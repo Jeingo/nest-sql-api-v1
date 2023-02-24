@@ -9,11 +9,3 @@ export const correctCommentNew = {
 export const inCorrectComment = {
   content: ''
 };
-
-export const emptyComments = {
-  pagesCount: 0,
-  page: 1,
-  pageSize: 10,
-  totalCount: 0,
-  items: []
-};
