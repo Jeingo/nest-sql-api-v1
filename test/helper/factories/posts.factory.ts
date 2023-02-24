@@ -15,20 +15,3 @@ export const savePost = async (
     .send(correctPost);
   return response.body.id;
 };
-
-export const savePosts = async (
-  app: any,
-  accessToken: string,
-  blogId: string,
-  count: number
-): Promise<TestStringID[]> => {
-  const ids: TestStringID[] = [];
-  for (let i = 0; i < count; i++) {
-    const response = await request(app)
-      .post(bloggerBlogsPath + '/' + blogId + '/posts')
-      .set(authHeader, bearerAccessToken(accessToken))
-      .send(correctPost);
-    ids.push(response.body.id);
-  }
-  return ids;
-};

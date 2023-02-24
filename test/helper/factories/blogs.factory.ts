@@ -14,19 +14,3 @@ export const saveBlog = async (
     .send(correctBlog);
   return response.body.id;
 };
-
-export const saveBlogs = async (
-  app: any,
-  accessToken: string,
-  count: number
-): Promise<TestStringID[]> => {
-  const ids: TestStringID[] = [];
-  for (let i = 0; i < count; i++) {
-    const response = await request(app)
-      .post(bloggerBlogsPath)
-      .set(authHeader, bearerAccessToken(accessToken))
-      .send(correctBlog);
-    ids.push(response.body.id);
-  }
-  return ids;
-};
