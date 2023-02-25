@@ -23,13 +23,16 @@ import { DbId, PaginatedType } from '../../../global-types/global.types';
 import { RemoveUserCommand } from '../application/use-cases/remove.user.use.case';
 import { InputBanUserDto } from './dto/input.ban.user.dto';
 import { BanUserCommand } from '../application/use-cases/ban.user.use.case';
+import { DataSource } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
 export class SuperAdminUsersController {
   constructor(
     private readonly superAdminUsersQueryRepository: SuperAdminUsersQueryRepository,
-    private readonly commandBus: CommandBus
+    private readonly commandBus: CommandBus,
+    @InjectDataSource() private readonly dataSource: DataSource //fixme move this
   ) {}
 
   @HttpCode(HttpStatus.CREATED)
@@ -66,5 +69,11 @@ export class SuperAdminUsersController {
   ) {
     await this.commandBus.execute(new BanUserCommand(banUserDto, id));
     return;
+  }
+  //fixme test router
+  @HttpCode(HttpStatus.OK)
+  @Get('test')
+  async test() {
+    return this.dataSource.query('SELECT * FROM public."Users";');
   }
 }
