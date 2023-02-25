@@ -205,13 +205,14 @@ const controllers = [
       { name: CommentLike.name, schema: CommentLikeSchema }
     ]),
     TypeOrmModule.forRoot({
+      //postgres://Jeingo:5hsV1vaLWHZg@ep-divine-union-415278.eu-central-1.aws.neon.tech/neondb
       type: 'postgres',
       host: process.env.PG_HOST,
       port: parseInt(process.env.PG_PORT, 10),
       username: process.env.PG_USERNAME,
       password: process.env.PG_PASSWORD,
       database: process.env.PG_DB_NAME,
-      entities: [],
+      ssl: true,
       autoLoadEntities: false,
       synchronize: false
     }),
