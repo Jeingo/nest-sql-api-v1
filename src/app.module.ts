@@ -95,6 +95,7 @@ import { BloggerUsersQueryRepository } from './blogger/users/infrastructure/blog
 import { BloggerBanUserUseCase } from './blogger/users/application/use-cases/blogger.ban.user.user.case';
 import { BanBlogUseCase } from './superadmin/blogs/application/use-cases/ban.blog.use.case';
 import { BloggerPostsQueryRepository } from './blogger/blogs/infrastructure/blogger.posts.query.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 const useCases = [
   RegistrationUserUseCase,
@@ -203,6 +204,17 @@ const controllers = [
       { name: PostLike.name, schema: PostLikeSchema },
       { name: CommentLike.name, schema: CommentLikeSchema }
     ]),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.PG_HOST,
+      port: parseInt(process.env.PG_PORT, 10),
+      username: process.env.PG_USERNAME,
+      password: process.env.PG_PASSWORD,
+      database: process.env.PG_DB_NAME,
+      entities: [],
+      autoLoadEntities: false,
+      synchronize: false
+    }),
     ThrottlerModule.forRoot({
       ttl: parseInt(process.env.THROTTLE_TTL, 10),
       limit: parseInt(process.env.THROTTLE_LIMIT, 10)
