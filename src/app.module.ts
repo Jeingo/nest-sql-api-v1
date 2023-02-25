@@ -211,7 +211,7 @@ const controllers = [
       username: process.env.PG_USERNAME,
       password: process.env.PG_PASSWORD,
       database: process.env.PG_DB_NAME,
-      // ssl: process.env.PG_SSL == 'true',
+      ssl: process.env.PG_SSL == 'true',
       autoLoadEntities: false,
       synchronize: false
     }),
