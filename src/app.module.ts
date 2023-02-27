@@ -101,6 +101,7 @@ import { SqlUsersRepository } from './users/infrastructure/sql.users.repository'
 import { SqlSuperAdminUsersQueryRepository } from './superadmin/users/infrastructure/sql.superadmin.users.query.repository';
 import { SqlUsersQueryRepository } from './auth/infrastructure/sql.users.query.respository';
 import { SqlSessionsRepository } from './sessions/infrastructure/sql.sessions.repository';
+import { SqlSessionsQueryRepository } from './sessions/infrastructure/sql.sessions.query.repository';
 
 const useCases = [
   RegistrationUserUseCase,
@@ -156,7 +157,8 @@ const sql = [
   SqlSuperAdminUsersQueryRepository,
   SqlUsersRepository,
   SqlUsersQueryRepository,
-  SqlSessionsRepository
+  SqlSessionsRepository,
+  SqlSessionsQueryRepository
 ];
 
 const queryRepositories = [

@@ -7,7 +7,6 @@ import {
   Param,
   UseGuards
 } from '@nestjs/common';
-import { SessionsQueryRepository } from '../infrastructure/sessions.query.repository';
 import { OutputSessionDto } from './dto/output.session.dto';
 import { CookieGuard } from '../../auth/infrastructure/guards/cookie.guard';
 import { PayloadFromRefreshToken } from '../../helper/get-decorators/payload.decorator';
@@ -15,11 +14,12 @@ import { RefreshTokenPayloadType } from '../../adapters/jwt/types/jwt.type';
 import { CommandBus } from '@nestjs/cqrs';
 import { RemoveSessionWithoutCurrentCommand } from '../application/use-cases/remove.sessions.without.current.use.case';
 import { RemoveSessionByDeviceIdCommand } from '../application/use-cases/remove.session.by.device.id.use.case';
+import { SqlSessionsQueryRepository } from '../infrastructure/sql.sessions.query.repository';
 
 @Controller('security/devices')
 export class SecurityDevicesController {
   constructor(
-    private readonly sessionsQueryRepository: SessionsQueryRepository,
+    private readonly sqlSessionsQueryRepository: SqlSessionsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 
@@ -29,7 +29,7 @@ export class SecurityDevicesController {
   async getAllActiveSession(
     @PayloadFromRefreshToken() payload: RefreshTokenPayloadType
   ): Promise<OutputSessionDto[]> {
-    return await this.sessionsQueryRepository.findAllActiveSession(
+    return await this.sqlSessionsQueryRepository.findAllActiveSession(
       payload.userId
     );
   }

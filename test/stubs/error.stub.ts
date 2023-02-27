@@ -122,7 +122,7 @@ export const errorsMessageForRegistration = {
 export const errorsMessageForConfirmation = {
   errorsMessages: [
     {
-      message: 'code is wrong',
+      message: 'must be a UUID',
       field: 'code'
     }
   ]
