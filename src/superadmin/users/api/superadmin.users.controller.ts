@@ -22,6 +22,7 @@ import { RemoveUserCommand } from '../application/use-cases/remove.user.use.case
 import { InputBanUserDto } from './dto/input.ban.user.dto';
 import { BanUserCommand } from '../application/use-cases/ban.user.use.case';
 import { SqlSuperAdminUsersQueryRepository } from '../infrastructure/sql.superadmin.users.query.repository';
+import { CheckId } from '../../../helper/pipes/check.id.validator.pipe';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
@@ -52,7 +53,7 @@ export class SuperAdminUsersController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id', new CheckId()) id: string) {
     await this.commandBus.execute(new RemoveUserCommand(id));
     return;
   }

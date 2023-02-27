@@ -10,3 +10,12 @@ export class CheckIdAndParseToDBId implements PipeTransform {
     return new Types.ObjectId(id);
   }
 }
+
+@Injectable()
+export class CheckId implements PipeTransform {
+  transform(id: string): string {
+    if (Number.isNaN(+id)) throw new NotFoundException();
+
+    return id;
+  }
+}

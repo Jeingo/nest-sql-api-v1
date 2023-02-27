@@ -5,21 +5,21 @@ import {
   ValidatorConstraintInterface
 } from 'class-validator';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UsersRepository } from '../../users/infrastructure/users.repository';
+import { SqlUsersRepository } from '../../users/infrastructure/sql.users.repository';
 
 @ValidatorConstraint({ async: true })
 @Injectable()
 export class EmailExistAndDontConfirmedConstraint
   implements ValidatorConstraintInterface
 {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly sqlUsersRepository: SqlUsersRepository) {}
 
   async validate(email: string) {
-    const user = await this.usersRepository.getByUniqueField(email);
+    const user = await this.sqlUsersRepository.getByLoginOrEmail(email);
     if (!user) {
       throw new BadRequestException(['email email is wrong']);
     }
-    if (user.emailConfirmation.isConfirmed) {
+    if (user.emailIsConfirmed) {
       throw new BadRequestException(['email account is already confirmed']);
     }
     return true;

@@ -45,7 +45,10 @@ import { SecurityDevicesController } from './sessions/api/security.devices.contr
 import { SessionsQueryRepository } from './sessions/infrastructure/sessions.query.repository';
 import { TestingController } from './testing/api/testing.controller';
 import { TestingService } from './testing/application/testing.service';
-import { CheckIdAndParseToDBId } from './helper/pipes/check.id.validator.pipe';
+import {
+  CheckId,
+  CheckIdAndParseToDBId
+} from './helper/pipes/check.id.validator.pipe';
 import { EmailNotExistConstraint } from './helper/validation-decorators/email.not.exist.decorator';
 import { LoginExistConstraint } from './helper/validation-decorators/login.exist.decorator';
 import { EmailConfirmationCodeIsCorrectConstraint } from './helper/validation-decorators/email.confirmation.code.is.correct.decorator';
@@ -174,7 +177,8 @@ const decorators = [
   LoginExistConstraint,
   EmailConfirmationCodeIsCorrectConstraint,
   PasswordRecoveryCodeIsCorrectConstraint,
-  CheckIdAndParseToDBId
+  CheckIdAndParseToDBId,
+  CheckId
 ];
 const strategies = [JwtStrategy, BasicStrategy];
 

@@ -5,27 +5,24 @@ import {
   ValidatorConstraintInterface
 } from 'class-validator';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UsersRepository } from '../../users/infrastructure/users.repository';
+import { SqlUsersRepository } from '../../users/infrastructure/sql.users.repository';
 
 @ValidatorConstraint({ async: true })
 @Injectable()
 export class EmailConfirmationCodeIsCorrectConstraint
   implements ValidatorConstraintInterface
 {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly sqlUsersRepository: SqlUsersRepository) {}
 
   async validate(confirmationCode: string) {
-    const user = await this.usersRepository.getByUniqueField(confirmationCode);
+    const user = await this.sqlUsersRepository.getByUUIDCode(confirmationCode);
     if (!user) {
       throw new BadRequestException(['code code is wrong']);
     }
-    if (user.emailConfirmation.confirmationCode !== confirmationCode) {
-      throw new BadRequestException(['code code is wrong']);
-    }
-    if (user.emailConfirmation.isConfirmed) {
+    if (user.emailIsConfirmed) {
       throw new BadRequestException(['code Account is already confirmed']);
     }
-    if (user.emailConfirmation.expirationDate < new Date()) {
+    if (user.emailExpirationDate < new Date()) {
       throw new BadRequestException(['code code is expired']);
     }
     return true;

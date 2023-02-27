@@ -31,10 +31,15 @@ export class SqlUsersRepository {
   //   return this.usersModel.findById(id);
   // }
   //
-  // OR email=${uniqueField}
-  //   AND "passwordRecoveryCode"=${uniqueField}
-  //   AND "emailConfirmationCode"=929e1d89-d430-457f-896d-97ed7cafce9c
+  async updateConfirmationCode(email: string): Promise<any> {
+    const queryString = `UPDATE "Users"
+                         SET "emailConfirmationCode"=uuid_generate_v4 ()
+                         WHERE email='${email}' RETURNING *`;
 
+    const result = await this.dataSource.query(queryString);
+
+    return result[0][0];
+  }
   async getByLoginOrEmail(uniqueField: string): Promise<any> {
     const queryString = `SELECT * FROM "Users"
                          WHERE login='${uniqueField}'
@@ -52,6 +57,15 @@ export class SqlUsersRepository {
     const result = await this.dataSource.query(queryString);
 
     return result[0];
+  }
+  async updateConfirmationEmail(code: string): Promise<boolean> {
+    const queryString = `UPDATE "Users"
+                         SET "emailIsConfirmed"=true
+                         WHERE "emailConfirmationCode"='${code}'`;
+
+    const result = await this.dataSource.query(queryString);
+
+    return !!result[0];
   }
   async delete(id: string): Promise<boolean> {
     const result = await this.dataSource.query(

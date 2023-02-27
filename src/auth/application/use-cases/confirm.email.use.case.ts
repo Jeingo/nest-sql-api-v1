@@ -1,6 +1,6 @@
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 import { InputConfirmationCodeDto } from '../../api/dto/input.confirmation.code.dto';
+import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
 
 export class ConfirmEmailCommand {
   constructor(public confirmationCodeDto: InputConfirmationCodeDto) {}
@@ -8,13 +8,12 @@ export class ConfirmEmailCommand {
 
 @CommandHandler(ConfirmEmailCommand)
 export class ConfirmEmailUseCase {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly sqlUsersRepository: SqlUsersRepository) {}
 
   async execute(command: ConfirmEmailCommand): Promise<boolean> {
     const code = command.confirmationCodeDto.code;
-    const user = await this.usersRepository.getByUniqueField(code);
-    user.updateEmailConfirmationStatus();
-    await this.usersRepository.save(user);
+    await this.sqlUsersRepository.updateConfirmationEmail(code);
+
     return true;
   }
 }
