@@ -27,7 +27,6 @@ import { UsersRepository } from './users/infrastructure/users.repository';
 import { JwtAdapter } from './adapters/jwt/jwt.service';
 import { JwtService } from '@nestjs/jwt';
 import { SessionsRepository } from './sessions/infrastructure/sessions.repository';
-import { UsersQueryRepository } from './auth/infrastructure/users.query.repository';
 import { EmailManager } from './adapters/email/email.manager';
 import { EmailService } from './adapters/email/email.service';
 import { BlogsController } from './blogs/api/blogs.controller';
@@ -97,6 +96,8 @@ import { BloggerPostsQueryRepository } from './blogger/blogs/infrastructure/blog
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SqlUsersRepository } from './users/infrastructure/sql.users.repository';
 import { SqlSuperAdminUsersQueryRepository } from './superadmin/users/infrastructure/sql.superadmin.users.query.repository';
+import { SqlUsersQueryRepository } from './auth/infrastructure/sql.users.query.respository';
+import { SqlSessionsRepository } from './sessions/infrastructure/sql.sessions.repository';
 
 const useCases = [
   RegistrationUserUseCase,
@@ -148,10 +149,14 @@ const repositories = [
   CommentsAndLikesRepository
 ];
 
-const sql = [SqlSuperAdminUsersQueryRepository, SqlUsersRepository];
+const sql = [
+  SqlSuperAdminUsersQueryRepository,
+  SqlUsersRepository,
+  SqlUsersQueryRepository,
+  SqlSessionsRepository
+];
 
 const queryRepositories = [
-  UsersQueryRepository,
   BlogsQueryRepository,
   PostsQueryRepository,
   CommentsQueryRepository,

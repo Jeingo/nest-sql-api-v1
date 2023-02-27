@@ -30,16 +30,29 @@ export class SqlUsersRepository {
   // async getById(id: DbId): Promise<UserDocument> {
   //   return this.usersModel.findById(id);
   // }
-  // async getByUniqueField(uniqueField: string): Promise<UserDocument> {
-  //   return this.usersModel
-  //     .findOne()
-  //     .or([
-  //       { email: uniqueField },
-  //       { login: uniqueField },
-  //       { 'emailConfirmation.confirmationCode': uniqueField },
-  //       { 'passwordRecoveryConfirmation.passwordRecoveryCode': uniqueField }
-  //     ]);
-  // }
+  //
+  // OR email=${uniqueField}
+  //   AND "passwordRecoveryCode"=${uniqueField}
+  //   AND "emailConfirmationCode"=929e1d89-d430-457f-896d-97ed7cafce9c
+
+  async getByLoginOrEmail(uniqueField: string): Promise<any> {
+    const queryString = `SELECT * FROM "Users"
+                         WHERE login='${uniqueField}'
+                         OR email='${uniqueField}'`;
+
+    const result = await this.dataSource.query(queryString);
+
+    return result[0];
+  }
+  async getByUUIDCode(code: string): Promise<any> {
+    const queryString = `SELECT * FROM "Users"
+                         WHERE "passwordRecoveryCode"='${code}'
+                         OR "emailConfirmationCode"='${code}'`;
+
+    const result = await this.dataSource.query(queryString);
+
+    return result[0];
+  }
   async delete(id: string): Promise<boolean> {
     const result = await this.dataSource.query(
       `DELETE FROM "Users" WHERE id=$1`,

@@ -18,7 +18,6 @@ import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { IConfigType } from '../../configuration/configuration';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import { UsersQueryRepository } from '../infrastructure/users.query.repository';
 import { OutputUserMeDto } from './dto/output.user.me.dto';
 import { InputRegistrationUserDto } from './dto/input.registration.user.dto';
 import { InputConfirmationCodeDto } from './dto/input.confirmation.code.dto';
@@ -42,13 +41,14 @@ import { CreateSessionCommand } from '../../sessions/application/use-cases/creat
 import { UpdateSessionCommand } from '../../sessions/application/use-cases/update.session.use.case';
 import { RemoveSessionCommand } from '../../sessions/application/use-cases/remove.session.use.case';
 import { CurrentUserType } from '../../global-types/global.types';
+import { SqlUsersQueryRepository } from '../infrastructure/sql.users.query.respository';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly jwtAdapter: JwtAdapter,
     private readonly configService: ConfigService<IConfigType>,
-    private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly sqlUsersQueryRepository: SqlUsersQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 
@@ -67,7 +67,7 @@ export class AuthController {
     );
 
     const { accessToken, refreshToken } = await this.jwtAdapter.getTokens(
-      userId.toString(),
+      userId,
       v4()
     );
 
@@ -118,7 +118,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Get('me')
   async me(@CurrentUser() user: CurrentUserType): Promise<OutputUserMeDto> {
-    return await this.usersQueryRepository.getMeById(
+    return await this.sqlUsersQueryRepository.getMeById(
       new Types.ObjectId(user.userId)
     );
   }

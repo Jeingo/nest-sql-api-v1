@@ -1,9 +1,8 @@
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 import { InputLoginUserDto } from '../../api/dto/input.login.user.dto';
 import bcrypt from 'bcrypt';
-import { DbId } from '../../../global-types/global.types';
 import { UnauthorizedException } from '@nestjs/common';
+import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
 
 export class ValidateUserInLoginCommand {
   constructor(public loginUserDto: InputLoginUserDto) {}
@@ -11,14 +10,14 @@ export class ValidateUserInLoginCommand {
 
 @CommandHandler(ValidateUserInLoginCommand)
 export class ValidateUserInLoginUseCase {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly sqlUsersRepository: SqlUsersRepository) {}
 
-  async execute(command: ValidateUserInLoginCommand): Promise<DbId> {
+  async execute(command: ValidateUserInLoginCommand): Promise<string> {
     const { loginOrEmail, password } = command.loginUserDto;
-    const user = await this.usersRepository.getByUniqueField(loginOrEmail);
-    if (!user || user.banInfo.isBanned) throw new UnauthorizedException();
+    const user = await this.sqlUsersRepository.getByLoginOrEmail(loginOrEmail);
+    if (!user || user.isBanned) throw new UnauthorizedException();
     const result = await bcrypt.compare(password, user.hash);
     if (!result) throw new UnauthorizedException();
-    return user._id;
+    return user.id.toString();
   }
 }

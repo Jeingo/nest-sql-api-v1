@@ -1,4 +1,4 @@
-CREATE TABLE public."Users2"
+CREATE TABLE public."Users"
 (
     id serial NOT NULL,
     login character varying NOT NULL,
@@ -17,5 +17,5 @@ CREATE TABLE public."Users2"
     PRIMARY KEY (id)
 );
 
-ALTER TABLE IF EXISTS public."Users2"
+ALTER TABLE IF EXISTS public."Users"
     OWNER to admin;

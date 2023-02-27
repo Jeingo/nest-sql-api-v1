@@ -9,7 +9,7 @@ import { DbId } from '../../global-types/global.types';
 import { OutputUserMeDto } from '../api/dto/output.user.me.dto';
 
 @Injectable()
-export class UsersQueryRepository {
+export class SqlUsersQueryRepository {
   constructor(@InjectModel(User.name) private usersModel: IUserModel) {}
 
   async getMeById(id: DbId): Promise<OutputUserMeDto> {
