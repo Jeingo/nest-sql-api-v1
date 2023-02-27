@@ -17,15 +17,15 @@ export class SqlUsersRepository {
     password: string,
     email: string,
     isConfirmed: boolean
-  ): Promise<string> {
+  ): Promise<any> {
     const passwordSalt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, passwordSalt);
     const result = await this.dataSource.query(
       `INSERT INTO "Users" (login, hash, email, "createdAt","passwordRecoveryCode","passwordRecoveryExpirationDate","passwordRecoveryIsConfirmed", "emailConfirmationCode", "emailExpirationDate", "emailIsConfirmed", "isBanned", "banDate", "banReason") 
-             VALUES ($1, $2,$3, now(), NULL, NULL, true, uuid_generate_v4 (), now() + interval '1 hour', $4, false, NULL, NULL) RETURNING id;`,
+             VALUES ($1, $2,$3, now(), NULL, NULL, true, uuid_generate_v4 (), now() + interval '1 hour', $4, false, NULL, NULL) RETURNING *;`,
       [login, hash, email, isConfirmed]
     );
-    return result[0].id.toString();
+    return result[0];
   }
   // async getById(id: DbId): Promise<UserDocument> {
   //   return this.usersModel.findById(id);

@@ -6,14 +6,12 @@ import { UserDocument } from '../../users/domain/entities/user.entity';
 export class EmailManager {
   constructor(private readonly emailService: EmailService) {}
 
-  async sendRegistrationEmailConfirmation(user: UserDocument): Promise<void> {
+  async sendRegistrationEmailConfirmation(user: any): Promise<void> {
     const emailForm = {
       from: '"Backend-09" <backend.jeingo@gmail.com>',
       to: user.email,
       subject: 'Registration confirmation',
-      html: this.registrationConfirmationMessage(
-        user.emailConfirmation.confirmationCode
-      )
+      html: this.registrationConfirmationMessage(user.emailConfirmationCode)
     };
     await this.emailService.sendEmail(emailForm);
   }

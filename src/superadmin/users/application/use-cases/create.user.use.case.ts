@@ -12,6 +12,12 @@ export class CreateUserUseCase {
 
   async execute(command: CreateUserCommand): Promise<string> {
     const { login, password, email } = command.createUserDto;
-    return await this.sqlUsersRepository.create(login, password, email, true);
+    const user = await this.sqlUsersRepository.create(
+      login,
+      password,
+      email,
+      true
+    );
+    return user.id.toString();
   }
 }

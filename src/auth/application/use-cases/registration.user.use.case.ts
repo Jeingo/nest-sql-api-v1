@@ -1,8 +1,7 @@
 import { InputRegistrationUserDto } from '../../api/dto/input.registration.user.dto';
-import { DbId } from '../../../global-types/global.types';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { EmailManager } from '../../../adapters/email/email.manager';
 import { CommandHandler } from '@nestjs/cqrs';
+import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
 
 export class RegistrationUserCommand {
   constructor(public registrationUserDto: InputRegistrationUserDto) {}
@@ -11,20 +10,19 @@ export class RegistrationUserCommand {
 @CommandHandler(RegistrationUserCommand)
 export class RegistrationUserUseCase {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly sqlUsersRepository: SqlUsersRepository,
     private readonly emailManager: EmailManager
   ) {}
 
-  async execute(command: RegistrationUserCommand): Promise<DbId> {
+  async execute(command: RegistrationUserCommand): Promise<string> {
     const { login, password, email } = command.registrationUserDto;
-    const createdUser = this.usersRepository.create(
+    const createdUser = await this.sqlUsersRepository.create(
       login,
       password,
       email,
       false
     );
-    await this.usersRepository.save(createdUser);
     await this.emailManager.sendRegistrationEmailConfirmation(createdUser);
-    return createdUser._id;
+    return createdUser.id.toString();
   }
 }
