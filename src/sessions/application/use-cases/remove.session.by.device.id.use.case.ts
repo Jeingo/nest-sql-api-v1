@@ -1,6 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { SessionsRepository } from '../../infrastructure/sessions.repository';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { SqlSessionsRepository } from '../../infrastructure/sql.sessions.repository';
+import { validate } from 'uuid';
 
 export class RemoveSessionByDeviceIdCommand {
   constructor(public id: string, public userId: string) {}
@@ -8,14 +9,15 @@ export class RemoveSessionByDeviceIdCommand {
 
 @CommandHandler(RemoveSessionByDeviceIdCommand)
 export class RemoveSessionByDeviceIdUseCase {
-  constructor(private readonly sessionsRepository: SessionsRepository) {}
+  constructor(private readonly sqlSessionsRepository: SqlSessionsRepository) {}
 
   async execute(command: RemoveSessionByDeviceIdCommand): Promise<boolean> {
     const sessionId = command.id;
     const userId = command.userId;
-    const session = await this.sessionsRepository.get(sessionId);
+    if (!validate(sessionId)) throw new NotFoundException();
+    const session = await this.sqlSessionsRepository.get(sessionId);
     if (!session) throw new NotFoundException();
-    if (session.userId !== userId) throw new ForbiddenException();
-    return await this.sessionsRepository.deleteSession(session.issueAt);
+    if (session.userId.toString() !== userId) throw new ForbiddenException();
+    return await this.sqlSessionsRepository.deleteSessionByDeviceId(sessionId);
   }
 }

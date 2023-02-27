@@ -31,7 +31,7 @@ export class SqlSessionsRepository {
              }),$1, $2, $3, $4, to_timestamp(${
         new Date(expireAt).getTime() / 1000
       })) RETURNING id;`,
-      [deviceId, deviceName, ip, userId]
+      [deviceId, deviceName, ip, userId.toString()]
     );
     return result[0].id.toString();
   }
@@ -65,6 +65,12 @@ export class SqlSessionsRepository {
       `DELETE FROM "Session" WHERE "issueAt"=to_timestamp(${
         new Date(issueAt).getTime() / 1000.0
       })`
+    );
+    return !!result[1];
+  }
+  async deleteSessionByDeviceId(deviceId: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `DELETE FROM "Session" WHERE "deviceId"='${deviceId}';`
     );
     return !!result[1];
   }
