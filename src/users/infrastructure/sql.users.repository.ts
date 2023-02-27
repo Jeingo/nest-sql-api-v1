@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { IUserModel, User, UserDocument } from '../domain/entities/user.entity';
-import { DbId } from '../../global-types/global.types';
+import { IUserModel, User } from '../domain/entities/user.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -45,6 +44,32 @@ export class SqlUsersRepository {
     const result = await this.dataSource.query(
       `DELETE FROM "Users" WHERE id=$1`,
       [id]
+    );
+    return !!result[1];
+  }
+  async banUser(
+    isBanned: boolean,
+    banReason: string,
+    userId: string
+  ): Promise<boolean> {
+    if (isBanned) {
+      const result = await this.dataSource.query(
+        `UPDATE "Users"
+               SET "isBanned"=true,
+               "banDate"=now(),
+               "banReason"='${banReason}'
+               WHERE id=$1`,
+        [userId]
+      );
+      return !!result[1];
+    }
+    const result = await this.dataSource.query(
+      `UPDATE "Users"
+               SET "isBanned"=false,
+               "banDate"=NULL,
+               "banReason"=NULL
+               WHERE id=$1`,
+      [userId]
     );
     return !!result[1];
   }

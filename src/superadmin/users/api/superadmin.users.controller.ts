@@ -17,8 +17,7 @@ import { InputCreateUserDto } from './dto/input.create.user.dto';
 import { OutputSuperAdminUserDto } from './dto/outputSuperAdminUserDto';
 import { CreateUserCommand } from '../application/use-cases/create.user.use.case';
 import { QueryUsers } from './types/query.users.type';
-import { CheckIdAndParseToDBId } from '../../../helper/pipes/check.id.validator.pipe';
-import { DbId, PaginatedType } from '../../../global-types/global.types';
+import { PaginatedType } from '../../../global-types/global.types';
 import { RemoveUserCommand } from '../application/use-cases/remove.user.use.case';
 import { InputBanUserDto } from './dto/input.ban.user.dto';
 import { BanUserCommand } from '../application/use-cases/ban.user.use.case';
@@ -60,10 +59,7 @@ export class SuperAdminUsersController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put(':id/ban')
-  async banUser(
-    @Param('id', new CheckIdAndParseToDBId()) id: DbId,
-    @Body() banUserDto: InputBanUserDto
-  ) {
+  async banUser(@Param('id') id: string, @Body() banUserDto: InputBanUserDto) {
     await this.commandBus.execute(new BanUserCommand(banUserDto, id));
     return;
   }
