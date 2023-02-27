@@ -39,19 +39,26 @@ export class SqlSessionsRepository {
   async save(session: SessionDocument): Promise<SessionDocument> {
     return session.save();
   }
-  async get(deviceId: string): Promise<SessionDocument> {
-    return this.sessionsModel.findOne({ deviceId: deviceId });
+  async get(deviceId: string): Promise<any> {
+    const result = await this.dataSource.query(
+      `SELECT * FROM "Session" WHERE "deviceId"='${deviceId}'`
+    );
+    return result[0];
   }
   async updateSession(
-    issueAt: string,
-    expireAt: string,
+    issueAt: number,
+    expireAt: number,
     deviceId: string
   ): Promise<boolean> {
-    const result = await this.sessionsModel.findOneAndUpdate(
-      { deviceId: deviceId },
-      { issueAt: issueAt, expireAt: expireAt }
+    const result = await this.dataSource.query(
+      `UPDATE "Session" 
+             SET "issueAt"=to_timestamp(${
+               new Date(issueAt).getTime() / 1000.0
+             }),
+             "expireAt"=to_timestamp(${new Date(expireAt).getTime() / 1000.0})
+             WHERE "deviceId"='${deviceId}'`
     );
-    return !!result;
+    return !!result[0];
   }
   async deleteSession(issueAt: string): Promise<boolean> {
     const result = await this.sessionsModel.findOneAndDelete({

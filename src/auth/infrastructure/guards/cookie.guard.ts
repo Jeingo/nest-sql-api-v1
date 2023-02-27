@@ -9,13 +9,13 @@ import {
   Token
 } from '../../../adapters/jwt/types/jwt.type';
 import { JwtAdapter } from '../../../adapters/jwt/jwt.service';
-import { SessionsRepository } from '../../../sessions/infrastructure/sessions.repository';
+import { SqlSessionsRepository } from '../../../sessions/infrastructure/sql.sessions.repository';
 
 @Injectable()
 export class CookieGuard implements CanActivate {
   constructor(
     private readonly jwtAdapter: JwtAdapter,
-    private readonly sessionsRepository: SessionsRepository
+    private readonly sqlSessionsRepository: SqlSessionsRepository
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -39,7 +39,7 @@ export class CookieGuard implements CanActivate {
     return payload;
   }
   private async isActiveSession(deviceId: string): Promise<boolean> {
-    const result = await this.sessionsRepository.get(deviceId);
+    const result = await this.sqlSessionsRepository.get(deviceId);
     return !!result;
   }
 }

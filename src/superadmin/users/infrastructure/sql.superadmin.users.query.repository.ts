@@ -39,8 +39,6 @@ export class SqlSuperAdminUsersQueryRepository {
                                   (login ILIKE '%${searchLoginTerm}%'
                                   OR email ILIKE '%${searchEmailTerm}%')`;
 
-    console.log(queryString);
-    console.log(queryStringForLength);
     const result = await this.dataSource.query(queryString);
     const resultCount = await this.dataSource.query(queryStringForLength);
 
