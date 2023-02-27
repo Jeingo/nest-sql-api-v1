@@ -27,16 +27,16 @@ export class SqlSuperAdminUsersQueryRepository {
     const banFilter = this.getBanFilter(banStatus);
 
     const queryString = `SELECT * FROM "Users"
-                         WHERE login LIKE '%${searchLoginTerm}%'
-                         AND email LIKE '%${searchEmailTerm}%'
+                         WHERE login ILIKE '%${searchLoginTerm}%'
+                         OR email ILIKE '%${searchEmailTerm}%'
                          ${banFilter}
                          ORDER BY "${sortBy}" ${sortDirection} 
                          LIMIT ${pageSize} 
                          OFFSET ${skipNumber}`;
 
     const queryStringForLength = `SELECT COUNT(*) FROM "Users"
-                                  WHERE login LIKE '%${searchLoginTerm}%'
-                                  AND email LIKE '%${searchEmailTerm}%'
+                                  WHERE login ILIKE '%${searchLoginTerm}%'
+                                  OR email ILIKE '%${searchEmailTerm}%'
                                   ${banFilter}`;
 
     const result = await this.dataSource.query(queryString);
