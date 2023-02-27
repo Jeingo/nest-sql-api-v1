@@ -85,6 +85,16 @@ export class SqlSessionsRepository {
     );
     return !!result[1];
   }
+  async isActive(deviceId: string, issueAt: number): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `SELECT * FROM "Session" WHERE "deviceId"='${deviceId}' AND "issueAt"=to_timestamp(${
+        new Date(issueAt).getTime() / 1000.0
+      })`
+    );
+    console.log(result);
+    return result[0];
+  }
+
   async deleteByUserId(userId: string): Promise<boolean> {
     const result = await this.sessionsModel.deleteMany({ userId: userId });
     return !!result;
