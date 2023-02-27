@@ -70,13 +70,14 @@ export class SqlSessionsRepository {
   }
   async deleteSessionsWithoutCurrent(
     userId: string,
-    issueAt: string
+    issueAt: number
   ): Promise<boolean> {
-    const result = await this.sessionsModel
-      .deleteMany({ userId: userId })
-      .where('issueAt')
-      .ne(issueAt);
-    return !!result;
+    const result = await this.dataSource.query(
+      `DELETE FROM "Session" WHERE "userId"=${userId} AND "issueAt" <> to_timestamp(${
+        new Date(issueAt).getTime() / 1000.0
+      })`
+    );
+    return !!result[1];
   }
   async deleteByUserId(userId: string): Promise<boolean> {
     const result = await this.sessionsModel.deleteMany({ userId: userId });
