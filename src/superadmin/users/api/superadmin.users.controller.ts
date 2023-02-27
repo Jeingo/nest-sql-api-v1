@@ -12,7 +12,6 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { SuperAdminUsersQueryRepository } from '../infrastructure/superadmin.users.query.repository';
 import { BasicAuthGuard } from '../../../auth/infrastructure/guards/basic.auth.guard';
 import { InputCreateUserDto } from './dto/input.create.user.dto';
 import { OutputSuperAdminUserDto } from './dto/outputSuperAdminUserDto';
@@ -29,7 +28,6 @@ import { SqlSuperAdminUsersQueryRepository } from '../infrastructure/sql.superad
 @Controller('sa/users')
 export class SuperAdminUsersController {
   constructor(
-    private readonly superAdminUsersQueryRepository: SuperAdminUsersQueryRepository,
     private readonly sqlSuperAdminUsersQueryRepository: SqlSuperAdminUsersQueryRepository,
     private readonly commandBus: CommandBus
   ) {}

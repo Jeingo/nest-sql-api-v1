@@ -84,7 +84,6 @@ import { BloggerBlogsController } from './blogger/blogs/api/blogger.blogs.contro
 import { SuperAdminBlogsController } from './superadmin/blogs/api/superadmin.blogs.controller';
 import { SuperAdminUsersController } from './superadmin/users/api/superadmin.users.controller';
 import { BloggerBlogsQueryRepository } from './blogger/blogs/infrastructure/blogger.blogs.query.repository';
-import { SuperAdminUsersQueryRepository } from './superadmin/users/infrastructure/superadmin.users.query.repository';
 import { SuperAdminBlogsQueryRepository } from './superadmin/blogs/infrastructure/superadmin.blogs.query.repository';
 import { BindWithUserUseCase } from './superadmin/blogs/application/use-cases/bind.with.user.use.case';
 import { BanUserUseCase } from './superadmin/users/application/use-cases/ban.user.use.case';
@@ -158,7 +157,6 @@ const queryRepositories = [
   CommentsQueryRepository,
   SessionsQueryRepository,
   BloggerBlogsQueryRepository,
-  SuperAdminUsersQueryRepository,
   SuperAdminBlogsQueryRepository,
   BloggerCommentsQueryRepository,
   BloggerUsersQueryRepository,
