@@ -71,6 +71,17 @@ export class SqlUsersRepository {
 
     return !!result[0];
   }
+  async updatePasswordRecoveryConfirmationCode(email: string): Promise<any> {
+    const queryString = `UPDATE "Users"
+                         SET "passwordRecoveryCode"=uuid_generate_v4 (),
+                         "passwordRecoveryIsConfirmed"=false,
+                         "passwordRecoveryExpirationDate"=now() + interval '1 hour'
+                         WHERE email='${email}' RETURNING *`;
+
+    const result = await this.dataSource.query(queryString);
+
+    return result[0][0];
+  }
   async delete(id: string): Promise<boolean> {
     const result = await this.dataSource.query(
       `DELETE FROM "Users" WHERE id=$1`,

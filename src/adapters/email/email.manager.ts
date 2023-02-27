@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { EmailService } from './email.service';
-import { UserDocument } from '../../users/domain/entities/user.entity';
 
 @Injectable()
 export class EmailManager {
@@ -15,16 +14,12 @@ export class EmailManager {
     };
     await this.emailService.sendEmail(emailForm);
   }
-  async sendPasswordRecoveryEmailConfirmation(
-    user: UserDocument
-  ): Promise<void> {
+  async sendPasswordRecoveryEmailConfirmation(user: any): Promise<void> {
     const emailForm = {
       from: '"Backend-09" <backend.jeingo@gmail.com>',
       to: user.email,
       subject: 'Password recovery confirmation',
-      html: this.passwordRecoveryConfirmationMessage(
-        user.passwordRecoveryConfirmation.passwordRecoveryCode
-      )
+      html: this.passwordRecoveryConfirmationMessage(user.passwordRecoveryCode)
     };
     await this.emailService.sendEmail(emailForm);
   }
