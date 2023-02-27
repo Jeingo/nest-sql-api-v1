@@ -1,5 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { SessionsRepository } from '../../infrastructure/sessions.repository';
+import { SqlSessionsRepository } from '../../infrastructure/sql.sessions.repository';
 
 export class RemoveSessionCommand {
   constructor(public iat: number) {}
@@ -7,11 +7,11 @@ export class RemoveSessionCommand {
 
 @CommandHandler(RemoveSessionCommand)
 export class RemoveSessionUseCase {
-  constructor(private readonly sessionsRepository: SessionsRepository) {}
+  constructor(private readonly sqlSessionsRepository: SqlSessionsRepository) {}
 
   async execute(command: RemoveSessionCommand): Promise<boolean> {
     const iat = command.iat;
-    const issueAt = new Date(iat * 1000).toISOString();
-    return await this.sessionsRepository.deleteSession(issueAt);
+    const issueAt = iat * 1000;
+    return await this.sqlSessionsRepository.deleteSession(issueAt);
   }
 }

@@ -60,11 +60,13 @@ export class SqlSessionsRepository {
     );
     return !!result[0];
   }
-  async deleteSession(issueAt: string): Promise<boolean> {
-    const result = await this.sessionsModel.findOneAndDelete({
-      issueAt: issueAt
-    });
-    return !!result;
+  async deleteSession(issueAt: number): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `DELETE FROM "Session" WHERE "issueAt"=to_timestamp(${
+        new Date(issueAt).getTime() / 1000.0
+      })`
+    );
+    return !!result[1];
   }
   async deleteSessionsWithoutCurrent(
     userId: string,
