@@ -27,18 +27,20 @@ export class SqlSuperAdminUsersQueryRepository {
     const banFilter = this.getBanFilter(banStatus);
 
     const queryString = `SELECT * FROM "Users"
-                         WHERE login ILIKE '%${searchLoginTerm}%'
-                         OR email ILIKE '%${searchEmailTerm}%'
-                         ${banFilter}
-                         ORDER BY "${sortBy}" ${sortDirection} 
-                         LIMIT ${pageSize} 
+                         WHERE ${banFilter}
+                         (login ILIKE '%${searchLoginTerm}%'
+                         OR email ILIKE '%${searchEmailTerm}%')
+                         ORDER BY "${sortBy}" ${sortDirection}
+                         LIMIT ${pageSize}
                          OFFSET ${skipNumber}`;
 
     const queryStringForLength = `SELECT COUNT(*) FROM "Users"
-                                  WHERE login ILIKE '%${searchLoginTerm}%'
-                                  OR email ILIKE '%${searchEmailTerm}%'
-                                  ${banFilter}`;
+                                  WHERE ${banFilter}
+                                  (login ILIKE '%${searchLoginTerm}%'
+                                  OR email ILIKE '%${searchEmailTerm}%')`;
 
+    console.log(queryString);
+    console.log(queryStringForLength);
     const result = await this.dataSource.query(queryString);
     const resultCount = await this.dataSource.query(queryStringForLength);
 
@@ -77,8 +79,8 @@ export class SqlSuperAdminUsersQueryRepository {
       return ``;
     }
     if (banStatus === BanStatus.banned) {
-      return `OR "isBanned"=true`;
+      return `"isBanned"=true AND`;
     }
-    return `OR "isBanned"=false`;
+    return `"isBanned"=false AND`;
   }
 }
