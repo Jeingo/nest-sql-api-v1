@@ -5,15 +5,15 @@ import {
   ValidatorConstraintInterface
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { UsersRepository } from '../../users/infrastructure/users.repository';
+import { SqlUsersRepository } from '../../users/infrastructure/sql.users.repository';
 
 @ValidatorConstraint({ async: true })
 @Injectable()
 export class EmailNotExistConstraint implements ValidatorConstraintInterface {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly sqlUsersRepository: SqlUsersRepository) {}
 
   async validate(email: string) {
-    const user = await this.usersRepository.getByUniqueField(email);
+    const user = await this.sqlUsersRepository.getByLoginOrEmail(email);
     return !user;
   }
   defaultMessage() {
