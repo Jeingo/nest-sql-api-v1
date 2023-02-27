@@ -5,31 +5,26 @@ import {
   ValidatorConstraintInterface
 } from 'class-validator';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UsersRepository } from '../../users/infrastructure/users.repository';
+import { SqlUsersRepository } from '../../users/infrastructure/sql.users.repository';
 
 @ValidatorConstraint({ async: true })
 @Injectable()
 export class PasswordRecoveryCodeIsCorrectConstraint
   implements ValidatorConstraintInterface
 {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly sqlUsersRepository: SqlUsersRepository) {}
 
   async validate(recoveryCode: string) {
-    const user = await this.usersRepository.getByUniqueField(recoveryCode);
+    const user = await this.sqlUsersRepository.getByUUIDCode(recoveryCode);
     if (!user) {
       throw new BadRequestException(['recoveryCode code is wrong']);
     }
-    if (
-      user.passwordRecoveryConfirmation.passwordRecoveryCode !== recoveryCode
-    ) {
-      throw new BadRequestException(['recoveryCode code is wrong']);
-    }
-    if (user.passwordRecoveryConfirmation.isConfirmed) {
+    if (user.passwordRecoveryIsConfirmed) {
       throw new BadRequestException([
         'recoveryCode Password is already changed'
       ]);
     }
-    if (user.passwordRecoveryConfirmation.expirationDate < new Date()) {
+    if (user.passwordRecoveryExpirationDate < new Date()) {
       throw new BadRequestException(['recoveryCode code is expired']);
     }
     return true;

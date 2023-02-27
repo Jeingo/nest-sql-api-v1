@@ -1,6 +1,6 @@
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { CommandHandler } from '@nestjs/cqrs';
 import { InputNewPasswordDto } from '../../api/dto/input.newpassword.dto';
+import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
 
 export class SetNewPasswordCommand {
   constructor(public newPasswordDto: InputNewPasswordDto) {}
@@ -8,13 +8,11 @@ export class SetNewPasswordCommand {
 
 @CommandHandler(SetNewPasswordCommand)
 export class SetNewPasswordUseCase {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly sqlUsersRepository: SqlUsersRepository) {}
 
   async execute(command: SetNewPasswordCommand): Promise<boolean> {
     const { recoveryCode, newPassword } = command.newPasswordDto;
-    const user = await this.usersRepository.getByUniqueField(recoveryCode);
-    user.updatePassword(newPassword);
-    await this.usersRepository.save(user);
+    await this.sqlUsersRepository.updatePassword(recoveryCode, newPassword);
     return true;
   }
 }

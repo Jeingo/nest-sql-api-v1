@@ -44,6 +44,21 @@ export class SqlUsersRepository {
 
     return result[0][0];
   }
+  async updatePassword(
+    recoveryCode: string,
+    newPassword: string
+  ): Promise<boolean> {
+    const passwordSalt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(newPassword, passwordSalt);
+    const queryString = `UPDATE "Users"
+                         SET "passwordRecoveryIsConfirmed"=true,
+                         hash='${hash}'
+                         WHERE "passwordRecoveryCode"='${recoveryCode}';`;
+    console.log(queryString);
+    const result = await this.dataSource.query(queryString);
+    console.log(result[0]);
+    return !!result[0];
+  }
   async getByLoginOrEmail(uniqueField: string): Promise<any> {
     const queryString = `SELECT * FROM "Users"
                          WHERE login='${uniqueField}'
@@ -59,7 +74,6 @@ export class SqlUsersRepository {
                          OR "emailConfirmationCode"='${code}'`;
 
     const result = await this.dataSource.query(queryString);
-
     return result[0];
   }
   async updateConfirmationEmail(code: string): Promise<boolean> {
