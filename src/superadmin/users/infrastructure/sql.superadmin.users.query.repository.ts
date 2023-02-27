@@ -77,8 +77,8 @@ export class SqlSuperAdminUsersQueryRepository {
       return ``;
     }
     if (banStatus === BanStatus.banned) {
-      return `AND "isBanned"=true`;
+      return `OR "isBanned"=true`;
     }
-    return `AND "isBanned"=false`;
+    return `OR "isBanned"=false`;
   }
 }
