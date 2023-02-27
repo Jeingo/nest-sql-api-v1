@@ -23,16 +23,15 @@ import { DbId, PaginatedType } from '../../../global-types/global.types';
 import { RemoveUserCommand } from '../application/use-cases/remove.user.use.case';
 import { InputBanUserDto } from './dto/input.ban.user.dto';
 import { BanUserCommand } from '../application/use-cases/ban.user.use.case';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { SqlSuperAdminUsersQueryRepository } from '../infrastructure/sql.superadmin.users.query.repository';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
 export class SuperAdminUsersController {
   constructor(
     private readonly superAdminUsersQueryRepository: SuperAdminUsersQueryRepository,
-    private readonly commandBus: CommandBus,
-    @InjectDataSource() private readonly dataSource: DataSource //fixme move this
+    private readonly sqlSuperAdminUsersQueryRepository: SqlSuperAdminUsersQueryRepository,
+    private readonly commandBus: CommandBus
   ) {}
 
   @HttpCode(HttpStatus.CREATED)
@@ -43,7 +42,7 @@ export class SuperAdminUsersController {
     const createdUserId = await this.commandBus.execute(
       new CreateUserCommand(createUserDto)
     );
-    return await this.superAdminUsersQueryRepository.getById(createdUserId);
+    return await this.sqlSuperAdminUsersQueryRepository.getById(createdUserId);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -51,7 +50,7 @@ export class SuperAdminUsersController {
   async findAll(
     @Query() query: QueryUsers
   ): Promise<PaginatedType<OutputSuperAdminUserDto>> {
-    return await this.superAdminUsersQueryRepository.getAll(query);
+    return await this.sqlSuperAdminUsersQueryRepository.getAll(query);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -69,11 +68,5 @@ export class SuperAdminUsersController {
   ) {
     await this.commandBus.execute(new BanUserCommand(banUserDto, id));
     return;
-  }
-  //fixme test router
-  @HttpCode(HttpStatus.OK)
-  @Get('test')
-  async test() {
-    return this.dataSource.query('SELECT * FROM public."Users";');
   }
 }

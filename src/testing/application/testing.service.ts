@@ -19,6 +19,8 @@ import {
   CommentLike,
   ICommentLikeModel
 } from '../../comment-likes/domain/entities/comment.like.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class TestingService {
@@ -29,7 +31,8 @@ export class TestingService {
     @InjectModel(Comment.name) private commentsModel: ICommentModel,
     @InjectModel(Session.name) private sessionsModel: ISessionModel,
     @InjectModel(PostLike.name) private postLikesModel: IPostLikeModel,
-    @InjectModel(CommentLike.name) private commentLikesModel: ICommentLikeModel
+    @InjectModel(CommentLike.name) private commentLikesModel: ICommentLikeModel,
+    @InjectDataSource() private readonly dataSource: DataSource
   ) {}
 
   async removeAll() {
@@ -40,5 +43,6 @@ export class TestingService {
     await this.sessionsModel.deleteMany({});
     await this.postLikesModel.deleteMany({});
     await this.commentLikesModel.deleteMany({});
+    await this.dataSource.query(`TRUNCATE "Users" CASCADE`);
   }
 }

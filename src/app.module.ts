@@ -96,6 +96,8 @@ import { BloggerBanUserUseCase } from './blogger/users/application/use-cases/blo
 import { BanBlogUseCase } from './superadmin/blogs/application/use-cases/ban.blog.use.case';
 import { BloggerPostsQueryRepository } from './blogger/blogs/infrastructure/blogger.posts.query.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SqlUsersRepository } from './users/infrastructure/sql.users.repository';
+import { SqlSuperAdminUsersQueryRepository } from './superadmin/users/infrastructure/sql.superadmin.users.query.repository';
 
 const useCases = [
   RegistrationUserUseCase,
@@ -146,6 +148,9 @@ const repositories = [
   CommentLikesRepository,
   CommentsAndLikesRepository
 ];
+
+const sql = [SqlSuperAdminUsersQueryRepository, SqlUsersRepository];
+
 const queryRepositories = [
   UsersQueryRepository,
   BlogsQueryRepository,
@@ -229,7 +234,8 @@ const controllers = [
     ...queryRepositories,
     ...decorators,
     ...strategies,
-    ...useCases
+    ...useCases,
+    ...sql
   ]
 })
 export class AppModule {}

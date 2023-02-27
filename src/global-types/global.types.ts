@@ -3,8 +3,8 @@ import { Types } from 'mongoose';
 export type DbId = Types.ObjectId;
 
 export enum Direction {
-  ASC = 'asc',
-  DESC = 'desc'
+  ASC = 'ASC',
+  DESC = 'DESC'
 }
 
 export enum LikeStatus {
