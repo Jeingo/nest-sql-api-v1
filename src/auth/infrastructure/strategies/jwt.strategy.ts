@@ -3,14 +3,13 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { IConfigType } from '../../../configuration/configuration';
-import { Types } from 'mongoose';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
+import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly configService: ConfigService<IConfigType>,
-    private readonly usersRepository: UsersRepository
+    private readonly sqlUsersRepository: SqlUsersRepository
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -20,12 +19,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload) {
-    const user = await this.usersRepository.getById(
-      new Types.ObjectId(payload.userId)
-    );
+    const user = await this.sqlUsersRepository.getById(payload.userId);
     if (!user) {
       throw new UnauthorizedException();
     }
-    return { userId: user._id.toString(), login: user.login };
+    return { userId: user.id.toString(), login: user.login };
   }
 }

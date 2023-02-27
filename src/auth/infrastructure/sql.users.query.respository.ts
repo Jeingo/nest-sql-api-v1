@@ -1,17 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { IUserModel, User } from '../../users/domain/entities/user.entity';
-import { DbId } from '../../global-types/global.types';
 import { OutputUserMeDto } from '../api/dto/output.user.me.dto';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class SqlUsersQueryRepository {
-  constructor(@InjectModel(User.name) private usersModel: IUserModel) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
-  async getMeById(id: DbId): Promise<OutputUserMeDto> {
-    const result = await this.usersModel.findById(id);
-    if (!result) throw new NotFoundException();
-    return this._getOutputMeUser(result);
+  async getMeById(id: string): Promise<OutputUserMeDto> {
+    const result = await this.dataSource.query(
+      `SELECT * FROM "Users" WHERE id=$1;`,
+      [id]
+    );
+    if (!result[0]) throw new NotFoundException();
+    return this._getOutputMeUser(result[0]);
   }
   private _getOutputMeUser(user: any): OutputUserMeDto {
     return {

@@ -25,7 +25,6 @@ import { InputEmailDto } from './dto/input.email.dto';
 import { InputRecoveryEmailDto } from './dto/input.recovery.email.dto';
 import { InputNewPasswordDto } from './dto/input.newpassword.dto';
 import { CurrentUser } from '../../helper/get-decorators/current.user.decorator';
-import { Types } from 'mongoose';
 import { JwtAuthGuard } from '../infrastructure/guards/jwt.auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { RegistrationUserCommand } from '../application/use-cases/registration.user.use.case';
@@ -118,9 +117,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Get('me')
   async me(@CurrentUser() user: CurrentUserType): Promise<OutputUserMeDto> {
-    return await this.sqlUsersQueryRepository.getMeById(
-      new Types.ObjectId(user.userId)
-    );
+    return await this.sqlUsersQueryRepository.getMeById(user.userId);
   }
 
   @UseGuards(ThrottlerGuard)

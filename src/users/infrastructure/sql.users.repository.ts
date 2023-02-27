@@ -27,10 +27,14 @@ export class SqlUsersRepository {
     );
     return result[0];
   }
-  // async getById(id: DbId): Promise<UserDocument> {
-  //   return this.usersModel.findById(id);
-  // }
-  //
+  async getById(id: string): Promise<any> {
+    const result = await this.dataSource.query(
+      `SELECT * FROM "Users" WHERE id=$1;`,
+      [id]
+    );
+    return result[0];
+  }
+
   async updateConfirmationCode(email: string): Promise<any> {
     const queryString = `UPDATE "Users"
                          SET "emailConfirmationCode"=uuid_generate_v4 ()
