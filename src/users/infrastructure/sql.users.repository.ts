@@ -28,23 +28,24 @@ export class SqlUsersRepository {
     );
     return result[0].id.toString();
   }
-  async getById(id: DbId): Promise<UserDocument> {
-    return this.usersModel.findById(id);
-  }
-  async getByUniqueField(uniqueField: string): Promise<UserDocument> {
-    return this.usersModel
-      .findOne()
-      .or([
-        { email: uniqueField },
-        { login: uniqueField },
-        { 'emailConfirmation.confirmationCode': uniqueField },
-        { 'passwordRecoveryConfirmation.passwordRecoveryCode': uniqueField }
-      ]);
-  }
-  async save(user: UserDocument): Promise<UserDocument> {
-    return await user.save();
-  }
-  async delete(id: DbId): Promise<UserDocument> {
-    return this.usersModel.findByIdAndDelete(id);
+  // async getById(id: DbId): Promise<UserDocument> {
+  //   return this.usersModel.findById(id);
+  // }
+  // async getByUniqueField(uniqueField: string): Promise<UserDocument> {
+  //   return this.usersModel
+  //     .findOne()
+  //     .or([
+  //       { email: uniqueField },
+  //       { login: uniqueField },
+  //       { 'emailConfirmation.confirmationCode': uniqueField },
+  //       { 'passwordRecoveryConfirmation.passwordRecoveryCode': uniqueField }
+  //     ]);
+  // }
+  async delete(id: string): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `DELETE FROM "Users" WHERE id=$1`,
+      [id]
+    );
+    return !!result[1];
   }
 }

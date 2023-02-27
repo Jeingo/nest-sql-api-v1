@@ -53,7 +53,7 @@ export class SuperAdminUsersController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  async remove(@Param('id', new CheckIdAndParseToDBId()) id: DbId) {
+  async remove(@Param('id') id: string) {
     await this.commandBus.execute(new RemoveUserCommand(id));
     return;
   }

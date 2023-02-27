@@ -1,20 +1,18 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { DbId } from '../../../../global-types/global.types';
-import { UsersRepository } from '../../../../users/infrastructure/users.repository';
 import { NotFoundException } from '@nestjs/common';
+import { SqlUsersRepository } from '../../../../users/infrastructure/sql.users.repository';
 
 export class RemoveUserCommand {
-  constructor(public id: DbId) {}
+  constructor(public id: string) {}
 }
 
 @CommandHandler(RemoveUserCommand)
 export class RemoveUserUseCase {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly sqlUsersRepository: SqlUsersRepository) {}
 
   async execute(command: RemoveUserCommand): Promise<boolean> {
-    const user = await this.usersRepository.getById(command.id);
-    if (!user) throw new NotFoundException();
-    await this.usersRepository.delete(command.id);
+    const result = await this.sqlUsersRepository.delete(command.id);
+    if (!result) throw new NotFoundException();
     return true;
   }
 }
