@@ -1,16 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { IUserModel, User } from '../domain/entities/user.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class SqlUsersRepository {
-  constructor(
-    @InjectModel(User.name) private usersModel: IUserModel,
-    @InjectDataSource() private readonly dataSource: DataSource
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async create(
     login: string,
@@ -20,9 +15,12 @@ export class SqlUsersRepository {
   ): Promise<any> {
     const passwordSalt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, passwordSalt);
+
     const result = await this.dataSource.query(
-      `INSERT INTO "Users" (login, hash, email, "createdAt","passwordRecoveryCode","passwordRecoveryExpirationDate","passwordRecoveryIsConfirmed", "emailConfirmationCode", "emailExpirationDate", "emailIsConfirmed", "isBanned", "banDate", "banReason") 
-             VALUES ($1, $2,$3, now(), NULL, NULL, true, uuid_generate_v4 (), now() + interval '1 hour', $4, false, NULL, NULL) RETURNING *;`,
+      `INSERT INTO "Users" 
+             (login, hash, email, "createdAt","passwordRecoveryCode","passwordRecoveryExpirationDate","passwordRecoveryIsConfirmed", "emailConfirmationCode", "emailExpirationDate", "emailIsConfirmed", "isBanned", "banDate", "banReason") 
+             VALUES
+             ($1, $2,$3, now(), NULL, NULL, true, uuid_generate_v4 (), now() + interval '1 hour', $4, false, NULL, NULL) RETURNING *;`,
       [login, hash, email, isConfirmed]
     );
     return result[0];
@@ -54,9 +52,9 @@ export class SqlUsersRepository {
                          SET "passwordRecoveryIsConfirmed"=true,
                          hash='${hash}'
                          WHERE "passwordRecoveryCode"='${recoveryCode}';`;
-    console.log(queryString);
+
     const result = await this.dataSource.query(queryString);
-    console.log(result[0]);
+
     return !!result[0];
   }
   async getByLoginOrEmail(uniqueField: string): Promise<any> {
@@ -74,6 +72,7 @@ export class SqlUsersRepository {
                          OR "emailConfirmationCode"='${code}'`;
 
     const result = await this.dataSource.query(queryString);
+
     return result[0];
   }
   async updateConfirmationEmail(code: string): Promise<boolean> {

@@ -27,7 +27,8 @@ export class BanUserUseCase {
 
     return true;
   }
-
+  //todo add flow with other entity
+  //
   // private async changeCountCommentLikes(
   //   commentLikes: CommentLikeDocument[],
   //   isBanned: boolean

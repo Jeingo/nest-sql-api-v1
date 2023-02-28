@@ -1,4 +1,4 @@
-CREATE TABLE public."Session"
+CREATE TABLE "Session"
 (
     id serial NOT NULL,
     "issueAt" timestamp with time zone NOT NULL,
@@ -9,11 +9,11 @@ CREATE TABLE public."Session"
     "expireAt" timestamp with time zone NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY ("userId")
-        REFERENCES public."Users" (id) MATCH SIMPLE
+        REFERENCES "Users" (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         NOT VALID
 );
 
-ALTER TABLE IF EXISTS public."Session"
+ALTER TABLE IF EXISTS "Session"
     OWNER to admin;
