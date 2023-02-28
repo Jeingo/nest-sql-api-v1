@@ -10,8 +10,6 @@ export class RemoveSessionUseCase {
   constructor(private readonly sqlSessionsRepository: SqlSessionsRepository) {}
 
   async execute(command: RemoveSessionCommand): Promise<boolean> {
-    const iat = command.iat;
-    const issueAt = iat * 1000;
-    return await this.sqlSessionsRepository.deleteSession(issueAt);
+    return await this.sqlSessionsRepository.deleteSession(command.iat);
   }
 }

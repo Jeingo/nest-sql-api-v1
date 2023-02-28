@@ -21,15 +21,9 @@ export class SqlSessionsRepository {
     expireAt: number
   ): Promise<SqlDbId> {
     deviceName = deviceName ? deviceName : 'some device';
-
     const result = await this.dataSource.query(
       `INSERT INTO "Session" ("issueAt", "deviceId", "deviceName", ip, "userId", "expireAt") 
-             VALUES ( to_timestamp(${
-               new Date(issueAt).getTime() / 1000.0
-             }),$1, $2, $3, $4, to_timestamp(${
-        new Date(expireAt).getTime() / 1000
-      })) RETURNING id;`,
-      [deviceId, deviceName, ip, userId.toString()]
+             VALUES ( to_timestamp(${issueAt}),'${deviceId}', '${deviceName}', '${ip}', '${userId}', to_timestamp(${expireAt})) RETURNING id;`
     );
     return result[0].id.toString();
   }
@@ -46,19 +40,15 @@ export class SqlSessionsRepository {
   ): Promise<boolean> {
     const result = await this.dataSource.query(
       `UPDATE "Session" 
-             SET "issueAt"=to_timestamp(${
-               new Date(issueAt).getTime() / 1000.0
-             }),
-             "expireAt"=to_timestamp(${new Date(expireAt).getTime() / 1000.0})
+             SET "issueAt"=to_timestamp(${issueAt}),
+             "expireAt"=to_timestamp(${expireAt})
              WHERE "deviceId"='${deviceId}'`
     );
     return !!result[0];
   }
   async deleteSession(issueAt: number): Promise<boolean> {
     const result = await this.dataSource.query(
-      `DELETE FROM "Session" WHERE "issueAt"=to_timestamp(${
-        new Date(issueAt).getTime() / 1000.0
-      })`
+      `DELETE FROM "Session" WHERE "issueAt"=to_timestamp(${issueAt})`
     );
     return !!result[1];
   }
@@ -73,17 +63,13 @@ export class SqlSessionsRepository {
     issueAt: number
   ): Promise<boolean> {
     const result = await this.dataSource.query(
-      `DELETE FROM "Session" WHERE "userId"=${userId} AND "issueAt" <> to_timestamp(${
-        new Date(issueAt).getTime() / 1000.0
-      })`
+      `DELETE FROM "Session" WHERE "userId"=${userId} AND "issueAt" <> to_timestamp(${issueAt})`
     );
     return !!result[1];
   }
   async isActive(deviceId: string, issueAt: number): Promise<boolean> {
     const result = await this.dataSource.query(
-      `SELECT * FROM "Session" WHERE "deviceId"='${deviceId}' AND "issueAt"=to_timestamp(${
-        new Date(issueAt).getTime() / 1000.0
-      })`
+      `SELECT * FROM "Session" WHERE "deviceId"='${deviceId}' AND "issueAt"=to_timestamp(${issueAt})`
     );
     return result[0];
   }

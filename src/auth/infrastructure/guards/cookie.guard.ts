@@ -45,6 +45,6 @@ export class CookieGuard implements CanActivate {
     deviceId: string,
     iat: number
   ): Promise<boolean> {
-    return await this.sqlSessionsRepository.isActive(deviceId, iat * 1000);
+    return await this.sqlSessionsRepository.isActive(deviceId, iat);
   }
 }

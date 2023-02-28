@@ -25,8 +25,7 @@ export class SqlUsersRepository {
              "emailConfirmationCode", "emailExpirationDate", "emailIsConfirmed",
              "isBanned", "banDate", "banReason") 
              VALUES
-             ($1, $2,$3, now(), NULL, NULL, true, uuid_generate_v4 (), now() + interval '1 hour', $4, false, NULL, NULL) RETURNING *;`,
-      [login, hash, email, isConfirmed]
+             ('${login}', '${hash}','${email}', now(), NULL, NULL, true, uuid_generate_v4 (), now() + interval '1 hour', ${isConfirmed}, false, NULL, NULL) RETURNING *;`
     );
     return result[0];
   }
@@ -104,8 +103,7 @@ export class SqlUsersRepository {
   }
   async delete(id: SqlDbId): Promise<boolean> {
     const result = await this.dataSource.query(
-      `DELETE FROM "Users" WHERE id=$1`,
-      [id]
+      `DELETE FROM "Users" WHERE id=${id}`
     );
     return !!result[1];
   }
@@ -120,8 +118,7 @@ export class SqlUsersRepository {
                SET "isBanned"=true,
                "banDate"=now(),
                "banReason"='${banReason}'
-               WHERE id=$1`,
-        [userId]
+               WHERE id=${userId}`
       );
       return !!result[1];
     }
@@ -130,8 +127,7 @@ export class SqlUsersRepository {
                SET "isBanned"=false,
                "banDate"=NULL,
                "banReason"=NULL
-               WHERE id=$1`,
-      [userId]
+               WHERE id=${userId}`
     );
     return !!result[1];
   }

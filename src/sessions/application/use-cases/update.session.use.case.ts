@@ -17,12 +17,11 @@ export class UpdateSessionUseCase {
   ) {}
 
   async execute(command: UpdateSessionCommand): Promise<boolean> {
-    const refreshToken = command.refreshToken;
-    const result = this.jwtService.verify(refreshToken, {
+    const result = this.jwtService.verify(command.refreshToken, {
       secret: this.configService.get('JWT_REFRESH_SECRET')
     });
-    const issueAt = result.iat * 1000;
-    const expireAt = result.exp * 1000;
+    const issueAt = result.iat;
+    const expireAt = result.exp;
     const deviceId = result.deviceId;
     return await this.sqlSessionsRepository.updateSession(
       issueAt,

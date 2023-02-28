@@ -57,8 +57,7 @@ export class SqlSuperAdminUsersQueryRepository {
   }
   async getById(id: SqlDbId): Promise<OutputSuperAdminUserDto> {
     const result = await this.dataSource.query(
-      `SELECT * FROM "Users" WHERE id=$1`,
-      [id]
+      `SELECT * FROM "Users" WHERE id=${id}`
     );
     if (!result[0]) throw new NotFoundException();
     return this.getOutputUserSql(result[0]);

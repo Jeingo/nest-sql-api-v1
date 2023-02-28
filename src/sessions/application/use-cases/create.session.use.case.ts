@@ -27,8 +27,8 @@ export class CreateSessionUseCase {
     const result = this.jwtService.verify(refreshToken, {
       secret: this.configService.get('JWT_REFRESH_SECRET')
     });
-    const issueAt = result.iat * 1000;
-    const expireAt = result.exp * 1000;
+    const issueAt = result.iat;
+    const expireAt = result.exp;
     const userId = result.userId;
     const deviceId = result.deviceId;
 
