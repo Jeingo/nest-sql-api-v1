@@ -2,6 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { InputBanUserDto } from '../../api/dto/input.ban.user.dto';
 import { NotFoundException } from '@nestjs/common';
 import { SqlUsersRepository } from '../../../../users/infrastructure/sql.users.repository';
+import { SqlSessionsRepository } from '../../../../sessions/infrastructure/sql.sessions.repository';
 
 export class BanUserCommand {
   constructor(public banUserDto: InputBanUserDto, public id: string) {}
@@ -10,7 +11,8 @@ export class BanUserCommand {
 @CommandHandler(BanUserCommand)
 export class BanUserUseCase {
   constructor(
-    private readonly sqlUsersRepository: SqlUsersRepository // private readonly usersRepository: UsersRepository, // private readonly postsRepository: PostsRepository, // private readonly blogsRepository: BlogsRepository, // private readonly commentsRepository: CommentsRepository
+    private readonly sqlUsersRepository: SqlUsersRepository,
+    private readonly sqlSessionRepository: SqlSessionsRepository
   ) {}
 
   async execute(command: BanUserCommand): Promise<boolean> {
@@ -23,7 +25,7 @@ export class BanUserUseCase {
     );
     if (!result) throw new NotFoundException();
 
-    // await this.sessionsRepository.deleteByUserId(userId.toString());
+    await this.sqlSessionRepository.deleteByUserId(command.id);
 
     return true;
   }

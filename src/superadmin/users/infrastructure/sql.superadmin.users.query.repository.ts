@@ -1,10 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BanStatus, QueryUsers } from '../api/types/query.users.type';
 import { OutputSuperAdminUserDto } from '../api/dto/outputSuperAdminUserDto';
-import { Direction, PaginatedType } from '../../../global-types/global.types';
+import {
+  Direction,
+  PaginatedType,
+  SqlDbId
+} from '../../../global-types/global.types';
 import { getPaginatedType } from '../../../helper/query/query.repository.helper';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { UsersSqlType } from '../../../type-for-sql-entity/users.sql.type';
 
 @Injectable()
 export class SqlSuperAdminUsersQueryRepository {
@@ -50,7 +55,7 @@ export class SqlSuperAdminUsersQueryRepository {
       +resultCount[0].count
     );
   }
-  async getById(id: string): Promise<OutputSuperAdminUserDto> {
+  async getById(id: SqlDbId): Promise<OutputSuperAdminUserDto> {
     const result = await this.dataSource.query(
       `SELECT * FROM "Users" WHERE id=$1`,
       [id]
@@ -58,15 +63,15 @@ export class SqlSuperAdminUsersQueryRepository {
     if (!result[0]) throw new NotFoundException();
     return this.getOutputUserSql(result[0]);
   }
-  private getOutputUserSql(user: any): OutputSuperAdminUserDto {
+  private getOutputUserSql(user: UsersSqlType): OutputSuperAdminUserDto {
     return {
       id: user.id.toString(),
       login: user.login,
       email: user.email,
-      createdAt: user.createdAt,
+      createdAt: user.createdAt.toISOString(),
       banInfo: {
         isBanned: user.isBanned,
-        banDate: user.banDate,
+        banDate: user.banDate ? user.banDate.toISOString() : null,
         banReason: user.banReason
       }
     };

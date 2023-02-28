@@ -11,6 +11,6 @@ export type UsersSqlType = {
   emailExpirationDate: Date;
   emailIsConfirmed: boolean;
   isBanned: boolean;
-  banDate: Date;
+  banDate: Date | null;
   banReason: string;
 };

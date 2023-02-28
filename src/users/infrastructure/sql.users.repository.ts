@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { UsersSqlType } from '../../type-for-sql-entity/users.sql.type';
+import { SqlDbId } from '../../global-types/global.types';
 
 @Injectable()
 export class SqlUsersRepository {
@@ -12,20 +14,23 @@ export class SqlUsersRepository {
     password: string,
     email: string,
     isConfirmed: boolean
-  ): Promise<any> {
+  ): Promise<UsersSqlType> {
     const passwordSalt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, passwordSalt);
 
     const result = await this.dataSource.query(
       `INSERT INTO "Users" 
-             (login, hash, email, "createdAt","passwordRecoveryCode","passwordRecoveryExpirationDate","passwordRecoveryIsConfirmed", "emailConfirmationCode", "emailExpirationDate", "emailIsConfirmed", "isBanned", "banDate", "banReason") 
+             (login, hash, email, "createdAt","passwordRecoveryCode",
+             "passwordRecoveryExpirationDate","passwordRecoveryIsConfirmed",
+             "emailConfirmationCode", "emailExpirationDate", "emailIsConfirmed",
+             "isBanned", "banDate", "banReason") 
              VALUES
              ($1, $2,$3, now(), NULL, NULL, true, uuid_generate_v4 (), now() + interval '1 hour', $4, false, NULL, NULL) RETURNING *;`,
       [login, hash, email, isConfirmed]
     );
     return result[0];
   }
-  async getById(id: string): Promise<any> {
+  async getById(id: SqlDbId): Promise<UsersSqlType> {
     const result = await this.dataSource.query(
       `SELECT * FROM "Users" WHERE id=$1;`,
       [id]
@@ -33,7 +38,7 @@ export class SqlUsersRepository {
     return result[0];
   }
 
-  async updateConfirmationCode(email: string): Promise<any> {
+  async updateConfirmationCode(email: string): Promise<UsersSqlType> {
     const queryString = `UPDATE "Users"
                          SET "emailConfirmationCode"=uuid_generate_v4 ()
                          WHERE email='${email}' RETURNING *`;
@@ -57,7 +62,7 @@ export class SqlUsersRepository {
 
     return !!result[0];
   }
-  async getByLoginOrEmail(uniqueField: string): Promise<any> {
+  async getByLoginOrEmail(uniqueField: string): Promise<UsersSqlType> {
     const queryString = `SELECT * FROM "Users"
                          WHERE login='${uniqueField}'
                          OR email='${uniqueField}'`;
@@ -66,7 +71,7 @@ export class SqlUsersRepository {
 
     return result[0];
   }
-  async getByUUIDCode(code: string): Promise<any> {
+  async getByUUIDCode(code: string): Promise<UsersSqlType> {
     const queryString = `SELECT * FROM "Users"
                          WHERE "passwordRecoveryCode"='${code}'
                          OR "emailConfirmationCode"='${code}'`;
@@ -84,7 +89,9 @@ export class SqlUsersRepository {
 
     return !!result[0];
   }
-  async updatePasswordRecoveryConfirmationCode(email: string): Promise<any> {
+  async updatePasswordRecoveryConfirmationCode(
+    email: string
+  ): Promise<UsersSqlType> {
     const queryString = `UPDATE "Users"
                          SET "passwordRecoveryCode"=uuid_generate_v4 (),
                          "passwordRecoveryIsConfirmed"=false,
@@ -95,7 +102,7 @@ export class SqlUsersRepository {
 
     return result[0][0];
   }
-  async delete(id: string): Promise<boolean> {
+  async delete(id: SqlDbId): Promise<boolean> {
     const result = await this.dataSource.query(
       `DELETE FROM "Users" WHERE id=$1`,
       [id]

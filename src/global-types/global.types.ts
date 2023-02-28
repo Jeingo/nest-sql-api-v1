@@ -2,6 +2,8 @@ import { Types } from 'mongoose';
 
 export type DbId = Types.ObjectId;
 
+export type SqlDbId = string;
+
 export enum Direction {
   ASC = 'ASC',
   DESC = 'DESC'

@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import {
-  ISessionModel,
-  Session,
-  SessionDocument
-} from '../domain/entities/session.entity';
+import { ISessionModel, Session } from '../domain/entities/session.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { SqlDbId } from '../../global-types/global.types';
+import { SessionSqlType } from '../../type-for-sql-entity/session.sql.type';
 
 @Injectable()
 export class SqlSessionsRepository {
@@ -21,7 +19,7 @@ export class SqlSessionsRepository {
     ip: string,
     userId: string,
     expireAt: number
-  ): Promise<string> {
+  ): Promise<SqlDbId> {
     deviceName = deviceName ? deviceName : 'some device';
 
     const result = await this.dataSource.query(
@@ -35,11 +33,7 @@ export class SqlSessionsRepository {
     );
     return result[0].id.toString();
   }
-
-  async save(session: SessionDocument): Promise<SessionDocument> {
-    return session.save();
-  }
-  async get(deviceId: string): Promise<any> {
+  async get(deviceId: string): Promise<SessionSqlType> {
     const result = await this.dataSource.query(
       `SELECT * FROM "Session" WHERE "deviceId"='${deviceId}'`
     );
@@ -91,12 +85,13 @@ export class SqlSessionsRepository {
         new Date(issueAt).getTime() / 1000.0
       })`
     );
-    console.log(result);
     return result[0];
   }
 
   async deleteByUserId(userId: string): Promise<boolean> {
-    const result = await this.sessionsModel.deleteMany({ userId: userId });
-    return !!result;
+    const result = await this.dataSource.query(
+      `DELETE FROM "Session" WHERE "userId"='${userId}';`
+    );
+    return !!result[1];
   }
 }
