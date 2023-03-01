@@ -28,7 +28,7 @@ export class UpdateLikeStatusInCommentUseCase {
     const user = command.user;
     const commentId = command.commentId;
     const newLikeStatus = command.newLikeStatus;
-    //todo to ask
+
     const commentForLikeUpdate = await this.commentsAndLikesRepository.get(
       commentId,
       user.userId

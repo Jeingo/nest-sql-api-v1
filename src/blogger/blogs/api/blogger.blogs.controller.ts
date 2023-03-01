@@ -38,12 +38,14 @@ import { QueryComments } from '../../../comments/api/types/query.comments.type';
 import { BloggerCommentsQueryRepository } from '../infrastructure/blogger.comments.query.repository';
 import { BloggerPostsQueryRepository } from '../infrastructure/blogger.posts.query.repository';
 import { OutputBloggerCommentsDto } from './dto/output.blogger.comments.dto';
+import { SqlBloggerBlogsQueryRepository } from '../infrastructure/sql.blogger.blogs.query.repository';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
 export class BloggerBlogsController {
   constructor(
     private readonly bloggerBlogsQueryRepository: BloggerBlogsQueryRepository,
+    private readonly sqlBloggerBlogsQueryRepository: SqlBloggerBlogsQueryRepository,
     private readonly bloggerPostsQueryRepository: BloggerPostsQueryRepository,
     private readonly bloggerCommentsQueryRepository: BloggerCommentsQueryRepository,
     private readonly commandBus: CommandBus
@@ -58,7 +60,7 @@ export class BloggerBlogsController {
     const createdBlogId = await this.commandBus.execute(
       new CreateBlogCommand(createBlogDto, user)
     );
-    return await this.bloggerBlogsQueryRepository.getById(createdBlogId);
+    return await this.sqlBloggerBlogsQueryRepository.getById(createdBlogId);
   }
 
   @HttpCode(HttpStatus.OK)

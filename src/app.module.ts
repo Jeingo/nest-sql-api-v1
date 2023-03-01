@@ -102,6 +102,9 @@ import { SqlSuperAdminUsersQueryRepository } from './superadmin/users/infrastruc
 import { SqlUsersQueryRepository } from './auth/infrastructure/sql.users.query.respository';
 import { SqlSessionsRepository } from './sessions/infrastructure/sql.sessions.repository';
 import { SqlSessionsQueryRepository } from './sessions/infrastructure/sql.sessions.query.repository';
+import { SqlBlogRepository } from './blogs/infrastructure/sql.blog.repository';
+import { SqlBloggerBlogsQueryRepository } from './blogger/blogs/infrastructure/sql.blogger.blogs.query.repository';
+import { SqlBlogsQueryRepository } from './blogs/infrastructure/sql.blogs.query.repository';
 
 const useCases = [
   RegistrationUserUseCase,
@@ -158,7 +161,10 @@ const sql = [
   SqlUsersRepository,
   SqlUsersQueryRepository,
   SqlSessionsRepository,
-  SqlSessionsQueryRepository
+  SqlSessionsQueryRepository,
+  SqlBlogRepository,
+  SqlBloggerBlogsQueryRepository,
+  SqlBlogsQueryRepository
 ];
 
 const queryRepositories = [

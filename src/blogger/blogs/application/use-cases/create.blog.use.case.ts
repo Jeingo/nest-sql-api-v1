@@ -1,7 +1,10 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { InputCreateBlogDto } from '../../api/dto/input.create.blog.dto';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
-import { CurrentUserType, DbId } from '../../../../global-types/global.types';
+import {
+  CurrentUserType,
+  SqlDbId
+} from '../../../../global-types/global.types';
+import { SqlBlogRepository } from '../../../../blogs/infrastructure/sql.blog.repository';
 
 export class CreateBlogCommand {
   constructor(
@@ -12,19 +15,18 @@ export class CreateBlogCommand {
 
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogUseCase {
-  constructor(private readonly blogsRepository: BlogsRepository) {}
+  constructor(private readonly sqlBlogsRepository: SqlBlogRepository) {}
 
-  async execute(command: CreateBlogCommand): Promise<DbId> {
+  async execute(command: CreateBlogCommand): Promise<SqlDbId> {
     const { name, description, websiteUrl } = command.createBlogDto;
-    const { userId, login } = command.user;
-    const createdBlog = this.blogsRepository.create(
+    const { userId } = command.user;
+    const createdBlog = await this.sqlBlogsRepository.create(
       name,
       description,
       websiteUrl,
-      userId,
-      login
+      userId
     );
-    await this.blogsRepository.save(createdBlog);
-    return createdBlog._id;
+
+    return createdBlog.id.toString();
   }
 }
