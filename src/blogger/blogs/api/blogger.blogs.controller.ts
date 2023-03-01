@@ -19,13 +19,9 @@ import { JwtAuthGuard } from '../../../auth/infrastructure/guards/jwt.auth.guard
 import { CurrentUser } from '../../../helper/get-decorators/current.user.decorator';
 import { QueryBlogs } from '../../../blogs/api/types/query.blogs.type';
 import { BloggerBlogsQueryRepository } from '../infrastructure/blogger.blogs.query.repository';
-import {
-  CheckId,
-  CheckIdAndParseToDBId
-} from '../../../helper/pipes/check.id.validator.pipe';
+import { CheckId } from '../../../helper/pipes/check.id.validator.pipe';
 import {
   CurrentUserType,
-  DbId,
   PaginatedType,
   SqlDbId
 } from '../../../global-types/global.types';
@@ -134,8 +130,8 @@ export class BloggerBlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':blogId/posts/:id')
   async removePost(
-    @Param('blogId', new CheckIdAndParseToDBId()) blogId: DbId,
-    @Param('id', new CheckIdAndParseToDBId()) id: DbId,
+    @Param('blogId', new CheckId()) blogId: SqlDbId,
+    @Param('id', new CheckId()) id: SqlDbId,
     @CurrentUser() user: CurrentUserType
   ) {
     await this.commandBus.execute(new RemovePostCommand(id, blogId, user));

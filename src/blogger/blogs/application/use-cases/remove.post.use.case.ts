@@ -1,13 +1,16 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { CurrentUserType, DbId } from '../../../../global-types/global.types';
-import { PostsRepository } from '../../../../posts/infrastructure/posts.repository';
+import {
+  CurrentUserType,
+  SqlDbId
+} from '../../../../global-types/global.types';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
+import { SqlPostsRepository } from '../../../../posts/infrastructure/sql.posts.repository';
+import { SqlBlogsRepository } from '../../../../blogs/infrastructure/sql.blogs.repository';
 
 export class RemovePostCommand {
   constructor(
-    public id: DbId,
-    public blogId: DbId,
+    public id: SqlDbId,
+    public blogId: SqlDbId,
     public user: CurrentUserType
   ) {}
 }
@@ -15,23 +18,20 @@ export class RemovePostCommand {
 @CommandHandler(RemovePostCommand)
 export class RemovePostUseCase {
   constructor(
-    private readonly postsRepository: PostsRepository,
-    private readonly blogsRepository: BlogsRepository
+    private readonly sqlPostsRepository: SqlPostsRepository,
+    private readonly sqlBlogRepository: SqlBlogsRepository
   ) {}
 
   async execute(command: RemovePostCommand): Promise<boolean> {
     const { userId } = command.user;
     const blogId = command.blogId;
     const postId = command.id;
-    const blog = await this.blogsRepository.getById(blogId);
-    const post = await this.postsRepository.getById(postId);
+    const blog = await this.sqlBlogRepository.getById(blogId);
+    const post = await this.sqlPostsRepository.getById(postId);
     if (!post || !blog) throw new NotFoundException();
-    if (
-      blog.blogOwnerInfo.userId !== userId ||
-      post.postOwnerInfo.userId !== userId
-    )
+    if (blog.userId.toString() !== userId || post.blogId.toString() !== blogId)
       throw new ForbiddenException();
-    await this.postsRepository.delete(postId);
+    await this.sqlPostsRepository.delete(postId);
     return true;
   }
 }
