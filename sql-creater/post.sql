@@ -16,3 +16,5 @@ CREATE TABLE "Posts"
 
 ALTER TABLE IF EXISTS "Posts"
     OWNER to admin;
+
+-- GRANT ALL ON "Session" TO "Jeingo";
