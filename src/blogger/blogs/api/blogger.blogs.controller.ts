@@ -43,6 +43,7 @@ import { BloggerCommentsQueryRepository } from '../infrastructure/blogger.commen
 import { BloggerPostsQueryRepository } from '../infrastructure/blogger.posts.query.repository';
 import { OutputBloggerCommentsDto } from './dto/output.blogger.comments.dto';
 import { SqlBloggerBlogsQueryRepository } from '../infrastructure/sql.blogger.blogs.query.repository';
+import { SqlBloggerPostsQueryRepository } from '../infrastructure/sql.blogger.posts.query.repository';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
@@ -51,6 +52,7 @@ export class BloggerBlogsController {
     private readonly bloggerBlogsQueryRepository: BloggerBlogsQueryRepository,
     private readonly sqlBloggerBlogsQueryRepository: SqlBloggerBlogsQueryRepository,
     private readonly bloggerPostsQueryRepository: BloggerPostsQueryRepository,
+    private readonly sqlBloggerPostsQueryRepository: SqlBloggerPostsQueryRepository,
     private readonly bloggerCommentsQueryRepository: BloggerCommentsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
@@ -105,14 +107,14 @@ export class BloggerBlogsController {
   @HttpCode(HttpStatus.CREATED)
   @Post(':blogId/posts')
   async createPost(
-    @Param('blogId', new CheckIdAndParseToDBId()) blogId: DbId,
+    @Param('blogId', new CheckId()) blogId: SqlDbId,
     @Body() createPostDto: InputCreatePostInBlogsDto,
     @CurrentUser() user: CurrentUserType
   ): Promise<OutputPostDto> {
     const createdPostId = await this.commandBus.execute(
       new CreatePostInBlogCommand(createPostDto, blogId, user)
     );
-    return await this.bloggerPostsQueryRepository.getById(createdPostId);
+    return await this.sqlBloggerPostsQueryRepository.getById(createdPostId);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)

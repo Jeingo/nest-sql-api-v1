@@ -7,7 +7,7 @@ import { DataSource } from 'typeorm';
 import { BlogsSqlType } from '../../type-for-sql-entity/blogs.sql.type';
 
 @Injectable()
-export class SqlBlogRepository {
+export class SqlBlogsRepository {
   constructor(
     @InjectModel(Blog.name) private blogsModel: IBlogModel,
     @InjectDataSource() private readonly dataSource: DataSource

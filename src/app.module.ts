@@ -102,9 +102,12 @@ import { SqlSuperAdminUsersQueryRepository } from './superadmin/users/infrastruc
 import { SqlUsersQueryRepository } from './auth/infrastructure/sql.users.query.respository';
 import { SqlSessionsRepository } from './sessions/infrastructure/sql.sessions.repository';
 import { SqlSessionsQueryRepository } from './sessions/infrastructure/sql.sessions.query.repository';
-import { SqlBlogRepository } from './blogs/infrastructure/sql.blog.repository';
+import { SqlBlogsRepository } from './blogs/infrastructure/sql.blogs.repository';
 import { SqlBloggerBlogsQueryRepository } from './blogger/blogs/infrastructure/sql.blogger.blogs.query.repository';
 import { SqlBlogsQueryRepository } from './blogs/infrastructure/sql.blogs.query.repository';
+import { SqlBloggerPostsQueryRepository } from './blogger/blogs/infrastructure/sql.blogger.posts.query.repository';
+import { SqlPostsQueryRepository } from './posts/infrastructure/sql.posts.query.repository';
+import { SqlPostsRepository } from './posts/infrastructure/sql.posts.repository';
 
 const useCases = [
   RegistrationUserUseCase,
@@ -162,9 +165,12 @@ const sql = [
   SqlUsersQueryRepository,
   SqlSessionsRepository,
   SqlSessionsQueryRepository,
-  SqlBlogRepository,
+  SqlBlogsRepository,
   SqlBloggerBlogsQueryRepository,
-  SqlBlogsQueryRepository
+  SqlBlogsQueryRepository,
+  SqlBloggerPostsQueryRepository,
+  SqlPostsQueryRepository,
+  SqlPostsRepository
 ];
 
 const queryRepositories = [
