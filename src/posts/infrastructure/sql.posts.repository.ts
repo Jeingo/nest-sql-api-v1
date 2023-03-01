@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { IPostModel, Post, PostDocument } from '../domain/entities/post.entity';
-import { DbId } from '../../global-types/global.types';
+import { DbId, SqlDbId } from '../../global-types/global.types';
 import { PostsSqlType } from '../../type-for-sql-entity/posts.sql.type';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -27,8 +27,28 @@ export class SqlPostsRepository {
     );
     return result[0];
   }
-  async getById(id: DbId): Promise<PostDocument> {
-    return this.postsModel.findById(id);
+  async getById(id: SqlDbId): Promise<PostsSqlType> {
+    const result = await this.dataSource.query(
+      `SELECT * FROM "Posts" WHERE id=$1;`,
+      [id]
+    );
+    return result[0];
+  }
+  async update(
+    postId: SqlDbId,
+    title: string,
+    shortDescription: string,
+    content: string
+  ): Promise<boolean> {
+    const queryString = `UPDATE "Posts"
+                         SET title='${title}',
+                         "shortDescription"='${shortDescription}',
+                         content='${content}'
+                         WHERE "id"=${postId}`;
+
+    const result = await this.dataSource.query(queryString);
+
+    return !!result[0];
   }
   async getByUserId(userId: string): Promise<PostDocument[]> {
     return this.postsModel.find({ 'postOwnerInfo.userId': userId });

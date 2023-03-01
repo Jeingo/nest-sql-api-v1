@@ -120,8 +120,8 @@ export class BloggerBlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put(':blogId/posts/:id')
   async updatePost(
-    @Param('blogId', new CheckIdAndParseToDBId()) blogId: DbId,
-    @Param('id', new CheckIdAndParseToDBId()) id: DbId,
+    @Param('blogId', new CheckId()) blogId: SqlDbId,
+    @Param('id', new CheckId()) id: SqlDbId,
     @Body() updatePostDto: InputUpdatePostDto,
     @CurrentUser() user: CurrentUserType
   ) {

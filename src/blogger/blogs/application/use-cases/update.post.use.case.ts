@@ -1,15 +1,18 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { CurrentUserType, DbId } from '../../../../global-types/global.types';
-import { PostsRepository } from '../../../../posts/infrastructure/posts.repository';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
+import {
+  CurrentUserType,
+  SqlDbId
+} from '../../../../global-types/global.types';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { InputUpdatePostDto } from '../../api/dto/input.update.post.dto';
+import { SqlPostsRepository } from '../../../../posts/infrastructure/sql.posts.repository';
+import { SqlBlogsRepository } from '../../../../blogs/infrastructure/sql.blogs.repository';
 
 export class UpdatePostCommand {
   constructor(
-    public id: DbId,
+    public id: SqlDbId,
     public updatePostDto: InputUpdatePostDto,
-    public blogId: DbId,
+    public blogId: SqlDbId,
     public user: CurrentUserType
   ) {}
 }
@@ -17,8 +20,8 @@ export class UpdatePostCommand {
 @CommandHandler(UpdatePostCommand)
 export class UpdatePostUseCase {
   constructor(
-    private readonly postsRepository: PostsRepository,
-    private readonly blogsRepository: BlogsRepository
+    private readonly sqlPostsRepository: SqlPostsRepository,
+    private readonly sqlBlogRepository: SqlBlogsRepository
   ) {}
 
   async execute(command: UpdatePostCommand): Promise<boolean> {
@@ -26,16 +29,17 @@ export class UpdatePostUseCase {
     const { title, shortDescription, content } = command.updatePostDto;
     const blogId = command.blogId;
     const postId = command.id;
-    const blog = await this.blogsRepository.getById(blogId);
-    const post = await this.postsRepository.getById(postId);
+    const blog = await this.sqlBlogRepository.getById(blogId);
+    const post = await this.sqlPostsRepository.getById(postId);
     if (!post || !blog) throw new NotFoundException();
-    if (
-      blog.blogOwnerInfo.userId !== userId ||
-      post.postOwnerInfo.userId !== userId
-    )
+    if (blog.userId.toString() !== userId || post.blogId.toString() !== blogId)
       throw new ForbiddenException();
-    post.update(title, shortDescription, content, blogId.toString(), blog.name);
-    await this.postsRepository.save(post);
+    await this.sqlPostsRepository.update(
+      postId,
+      title,
+      shortDescription,
+      content
+    );
     return true;
   }
 }
