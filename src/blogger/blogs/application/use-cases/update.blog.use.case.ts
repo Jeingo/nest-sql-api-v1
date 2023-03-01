@@ -1,12 +1,15 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
-import { CurrentUserType, DbId } from '../../../../global-types/global.types';
+import {
+  CurrentUserType,
+  SqlDbId
+} from '../../../../global-types/global.types';
 import { InputUpdateBlogDto } from '../../api/dto/input.update.blog.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { SqlBlogRepository } from '../../../../blogs/infrastructure/sql.blog.repository';
 
 export class UpdateBlogCommand {
   constructor(
-    public id: DbId,
+    public id: SqlDbId,
     public updateBlogDto: InputUpdateBlogDto,
     public user: CurrentUserType
   ) {}
@@ -14,17 +17,16 @@ export class UpdateBlogCommand {
 
 @CommandHandler(UpdateBlogCommand)
 export class UpdateBlogUseCase {
-  constructor(private readonly blogsRepository: BlogsRepository) {}
+  constructor(private readonly sqlBlogRepository: SqlBlogRepository) {}
 
   async execute(command: UpdateBlogCommand): Promise<boolean> {
     const { name, description, websiteUrl } = command.updateBlogDto;
     const blogId = command.id;
     const { userId } = command.user;
-    const blog = await this.blogsRepository.getById(blogId);
+    const blog = await this.sqlBlogRepository.getById(blogId);
     if (!blog) throw new NotFoundException();
-    if (blog.blogOwnerInfo.userId !== userId) throw new ForbiddenException();
-    blog.update(name, description, websiteUrl);
-    await this.blogsRepository.save(blog);
+    if (blog.userId.toString() !== userId) throw new ForbiddenException();
+    await this.sqlBlogRepository.update(blogId, name, description, websiteUrl);
     return true;
   }
 }

@@ -19,11 +19,15 @@ import { JwtAuthGuard } from '../../../auth/infrastructure/guards/jwt.auth.guard
 import { CurrentUser } from '../../../helper/get-decorators/current.user.decorator';
 import { QueryBlogs } from '../../../blogs/api/types/query.blogs.type';
 import { BloggerBlogsQueryRepository } from '../infrastructure/blogger.blogs.query.repository';
-import { CheckIdAndParseToDBId } from '../../../helper/pipes/check.id.validator.pipe';
+import {
+  CheckId,
+  CheckIdAndParseToDBId
+} from '../../../helper/pipes/check.id.validator.pipe';
 import {
   CurrentUserType,
   DbId,
-  PaginatedType
+  PaginatedType,
+  SqlDbId
 } from '../../../global-types/global.types';
 import { InputUpdateBlogDto } from './dto/input.update.blog.dto';
 import { UpdateBlogCommand } from '../application/use-cases/update.blog.use.case';
@@ -78,7 +82,7 @@ export class BloggerBlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put(':id')
   async update(
-    @Param('id', new CheckIdAndParseToDBId()) id: DbId,
+    @Param('id', new CheckId()) id: SqlDbId,
     @Body() updateBlogDto: InputUpdateBlogDto,
     @CurrentUser() user: CurrentUserType
   ) {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument, IBlogModel } from '../domain/entities/blog.entity';
-import { DbId } from '../../global-types/global.types';
+import { DbId, SqlDbId } from '../../global-types/global.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BlogsSqlType } from '../../type-for-sql-entity/blogs.sql.type';
@@ -28,8 +28,28 @@ export class SqlBlogRepository {
     );
     return result[0];
   }
-  async getById(id: DbId): Promise<BlogDocument> {
-    return this.blogsModel.findById(id);
+  async getById(id: SqlDbId): Promise<BlogsSqlType> {
+    const result = await this.dataSource.query(
+      `SELECT * FROM "Blogs" WHERE id=$1;`,
+      [id]
+    );
+    return result[0];
+  }
+  async update(
+    blogId: SqlDbId,
+    name: string,
+    description: string,
+    websiteUrl: string
+  ): Promise<boolean> {
+    const queryString = `UPDATE "Blogs"
+                         SET name='${name}',
+                         description='${description}',
+                         "websiteUrl"='${websiteUrl}'
+                         WHERE "id"=${blogId}`;
+
+    const result = await this.dataSource.query(queryString);
+
+    return !!result[0];
   }
   async getByUserId(userId: string): Promise<BlogDocument[]> {
     return this.blogsModel.find({ 'blogOwnerInfo.userId': userId });
