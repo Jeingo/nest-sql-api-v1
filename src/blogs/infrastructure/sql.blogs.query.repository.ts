@@ -21,7 +21,7 @@ import { BlogsSqlType } from '../../type-for-sql-entity/blogs.sql.type';
 export class SqlBlogsQueryRepository {
   constructor(
     @InjectModel(Blog.name) protected blogsModel: IBlogModel,
-    @InjectDataSource() private readonly dataSource: DataSource
+    @InjectDataSource() protected readonly dataSource: DataSource
   ) {}
 
   async getAll(query: QueryBlogs): Promise<PaginatedType<OutputBlogDto>> {

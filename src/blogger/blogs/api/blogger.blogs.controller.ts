@@ -69,7 +69,10 @@ export class BloggerBlogsController {
     @Query() query: QueryBlogs,
     @CurrentUser() user: CurrentUserType
   ): Promise<PaginatedType<OutputBlogDto>> {
-    return await this.bloggerBlogsQueryRepository.getAllForBlogger(query, user);
+    return await this.sqlBloggerBlogsQueryRepository.getAllForBlogger(
+      query,
+      user
+    );
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)

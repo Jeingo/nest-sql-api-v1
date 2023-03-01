@@ -5,10 +5,7 @@ import {
   Direction,
   PaginatedType
 } from '../../../global-types/global.types';
-import {
-  getPaginatedType,
-  makeDirectionToNumber
-} from '../../../helper/query/query.repository.helper';
+import { getPaginatedType } from '../../../helper/query/query.repository.helper';
 import { OutputBlogDto } from '../../../blogs/api/dto/output.blog.dto';
 import { SqlBlogsQueryRepository } from '../../../blogs/infrastructure/sql.blogs.query.repository';
 
@@ -19,36 +16,38 @@ export class SqlBloggerBlogsQueryRepository extends SqlBlogsQueryRepository {
     user: CurrentUserType
   ): Promise<PaginatedType<OutputBlogDto>> {
     const {
-      searchNameTerm = null,
+      searchNameTerm = '',
       sortBy = 'createdAt',
       sortDirection = Direction.DESC,
       pageNumber = 1,
       pageSize = 10
     } = query;
 
-    const sortDirectionNumber = makeDirectionToNumber(sortDirection);
     const skipNumber = (+pageNumber - 1) * +pageSize;
-    let filter = {};
-    if (searchNameTerm) {
-      filter = {
-        name: { $regex: new RegExp(searchNameTerm, 'gi') }
-      };
-    }
-    const countAllDocuments = await this.blogsModel.countDocuments({
-      'blogOwnerInfo.userId': user.userId,
-      ...filter
-    });
-    const result = await this.blogsModel
-      .find({ 'blogOwnerInfo.userId': user.userId, ...filter })
-      .sort({ [sortBy]: sortDirectionNumber })
-      .skip(skipNumber)
-      .limit(+pageSize);
+
+    const queryString = `SELECT * FROM "Blogs"
+                         WHERE
+                         "userId"=${user.userId}
+                         AND
+                         name ILIKE '%${searchNameTerm}%'
+                         ORDER BY "${sortBy}" ${sortDirection}
+                         LIMIT ${pageSize}
+                         OFFSET ${skipNumber}`;
+
+    const queryStringForLength = `SELECT COUNT(*) FROM "Blogs"
+                                  WHERE
+                                  "userId"=${user.userId}
+                                  AND
+                                  name ILIKE '%${searchNameTerm}%'`;
+
+    const result = await this.dataSource.query(queryString);
+    const resultCount = await this.dataSource.query(queryStringForLength);
 
     return getPaginatedType(
-      result.map(this._getOutputBlogDto),
+      result.map(this.sqlGetOutputBlogDto),
       +pageSize,
       +pageNumber,
-      countAllDocuments
+      +resultCount[0].count
     );
   }
 }
