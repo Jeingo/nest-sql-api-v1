@@ -6,6 +6,6 @@ export type BlogsSqlType = {
   createdAt: Date;
   isMembership: boolean;
   isBanned: boolean;
-  banDate: Date;
+  banDate: Date | null;
   userId: number;
 };

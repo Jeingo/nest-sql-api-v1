@@ -4,13 +4,13 @@ export type UsersSqlType = {
   hash: string;
   email: string;
   createdAt: Date;
-  passwordRecoveryCode: string;
-  passwordRecoveryExpirationDate: Date;
+  passwordRecoveryCode: string | null;
+  passwordRecoveryExpirationDate: Date | null;
   passwordRecoveryIsConfirmed: boolean;
   emailConfirmationCode: string;
   emailExpirationDate: Date;
   emailIsConfirmed: boolean;
   isBanned: boolean;
   banDate: Date | null;
-  banReason: string;
+  banReason: string | null;
 };
