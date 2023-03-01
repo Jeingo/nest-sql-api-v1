@@ -1,23 +1,26 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
-import { CurrentUserType, DbId } from '../../../../global-types/global.types';
+import {
+  CurrentUserType,
+  SqlDbId
+} from '../../../../global-types/global.types';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { SqlBlogRepository } from '../../../../blogs/infrastructure/sql.blog.repository';
 
 export class RemoveBlogCommand {
-  constructor(public id: DbId, public user: CurrentUserType) {}
+  constructor(public id: SqlDbId, public user: CurrentUserType) {}
 }
 
 @CommandHandler(RemoveBlogCommand)
 export class RemoveBlogUseCase {
-  constructor(private readonly blogsRepository: BlogsRepository) {}
+  constructor(private readonly sqlBlogRepository: SqlBlogRepository) {}
 
   async execute(command: RemoveBlogCommand): Promise<boolean> {
     const { userId } = command.user;
     const blogId = command.id;
-    const blog = await this.blogsRepository.getById(blogId);
+    const blog = await this.sqlBlogRepository.getById(blogId);
     if (!blog) throw new NotFoundException();
-    if (blog.blogOwnerInfo.userId !== userId) throw new ForbiddenException();
-    await this.blogsRepository.delete(blogId);
+    if (blog.userId.toString() !== userId) throw new ForbiddenException();
+    await this.sqlBlogRepository.delete(blogId);
     return true;
   }
 }

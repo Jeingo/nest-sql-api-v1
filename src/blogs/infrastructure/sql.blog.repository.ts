@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument, IBlogModel } from '../domain/entities/blog.entity';
-import { DbId, SqlDbId } from '../../global-types/global.types';
+import { SqlDbId } from '../../global-types/global.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BlogsSqlType } from '../../type-for-sql-entity/blogs.sql.type';
@@ -57,7 +57,10 @@ export class SqlBlogRepository {
   async save(blog: BlogDocument): Promise<BlogDocument> {
     return await blog.save();
   }
-  async delete(id: DbId): Promise<BlogDocument> {
-    return this.blogsModel.findByIdAndDelete(id);
+  async delete(id: SqlDbId): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `DELETE FROM "Blogs" WHERE id=${id}`
+    );
+    return !!result[1];
   }
 }

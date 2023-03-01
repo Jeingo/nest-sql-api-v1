@@ -95,7 +95,7 @@ export class BloggerBlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async remove(
-    @Param('id', new CheckIdAndParseToDBId()) id: DbId,
+    @Param('id', new CheckId()) id: SqlDbId,
     @CurrentUser() user: CurrentUserType
   ) {
     await this.commandBus.execute(new RemoveBlogCommand(id, user));
