@@ -92,7 +92,7 @@ import { BanUserUseCase } from './superadmin/users/application/use-cases/ban.use
 import { CommentsAndLikesRepository } from './comments/infrastructure/comments.and.likes.repository';
 import { BloggerCommentsQueryRepository } from './blogger/blogs/infrastructure/blogger.comments.query.repository';
 import { BloggerUsersController } from './blogger/users/api/blogger.users.controller';
-import { BloggerUsersQueryRepository } from './blogger/users/infrastructure/blogger.users.query.repository';
+import { SqlBloggerUsersQueryRepository } from './blogger/users/infrastructure/blogger.users.query.repository';
 import { BloggerBanUserUseCase } from './blogger/users/application/use-cases/blogger.ban.user.user.case';
 import { BanBlogUseCase } from './superadmin/blogs/application/use-cases/ban.blog.use.case';
 import { BloggerPostsQueryRepository } from './blogger/blogs/infrastructure/blogger.posts.query.repository';
@@ -108,6 +108,7 @@ import { SqlBlogsQueryRepository } from './blogs/infrastructure/sql.blogs.query.
 import { SqlBloggerPostsQueryRepository } from './blogger/blogs/infrastructure/sql.blogger.posts.query.repository';
 import { SqlPostsQueryRepository } from './posts/infrastructure/sql.posts.query.repository';
 import { SqlPostsRepository } from './posts/infrastructure/sql.posts.repository';
+import { BlogsUsersBanRepository } from './blogger/users/infrastructure/blogs.users.ban.repository';
 
 const useCases = [
   RegistrationUserUseCase,
@@ -156,7 +157,8 @@ const repositories = [
   PostLikesRepository,
   CommentsRepository,
   CommentLikesRepository,
-  CommentsAndLikesRepository
+  CommentsAndLikesRepository,
+  BlogsUsersBanRepository
 ];
 
 const sql = [
@@ -181,7 +183,7 @@ const queryRepositories = [
   BloggerBlogsQueryRepository,
   SqlSuperAdminBlogsQueryRepository,
   BloggerCommentsQueryRepository,
-  BloggerUsersQueryRepository,
+  SqlBloggerUsersQueryRepository,
   BloggerPostsQueryRepository
 ];
 const decorators = [

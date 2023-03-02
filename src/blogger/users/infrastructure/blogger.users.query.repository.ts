@@ -5,94 +5,91 @@ import {
 } from '@nestjs/common';
 import {
   CurrentUserType,
-  DbId,
   Direction,
-  PaginatedType
+  PaginatedType,
+  SqlDbId
 } from '../../../global-types/global.types';
 import { OutputBloggerUserDto } from '../api/dto/output.blogger.user.dto';
 import { QueryBannedUsers } from '../api/types/query.banned.users.type';
-import {
-  bannedFilter,
-  getPaginatedType,
-  makeDirectionToNumber
-} from '../../../helper/query/query.repository.helper';
+import { getPaginatedType } from '../../../helper/query/query.repository.helper';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  IUserModel,
-  User,
-  UserDocument
-} from '../../../users/domain/entities/user.entity';
+import { IUserModel, User } from '../../../users/domain/entities/user.entity';
 import { Blog, IBlogModel } from '../../../blogs/domain/entities/blog.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { UsersBlogsBanSqlType } from '../../../type-for-sql-entity/users.blogs.ban.sql.type';
 
 @Injectable()
-export class BloggerUsersQueryRepository {
+export class SqlBloggerUsersQueryRepository {
   constructor(
     @InjectModel(User.name) protected usersModel: IUserModel,
-    @InjectModel(Blog.name) protected blogsModel: IBlogModel
+    @InjectModel(Blog.name) protected blogsModel: IBlogModel,
+    @InjectDataSource() protected readonly dataSource: DataSource
   ) {}
 
   async getBannedUserByBlogId(
-    blogId: DbId,
+    blogId: SqlDbId,
     query: QueryBannedUsers,
     user: CurrentUserType
   ): Promise<PaginatedType<OutputBloggerUserDto>> {
-    const blog = await this.blogsModel.findById(blogId);
-    if (!blog) throw new NotFoundException();
-    if (blog.blogOwnerInfo.userId !== user.userId)
+    const blog = await this.dataSource.query(
+      `SELECT * FROM "Blogs" WHERE id=$1;`,
+      [blogId]
+    );
+    if (!blog[0]) throw new NotFoundException();
+    if (blog[0].userId.toString() !== user.userId)
       throw new ForbiddenException();
     const {
-      searchLoginTerm = null,
+      searchLoginTerm = '',
       sortBy = 'createdAt',
       sortDirection = Direction.DESC,
       pageNumber = 1,
       pageSize = 10
     } = query;
-    const sortDirectionNumber = makeDirectionToNumber(sortDirection);
-    const skipNumber = (+pageNumber - 1) * +pageSize;
-    let filter = {};
-    if (searchLoginTerm) {
-      filter = { login: { $regex: new RegExp(searchLoginTerm, 'gi') } };
-    }
-    const finalFilter = {
-      ...filter,
-      ...bannedFilter('banInfo.isBanned'),
-      'bloggerBanInfo.blogId': blogId.toString()
-    };
-    const countAllDocuments = await this.usersModel.countDocuments(finalFilter);
-    const result = await this.usersModel
-      .find(finalFilter)
-      .sort({ [sortBy]: sortDirectionNumber })
-      .skip(skipNumber)
-      .limit(+pageSize);
 
-    const mappedResult = this._getOutputBannedUserDto(
-      result,
-      blogId.toString()
-    );
+    const skipNumber = (+pageNumber - 1) * +pageSize;
+
+    const queryString = `SELECT ub.*,u.login, u.id AS "userId"
+                         FROM "Users_Blogs_Ban" ub
+                         LEFT JOIN "Users" u ON ub."userId"=u.id
+                         WHERE ub."blogId"=${blogId}
+                         AND u."isBanned"=false
+                         AND u.login ILIKE '%${searchLoginTerm}%'
+                         ORDER BY "${sortBy}" ${sortDirection}
+                         LIMIT ${pageSize}
+                         OFFSET ${skipNumber}`;
+
+    const queryStringForLength = `SELECT COUNT(ub.*)
+                                  FROM "Users_Blogs_Ban" ub
+                                  LEFT JOIN "Users" u ON ub."userId"=u.id
+                                  WHERE ub."blogId"=${blogId}
+                                  AND u."isBanned"=false
+                                  AND u.login ILIKE '%${searchLoginTerm}%'`;
+
+    const result = await this.dataSource.query(queryString);
+    const resultCount = await this.dataSource.query(queryStringForLength);
+
+    const mappedResult = this._getOutputBannedUserDto(result);
 
     return getPaginatedType(
       mappedResult,
       +pageSize,
       +pageNumber,
-      countAllDocuments
+      +resultCount[0].count
     );
   }
 
   protected _getOutputBannedUserDto(
-    users: UserDocument[],
-    blogId: string
+    usersBlogsBan: (UsersBlogsBanSqlType & { login: string; userId: number })[]
   ): OutputBloggerUserDto[] {
-    return users.map((user) => {
-      const bloggerBanInfo = user.bloggerBanInfo.filter(
-        (info) => info.blogId === blogId
-      );
+    return usersBlogsBan.map((uub) => {
       return {
-        id: user._id.toString(),
-        login: user.login,
+        id: uub.userId.toString(),
+        login: uub.login,
         banInfo: {
           isBanned: true,
-          banDate: bloggerBanInfo[0].banDate,
-          banReason: bloggerBanInfo[0].banReason
+          banDate: uub.banDate.toISOString(),
+          banReason: uub.banReason
         }
       };
     });

@@ -1,15 +1,18 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { CurrentUserType, DbId } from '../../../../global-types/global.types';
+import {
+  CurrentUserType,
+  SqlDbId
+} from '../../../../global-types/global.types';
 import { InputBloggerUserBanDto } from '../../api/dto/input.blogger.user.ban.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { UsersRepository } from '../../../../users/infrastructure/users.repository';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
-import { Types } from 'mongoose';
+import { SqlUsersRepository } from '../../../../users/infrastructure/sql.users.repository';
+import { SqlBlogsRepository } from '../../../../blogs/infrastructure/sql.blogs.repository';
+import { BlogsUsersBanRepository } from '../../infrastructure/blogs.users.ban.repository';
 
 export class BloggerBanUserCommand {
   constructor(
     public bloggerUserBanDto: InputBloggerUserBanDto,
-    public userId: DbId,
+    public userId: SqlDbId,
     public user: CurrentUserType
   ) {}
 }
@@ -17,22 +20,29 @@ export class BloggerBanUserCommand {
 @CommandHandler(BloggerBanUserCommand)
 export class BloggerBanUserUseCase {
   constructor(
-    private readonly usersRepository: UsersRepository,
-    private readonly blogsRepository: BlogsRepository
+    private readonly sqlUsersRepository: SqlUsersRepository,
+    private readonly sqlBlogsRepository: SqlBlogsRepository,
+    private readonly blogsUsersBanRepository: BlogsUsersBanRepository
   ) {}
 
   async execute(command: BloggerBanUserCommand): Promise<boolean> {
     const { isBanned, banReason, blogId } = command.bloggerUserBanDto;
     const { userId } = command.user;
     const bannedUserId = command.userId;
-    const blog = await this.blogsRepository.getById(new Types.ObjectId(blogId));
-    if (blog.blogOwnerInfo.userId !== userId) throw new ForbiddenException();
+    const blog = await this.sqlBlogsRepository.getById(blogId);
+    if (!blog) throw new NotFoundException();
+    if (blog.userId.toString() !== userId) throw new ForbiddenException();
 
-    const user = await this.usersRepository.getById(bannedUserId);
+    const user = await this.sqlUsersRepository.getById(bannedUserId);
     if (!user) throw new NotFoundException();
 
-    user.bloggerBan(isBanned, banReason, blogId);
-    await this.usersRepository.save(user);
+    await this.blogsUsersBanRepository.ban(
+      bannedUserId,
+      blogId,
+      isBanned,
+      banReason
+    );
+
     return true;
   }
 }
