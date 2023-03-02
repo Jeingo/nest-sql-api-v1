@@ -51,6 +51,15 @@ export class SqlBlogsRepository {
 
     return !!result[0];
   }
+  async bindWithUser(blogId: string, userId: string): Promise<boolean> {
+    const queryString = `UPDATE "Blogs"
+                         SET "userId"='${userId}'
+                         WHERE "id"=${blogId}`;
+
+    const result = await this.dataSource.query(queryString);
+
+    return !!result[0];
+  }
   async getByUserId(userId: string): Promise<BlogDocument[]> {
     return this.blogsModel.find({ 'blogOwnerInfo.userId': userId });
   }

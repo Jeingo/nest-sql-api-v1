@@ -1,32 +1,30 @@
 import { CommandHandler } from '@nestjs/cqrs';
-
-import { UsersRepository } from '../../../../users/infrastructure/users.repository';
-import { DbId } from '../../../../global-types/global.types';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
+import { SqlDbId } from '../../../../global-types/global.types';
 import { BadRequestException } from '@nestjs/common';
+import { SqlUsersRepository } from '../../../../users/infrastructure/sql.users.repository';
+import { SqlBlogsRepository } from '../../../../blogs/infrastructure/sql.blogs.repository';
 
 export class BindWithUserCommand {
-  constructor(public blogId: DbId, public userId: DbId) {}
+  constructor(public blogId: SqlDbId, public userId: SqlDbId) {}
 }
 
 @CommandHandler(BindWithUserCommand)
 export class BindWithUserUseCase {
   constructor(
-    private readonly usersRepository: UsersRepository,
-    private readonly blogsRepository: BlogsRepository
+    private readonly sqlUsersRepository: SqlUsersRepository,
+    private readonly sqlBlogsRepository: SqlBlogsRepository
   ) {}
 
   async execute(command: BindWithUserCommand): Promise<boolean> {
     const blogId = command.blogId;
     const userId = command.userId;
-    const blog = await this.blogsRepository.getById(blogId);
-    const user = await this.usersRepository.getById(userId);
+    const blog = await this.sqlBlogsRepository.getById(blogId);
+    const user = await this.sqlUsersRepository.getById(userId);
     if (!blog || !user)
       throw new BadRequestException(['blogId is not correct']);
-    if (blog.blogOwnerInfo.userId !== null)
+    if (blog.userId !== null)
       throw new BadRequestException(['blogId is not correct']);
-    blog.blogOwnerInfo.userId = userId.toString();
-    await this.blogsRepository.save(blog);
+    await this.sqlBlogsRepository.bindWithUser(blogId, userId);
     return true;
   }
 }

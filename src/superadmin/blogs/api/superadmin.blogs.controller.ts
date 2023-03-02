@@ -16,7 +16,6 @@ import { QueryBlogs } from '../../../blogs/api/types/query.blogs.type';
 import { OutputSuperAdminBlogDto } from './dto/output.superadmin.blog.dto';
 import { BasicAuthGuard } from '../../../auth/infrastructure/guards/basic.auth.guard';
 import { BindWithUserCommand } from '../application/use-cases/bind.with.user.use.case';
-import { Types } from 'mongoose';
 import { DbId, PaginatedType } from '../../../global-types/global.types';
 import { InputBanBlogDto } from './dto/input.ban.blog.dto';
 import { CheckIdAndParseToDBId } from '../../../helper/pipes/check.id.validator.pipe';
@@ -44,14 +43,9 @@ export class SuperAdminBlogsController {
     @Param('blogId') blogId: string,
     @Param('userId') userId: string
   ) {
-    if (!Types.ObjectId.isValid(blogId) || !Types.ObjectId.isValid(blogId))
+    if (Number.isNaN(+blogId) || Number.isNaN(+userId))
       throw new BadRequestException(['blogId is not correct']);
-    await this.commandBus.execute(
-      new BindWithUserCommand(
-        new Types.ObjectId(blogId),
-        new Types.ObjectId(userId)
-      )
-    );
+    await this.commandBus.execute(new BindWithUserCommand(blogId, userId));
     return;
   }
 
