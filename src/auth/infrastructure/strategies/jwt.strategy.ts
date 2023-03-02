@@ -14,13 +14,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET,
-      passReqToCallback: true
+      secretOrKey: process.env.JWT_SECRET
     });
   }
 
   async validate(req, payload) {
-    console.log(req.body);
     const user = await this.sqlUsersRepository.getById(payload.userId);
     if (!user) {
       throw new UnauthorizedException();

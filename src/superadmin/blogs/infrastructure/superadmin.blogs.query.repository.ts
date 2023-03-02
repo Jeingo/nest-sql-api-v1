@@ -48,8 +48,6 @@ export class SqlSuperAdminBlogsQueryRepository {
     const result = await this.dataSource.query(queryString);
     const resultCount = await this.dataSource.query(queryStringForLength);
 
-    console.log(result);
-
     return getPaginatedType(
       result.map(this._getOutputSuperAdminBlogDto),
       +pageSize,
