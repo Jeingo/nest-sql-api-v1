@@ -10,11 +10,7 @@ import {
 } from '../../global-types/global.types';
 import { OutputPostDto } from '../api/dto/output.post.dto';
 import { NewestLikesType, QueryPosts } from '../api/types/query.posts.type';
-import {
-  bannedFilter,
-  getPaginatedType,
-  makeDirectionToNumber
-} from '../../helper/query/query.repository.helper';
+import { getPaginatedType } from '../../helper/query/query.repository.helper';
 import { Blog, IBlogModel } from '../../blogs/domain/entities/blog.entity';
 import {
   IPostLikeModel,
@@ -44,32 +40,40 @@ export class SqlPostsQueryRepository {
       pageNumber = 1,
       pageSize = 10
     } = query;
-    const sortDirectionNumber = makeDirectionToNumber(sortDirection);
+
     const skipNumber = (+pageNumber - 1) * +pageSize;
 
-    const finalFilter = {
-      ...bannedFilter('postOwnerInfo.isBanned'),
-      ...bannedFilter('blogIsBanned')
-    };
-    const countAllDocuments = await this.postsModel.countDocuments(finalFilter);
-    const result = await this.postsModel
-      .find(finalFilter)
-      .sort({ [sortBy]: sortDirectionNumber })
-      .skip(skipNumber)
-      .limit(+pageSize);
-    const mappedPost = result.map(this._getOutputPostDto);
-    const mappedPostWithStatusLike = await this._setStatusLike(
-      mappedPost,
-      user?.userId
-    );
-    const mappedFinishPost = await this._setThreeLastUser(
-      mappedPostWithStatusLike
-    );
+    const queryString = `SELECT p.*,
+                         b.name AS "blogName"
+                         FROM "Posts" p
+                         LEFT JOIN "Blogs" b ON p."blogId"=b.id 
+                         LEFT JOIN "Users" u ON b."userId"=u.id
+                         WHERE
+                         b."isBanned"=false
+                         AND
+                         u."isBanned"=false
+                         ORDER BY "${sortBy}" ${sortDirection}
+                         LIMIT ${pageSize}
+                         OFFSET ${skipNumber}`;
+
+    const queryStringForLength = `SELECT COUNT(p.*)
+                                  FROM "Posts" p
+                                  LEFT JOIN "Blogs" b ON p."blogId"=b.id 
+                                  LEFT JOIN "Users" u ON b."userId"=u.id
+                                  WHERE
+                                  b."isBanned"=false
+                                  AND
+                                  u."isBanned"=false`;
+
+    const result = await this.dataSource.query(queryString);
+    const resultCount = await this.dataSource.query(queryStringForLength);
+
+    //todo after add like
     return getPaginatedType(
-      mappedFinishPost,
+      result.map(this.sqlGetOutputPostDto),
       +pageSize,
       +pageNumber,
-      countAllDocuments
+      +resultCount[0].count
     );
   }
   async getAllByBlogId(

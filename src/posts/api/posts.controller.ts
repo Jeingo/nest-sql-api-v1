@@ -19,22 +19,28 @@ import { OutputCommentDto } from '../../comments/api/dto/output.comment.dto';
 import { GetUserGuard } from '../../auth/infrastructure/guards/get.user.guard';
 import { InputCreateCommentDto } from '../../comments/api/dto/input.create.comment.dto';
 import { InputUpdatePostLikeDto } from './dto/input.update.post.like.dto';
-import { CheckIdAndParseToDBId } from '../../helper/pipes/check.id.validator.pipe';
+import {
+  CheckId,
+  CheckIdAndParseToDBId
+} from '../../helper/pipes/check.id.validator.pipe';
 import { CurrentUser } from '../../helper/get-decorators/current.user.decorator';
 import {
   CurrentUserType,
   DbId,
-  PaginatedType
+  PaginatedType,
+  SqlDbId
 } from '../../global-types/global.types';
 import { JwtAuthGuard } from '../../auth/infrastructure/guards/jwt.auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateCommentCommand } from '../../comments/application/use.cases/create.comment.use.case';
 import { UpdateStatusLikeInPostCommand } from '../application/use-cases/update.status.like.in.post.use.case';
+import { SqlPostsQueryRepository } from '../infrastructure/sql.posts.query.repository';
 
 @Controller('posts')
 export class PostsController {
   constructor(
     private readonly postsQueryRepository: PostsQueryRepository,
+    private readonly sqlPostsQueryRepository: SqlPostsQueryRepository,
     private readonly commentsQueryRepository: CommentsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
@@ -46,17 +52,17 @@ export class PostsController {
     @Query() query: QueryPosts,
     @CurrentUser() user: CurrentUserType
   ): Promise<PaginatedType<OutputPostDto>> {
-    return await this.postsQueryRepository.getAll(query, user);
+    return await this.sqlPostsQueryRepository.getAll(query, user);
   }
 
   @UseGuards(GetUserGuard)
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   async findOne(
-    @Param('id', new CheckIdAndParseToDBId()) id: DbId,
+    @Param('id', new CheckId()) id: SqlDbId,
     @CurrentUser() user: CurrentUserType
   ): Promise<OutputPostDto> {
-    return await this.postsQueryRepository.getById(id, user);
+    return await this.sqlPostsQueryRepository.getById(id, user);
   }
 
   @UseGuards(GetUserGuard)
