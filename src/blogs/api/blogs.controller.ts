@@ -14,12 +14,16 @@ import { PostsQueryRepository } from '../../posts/infrastructure/posts.query.rep
 import { QueryPosts } from '../../posts/api/types/query.posts.type';
 import { OutputPostDto } from '../../posts/api/dto/output.post.dto';
 import { GetUserGuard } from '../../auth/infrastructure/guards/get.user.guard';
-import { CheckIdAndParseToDBId } from '../../helper/pipes/check.id.validator.pipe';
+import {
+  CheckId,
+  CheckIdAndParseToDBId
+} from '../../helper/pipes/check.id.validator.pipe';
 import { CurrentUser } from '../../helper/get-decorators/current.user.decorator';
 import {
   CurrentUserType,
   DbId,
-  PaginatedType
+  PaginatedType,
+  SqlDbId
 } from '../../global-types/global.types';
 import { SqlBlogsQueryRepository } from '../infrastructure/sql.blogs.query.repository';
 import { SqlPostsQueryRepository } from '../../posts/infrastructure/sql.posts.query.repository';
@@ -44,9 +48,9 @@ export class BlogsController {
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   async findOne(
-    @Param('id', new CheckIdAndParseToDBId()) id: DbId
+    @Param('id', new CheckId()) id: SqlDbId
   ): Promise<OutputBlogDto> {
-    return await this.blogsQueryRepository.getById(id);
+    return await this.sqlBlogsQueryRepository.getById(id);
   }
 
   @UseGuards(GetUserGuard)
