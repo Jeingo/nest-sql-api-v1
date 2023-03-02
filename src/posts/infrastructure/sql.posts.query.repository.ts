@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { IPostModel, Post, PostDocument } from '../domain/entities/post.entity';
 import {
   CurrentUserType,
-  DbId,
   Direction,
   LikeStatus,
   PaginatedType,
@@ -75,44 +74,59 @@ export class SqlPostsQueryRepository {
   }
   async getAllByBlogId(
     query: QueryPosts,
-    blogId: DbId,
+    blogId: SqlDbId,
     user?: CurrentUserType
   ): Promise<PaginatedType<OutputPostDto>> {
-    const blog = await this.blogsModel.findById(blogId);
-    if (!blog) throw new NotFoundException();
+    const blog = await this.dataSource.query(
+      `SELECT * FROM "Blogs" WHERE id=$1;`,
+      [blogId]
+    );
+    if (!blog[0]) throw new NotFoundException();
+
     const {
       sortBy = 'createdAt',
       sortDirection = Direction.DESC,
       pageNumber = 1,
       pageSize = 10
     } = query;
-    const sortDirectionNumber = makeDirectionToNumber(sortDirection);
+
     const skipNumber = (+pageNumber - 1) * +pageSize;
 
-    const finalFilter = {
-      ...bannedFilter('postOwnerInfo.isBanned'),
-      ...bannedFilter('blogIsBanned'),
-      blogId: blogId.toString()
-    };
-    const countAllDocuments = await this.postsModel.countDocuments(finalFilter);
-    const result = await this.postsModel
-      .find(finalFilter)
-      .sort({ [sortBy]: sortDirectionNumber })
-      .skip(skipNumber)
-      .limit(+pageSize);
-    const mappedPost = result.map(this._getOutputPostDto);
-    const mappedPostWithStatusLike = await this._setStatusLike(
-      mappedPost,
-      user?.userId
-    );
-    const mappedFinishPost = await this._setThreeLastUser(
-      mappedPostWithStatusLike
-    );
+    const queryString = `SELECT p.*,
+                         b.name AS "blogName"
+                         FROM "Posts" p
+                         LEFT JOIN "Blogs" b ON p."blogId"=b.id 
+                         LEFT JOIN "Users" u ON b."userId"=u.id
+                         WHERE
+                         b."isBanned"=false
+                         AND
+                         u."isBanned"=false
+                         AND
+                         p."blogId"=${blogId}
+                         ORDER BY "${sortBy}" ${sortDirection}
+                         LIMIT ${pageSize}
+                         OFFSET ${skipNumber}`;
+
+    const queryStringForLength = `SELECT COUNT(p.*)
+                                  FROM "Posts" p
+                                  LEFT JOIN "Blogs" b ON p."blogId"=b.id 
+                                  LEFT JOIN "Users" u ON b."userId"=u.id
+                                  WHERE
+                                  b."isBanned"=false
+                                  AND
+                                  u."isBanned"=false
+                                  AND
+                                  p."blogId"=${blogId}`;
+
+    const result = await this.dataSource.query(queryString);
+    const resultCount = await this.dataSource.query(queryStringForLength);
+
+    //todo after add like
     return getPaginatedType(
-      mappedFinishPost,
+      result.map(this.sqlGetOutputPostDto),
       +pageSize,
       +pageNumber,
-      countAllDocuments
+      +resultCount[0].count
     );
   }
   async getById(id: SqlDbId, user?: CurrentUserType): Promise<OutputPostDto> {

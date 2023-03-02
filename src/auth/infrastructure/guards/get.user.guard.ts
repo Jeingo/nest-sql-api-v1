@@ -1,13 +1,12 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtAdapter } from '../../../adapters/jwt/jwt.service';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
-import { Types } from 'mongoose';
+import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
 
 @Injectable()
 export class GetUserGuard implements CanActivate {
   constructor(
     private readonly jwtAdapter: JwtAdapter,
-    private readonly usersRepository: UsersRepository
+    private readonly sqlUsersRepository: SqlUsersRepository
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -28,10 +27,8 @@ export class GetUserGuard implements CanActivate {
     if (!payload) {
       return true;
     }
-    const user = await this.usersRepository.getById(
-      new Types.ObjectId(payload.userId)
-    );
-    request.user = { userId: user?._id.toString(), login: user?.login };
+    const user = await this.sqlUsersRepository.getById(payload.userId);
+    request.user = { userId: user?.id.toString(), login: user?.login };
     return true;
   }
 }

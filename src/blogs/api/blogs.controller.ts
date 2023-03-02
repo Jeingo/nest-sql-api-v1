@@ -14,14 +14,10 @@ import { PostsQueryRepository } from '../../posts/infrastructure/posts.query.rep
 import { QueryPosts } from '../../posts/api/types/query.posts.type';
 import { OutputPostDto } from '../../posts/api/dto/output.post.dto';
 import { GetUserGuard } from '../../auth/infrastructure/guards/get.user.guard';
-import {
-  CheckId,
-  CheckIdAndParseToDBId
-} from '../../helper/pipes/check.id.validator.pipe';
+import { CheckId } from '../../helper/pipes/check.id.validator.pipe';
 import { CurrentUser } from '../../helper/get-decorators/current.user.decorator';
 import {
   CurrentUserType,
-  DbId,
   PaginatedType,
   SqlDbId
 } from '../../global-types/global.types';
@@ -58,9 +54,13 @@ export class BlogsController {
   @Get(':blogId/posts')
   async findAllPostsByBlogId(
     @Query() query: QueryPosts,
-    @Param('blogId', new CheckIdAndParseToDBId()) blogId: DbId,
+    @Param('blogId', new CheckId()) blogId: SqlDbId,
     @CurrentUser() user: CurrentUserType
   ): Promise<PaginatedType<OutputPostDto>> {
-    return await this.postsQueryRepository.getAllByBlogId(query, blogId, user);
+    return await this.sqlPostsQueryRepository.getAllByBlogId(
+      query,
+      blogId,
+      user
+    );
   }
 }
