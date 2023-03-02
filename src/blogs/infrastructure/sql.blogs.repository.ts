@@ -60,6 +60,24 @@ export class SqlBlogsRepository {
 
     return !!result[0];
   }
+  async banBlog(blogId: string, isBanned: boolean): Promise<boolean> {
+    if (isBanned) {
+      const result = await this.dataSource.query(
+        `UPDATE "Blogs"
+               SET "isBanned"=true,
+               "banDate"=now()
+               WHERE id=${blogId}`
+      );
+      return !!result[1];
+    }
+    const result = await this.dataSource.query(
+      `UPDATE "Blogs"
+               SET "isBanned"=false,
+               "banDate"=NULL
+               WHERE id=${blogId}`
+    );
+    return !!result[1];
+  }
   async getByUserId(userId: string): Promise<BlogDocument[]> {
     return this.blogsModel.find({ 'blogOwnerInfo.userId': userId });
   }

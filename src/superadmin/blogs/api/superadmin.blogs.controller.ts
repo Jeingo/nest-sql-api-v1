@@ -16,9 +16,9 @@ import { QueryBlogs } from '../../../blogs/api/types/query.blogs.type';
 import { OutputSuperAdminBlogDto } from './dto/output.superadmin.blog.dto';
 import { BasicAuthGuard } from '../../../auth/infrastructure/guards/basic.auth.guard';
 import { BindWithUserCommand } from '../application/use-cases/bind.with.user.use.case';
-import { DbId, PaginatedType } from '../../../global-types/global.types';
+import { PaginatedType, SqlDbId } from '../../../global-types/global.types';
 import { InputBanBlogDto } from './dto/input.ban.blog.dto';
-import { CheckIdAndParseToDBId } from '../../../helper/pipes/check.id.validator.pipe';
+import { CheckId } from '../../../helper/pipes/check.id.validator.pipe';
 import { BanBlogCommand } from '../application/use-cases/ban.blog.use.case';
 
 @UseGuards(BasicAuthGuard)
@@ -52,7 +52,7 @@ export class SuperAdminBlogsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put(':blogId/ban')
   async banBlog(
-    @Param('blogId', new CheckIdAndParseToDBId()) blogId: DbId,
+    @Param('blogId', new CheckId()) blogId: SqlDbId,
     @Body() banBlogDto: InputBanBlogDto
   ) {
     await this.commandBus.execute(new BanBlogCommand(blogId, banBlogDto));
