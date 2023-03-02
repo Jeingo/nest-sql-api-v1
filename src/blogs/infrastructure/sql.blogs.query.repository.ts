@@ -1,13 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument, IBlogModel } from '../domain/entities/blog.entity';
+import { Blog, IBlogModel } from '../domain/entities/blog.entity';
 import { OutputBlogDto } from '../api/dto/output.blog.dto';
 import { QueryBlogs } from '../api/types/query.blogs.type';
-import {
-  bannedFilter,
-  getPaginatedType,
-  makeDirectionToNumber
-} from '../../helper/query/query.repository.helper';
+import { getPaginatedType } from '../../helper/query/query.repository.helper';
 import {
   Direction,
   PaginatedType,
@@ -26,36 +22,44 @@ export class SqlBlogsQueryRepository {
 
   async getAll(query: QueryBlogs): Promise<PaginatedType<OutputBlogDto>> {
     const {
-      searchNameTerm = null,
+      searchNameTerm = '',
       sortBy = 'createdAt',
       sortDirection = Direction.DESC,
       pageNumber = 1,
       pageSize = 10
     } = query;
 
-    const sortDirectionNumber = makeDirectionToNumber(sortDirection);
     const skipNumber = (+pageNumber - 1) * +pageSize;
-    let filter = {};
-    if (searchNameTerm) {
-      filter = { name: { $regex: new RegExp(searchNameTerm, 'gi') } };
-    }
-    const finalFilter = {
-      ...filter,
-      ...bannedFilter('blogOwnerInfo.isBanned'),
-      ...bannedFilter('isBanned')
-    };
-    const countAllDocuments = await this.blogsModel.countDocuments(finalFilter);
-    const result = await this.blogsModel
-      .find(finalFilter)
-      .sort({ [sortBy]: sortDirectionNumber })
-      .skip(skipNumber)
-      .limit(+pageSize);
+
+    const queryString = `SELECT b.* FROM "Blogs" b
+                         LEFT JOIN "Users" u ON b."userId"=u.id
+                         WHERE
+                         b."isBanned"=false
+                         AND
+                         u."isBanned"=false
+                         AND
+                         b.name ILIKE '%${searchNameTerm}%'
+                         ORDER BY "${sortBy}" ${sortDirection}
+                         LIMIT ${pageSize}
+                         OFFSET ${skipNumber}`;
+
+    const queryStringForLength = `SELECT COUNT(b.*) FROM "Blogs" b
+                                  LEFT JOIN "Users" u ON b."userId"=u.id
+                                  WHERE
+                                  b."isBanned"=false
+                                  AND
+                                  u."isBanned"=false
+                                  AND
+                                  b.name ILIKE '%${searchNameTerm}%'`;
+
+    const result = await this.dataSource.query(queryString);
+    const resultCount = await this.dataSource.query(queryStringForLength);
 
     return getPaginatedType(
-      result.map(this._getOutputBlogDto),
+      result.map(this.sqlGetOutputBlogDto),
       +pageSize,
       +pageNumber,
-      countAllDocuments
+      +resultCount[0].count
     );
   }
   async getById(id: SqlDbId): Promise<OutputBlogDto> {
@@ -66,16 +70,6 @@ export class SqlBlogsQueryRepository {
     if (result[0].isBanned || result[0].ownerIsBanned)
       throw new NotFoundException();
     return this.sqlGetOutputBlogDto(result[0]);
-  }
-  protected _getOutputBlogDto(blog: BlogDocument): OutputBlogDto {
-    return {
-      id: blog._id.toString(),
-      name: blog.name,
-      description: blog.description,
-      websiteUrl: blog.websiteUrl,
-      createdAt: blog.createdAt,
-      isMembership: blog.isMembership
-    };
   }
   protected sqlGetOutputBlogDto(blog: BlogsSqlType): OutputBlogDto {
     return {

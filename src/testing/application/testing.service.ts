@@ -45,5 +45,7 @@ export class TestingService {
     await this.commentLikesModel.deleteMany({});
     await this.dataSource.query(`TRUNCATE "Users" CASCADE`);
     await this.dataSource.query(`TRUNCATE "Session" CASCADE`);
+    await this.dataSource.query(`TRUNCATE "Blogs" CASCADE`);
+    await this.dataSource.query(`TRUNCATE "Posts" CASCADE`);
   }
 }

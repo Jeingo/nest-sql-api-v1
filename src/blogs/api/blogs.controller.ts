@@ -21,12 +21,16 @@ import {
   DbId,
   PaginatedType
 } from '../../global-types/global.types';
+import { SqlBlogsQueryRepository } from '../infrastructure/sql.blogs.query.repository';
+import { SqlPostsQueryRepository } from '../../posts/infrastructure/sql.posts.query.repository';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     private readonly blogsQueryRepository: BlogsQueryRepository,
-    private readonly postsQueryRepository: PostsQueryRepository
+    private readonly postsQueryRepository: PostsQueryRepository,
+    private readonly sqlBlogsQueryRepository: SqlBlogsQueryRepository,
+    private readonly sqlPostsQueryRepository: SqlPostsQueryRepository
   ) {}
 
   @HttpCode(HttpStatus.OK)
@@ -34,7 +38,7 @@ export class BlogsController {
   async findAll(
     @Query() query: QueryBlogs
   ): Promise<PaginatedType<OutputBlogDto>> {
-    return await this.blogsQueryRepository.getAll(query);
+    return await this.sqlBlogsQueryRepository.getAll(query);
   }
 
   @HttpCode(HttpStatus.OK)
