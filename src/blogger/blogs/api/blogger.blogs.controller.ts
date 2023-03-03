@@ -40,6 +40,7 @@ import { BloggerPostsQueryRepository } from '../infrastructure/blogger.posts.que
 import { OutputBloggerCommentsDto } from './dto/output.blogger.comments.dto';
 import { SqlBloggerBlogsQueryRepository } from '../infrastructure/sql.blogger.blogs.query.repository';
 import { SqlBloggerPostsQueryRepository } from '../infrastructure/sql.blogger.posts.query.repository';
+import { SqlBloggerCommentsQueryRepository } from '../infrastructure/sql.blogger.comments.query.repository';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
@@ -50,6 +51,7 @@ export class BloggerBlogsController {
     private readonly bloggerPostsQueryRepository: BloggerPostsQueryRepository,
     private readonly sqlBloggerPostsQueryRepository: SqlBloggerPostsQueryRepository,
     private readonly bloggerCommentsQueryRepository: BloggerCommentsQueryRepository,
+    private readonly sqlBloggerCommentsQueryRepository: SqlBloggerCommentsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 
@@ -144,7 +146,7 @@ export class BloggerBlogsController {
     @Query() query: QueryComments,
     @CurrentUser() user: CurrentUserType
   ): Promise<PaginatedType<OutputBloggerCommentsDto>> {
-    return await this.bloggerCommentsQueryRepository.getAllForBlogger(
+    return await this.sqlBloggerCommentsQueryRepository.getAllForBlogger(
       query,
       user
     );
