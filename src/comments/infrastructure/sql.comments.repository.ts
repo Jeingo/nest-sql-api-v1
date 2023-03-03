@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { DbId, SqlDbId } from '../../global-types/global.types';
+import { SqlDbId } from '../../global-types/global.types';
 import {
   CommentDocument,
   ICommentModel,
@@ -51,7 +51,10 @@ export class SqlCommentsRepository {
   async save(comment: CommentDocument): Promise<CommentDocument> {
     return await comment.save();
   }
-  async delete(id: DbId): Promise<CommentDocument> {
-    return this.commentsModel.findByIdAndDelete(id);
+  async delete(id: SqlDbId): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `DELETE FROM "Comments" WHERE id=${id}`
+    );
+    return !!result[1];
   }
 }
