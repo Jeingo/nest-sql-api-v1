@@ -35,6 +35,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateCommentCommand } from '../../comments/application/use.cases/create.comment.use.case';
 import { UpdateStatusLikeInPostCommand } from '../application/use-cases/update.status.like.in.post.use.case';
 import { SqlPostsQueryRepository } from '../infrastructure/sql.posts.query.repository';
+import { SqlCommentsQueryRepository } from '../../comments/infrastructure/sql.comments.query.repository';
 
 @Controller('posts')
 export class PostsController {
@@ -42,6 +43,7 @@ export class PostsController {
     private readonly postsQueryRepository: PostsQueryRepository,
     private readonly sqlPostsQueryRepository: SqlPostsQueryRepository,
     private readonly commentsQueryRepository: CommentsQueryRepository,
+    private readonly sqlCommentsQueryRepository: SqlCommentsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 
@@ -84,14 +86,14 @@ export class PostsController {
   @HttpCode(HttpStatus.CREATED)
   @Post(':postId/comments')
   async createCommentByPostId(
-    @Param('postId', new CheckIdAndParseToDBId()) postId: DbId,
+    @Param('postId', new CheckId()) postId: SqlDbId,
     @Body() createCommentDto: InputCreateCommentDto,
     @CurrentUser() user: CurrentUserType
   ): Promise<OutputCommentDto> {
     const createdCommentId = await this.commandBus.execute(
       new CreateCommentCommand(createCommentDto, postId, user)
     );
-    return await this.commentsQueryRepository.getById(createdCommentId);
+    return await this.sqlCommentsQueryRepository.getById(createdCommentId);
   }
 
   @UseGuards(JwtAuthGuard)

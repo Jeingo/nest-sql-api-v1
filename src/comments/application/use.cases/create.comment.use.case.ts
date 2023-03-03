@@ -1,16 +1,16 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { CurrentUserType, DbId } from '../../../global-types/global.types';
+import { CurrentUserType, SqlDbId } from '../../../global-types/global.types';
 import { InputCreateCommentDto } from '../../api/dto/input.create.comment.dto';
-import { CommentsRepository } from '../../infrastructure/comments.repository';
-import { PostsRepository } from '../../../posts/infrastructure/posts.repository';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
-import { Types } from 'mongoose';
+import { SqlPostsRepository } from '../../../posts/infrastructure/sql.posts.repository';
+import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
+import { SqlCommentsRepository } from '../../infrastructure/sql.comments.repository';
+import { BlogsUsersBanRepository } from '../../../blogger/users/infrastructure/blogs.users.ban.repository';
 
 export class CreateCommentCommand {
   constructor(
     public createCommentDto: InputCreateCommentDto,
-    public postId: DbId,
+    public postId: SqlDbId,
     public user: CurrentUserType
   ) {}
 }
@@ -18,29 +18,30 @@ export class CreateCommentCommand {
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentUseCase {
   constructor(
-    private readonly commentRepository: CommentsRepository,
-    private readonly postsRepository: PostsRepository,
-    private readonly usersRepository: UsersRepository
+    private readonly sqlCommentRepository: SqlCommentsRepository,
+    private readonly sqlPostsRepository: SqlPostsRepository,
+    private readonly sqlUsersRepository: SqlUsersRepository,
+    private readonly blogsUsersBanRepository: BlogsUsersBanRepository
   ) {}
 
-  async execute(command: CreateCommentCommand): Promise<DbId> {
+  async execute(command: CreateCommentCommand): Promise<SqlDbId> {
     const { content } = command.createCommentDto;
-    const { userId, login } = command.user;
+    const { userId } = command.user;
     const postId = command.postId;
-    const post = await this.postsRepository.getById(postId);
+    const post = await this.sqlPostsRepository.getById(postId);
     if (!post) throw new NotFoundException();
-    const user = await this.usersRepository.getById(new Types.ObjectId(userId));
-    if (user.checkBanStatusForBlog(post.blogId)) {
-      throw new ForbiddenException();
-    }
-    const createdComment = this.commentRepository.create(
+    const userIsBannedForBlog = await this.blogsUsersBanRepository.isBannedUser(
+      post.blogId.toString(),
+      userId
+    );
+    if (userIsBannedForBlog) throw new ForbiddenException();
+
+    const createdComment = await this.sqlCommentRepository.create(
       content,
       userId,
-      login,
-      postId.toString(),
-      post.postOwnerInfo.userId
+      postId
     );
-    await this.commentRepository.save(createdComment);
-    return createdComment._id;
+
+    return createdComment.id.toString();
   }
 }

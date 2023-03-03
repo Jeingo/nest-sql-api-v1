@@ -48,5 +48,8 @@ export class TestingService {
     await this.dataSource.query(`TRUNCATE "Blogs" CASCADE`);
     await this.dataSource.query(`TRUNCATE "Posts" CASCADE`);
     await this.dataSource.query(`TRUNCATE "Users_Blogs_Ban" CASCADE`);
+    await this.dataSource.query(`TRUNCATE "Comments" CASCADE`);
+    await this.dataSource.query(`TRUNCATE "CommentLikes" CASCADE`);
+    await this.dataSource.query(`TRUNCATE "PostLikes" CASCADE`);
   }
 }
