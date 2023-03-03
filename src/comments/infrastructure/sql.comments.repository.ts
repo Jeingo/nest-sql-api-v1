@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { DbId } from '../../global-types/global.types';
+import { DbId, SqlDbId } from '../../global-types/global.types';
 import {
   CommentDocument,
   ICommentModel,
@@ -29,8 +29,21 @@ export class SqlCommentsRepository {
     );
     return result[0];
   }
-  async getById(id: DbId): Promise<CommentDocument> {
-    return this.commentsModel.findById(id);
+  async getById(id: SqlDbId): Promise<CommentsSqlType> {
+    const result = await this.dataSource.query(
+      `SELECT * FROM "Comments" WHERE id=$1;`,
+      [id]
+    );
+    return result[0];
+  }
+  async update(id: SqlDbId, content: string): Promise<boolean> {
+    const queryString = `UPDATE "Comments"
+                         SET content='${content}'
+                         WHERE "id"=${id}`;
+
+    const result = await this.dataSource.query(queryString);
+
+    return !!result[0];
   }
   async getByUserId(userId: string): Promise<CommentDocument[]> {
     return this.commentsModel.find({ 'commentatorInfo.userId': userId });

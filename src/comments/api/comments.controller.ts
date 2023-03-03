@@ -53,7 +53,7 @@ export class CommentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put(':id')
   async update(
-    @Param('id', new CheckIdAndParseToDBId()) id: DbId,
+    @Param('id', new CheckId()) id: SqlDbId,
     @Body() createCommentDto: InputCreateCommentDto,
     @CurrentUser() user: CurrentUserType
   ) {

@@ -1,12 +1,12 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { CurrentUserType, DbId } from '../../../global-types/global.types';
+import { CurrentUserType, SqlDbId } from '../../../global-types/global.types';
 import { InputCreateCommentDto } from '../../api/dto/input.create.comment.dto';
-import { CommentsRepository } from '../../infrastructure/comments.repository';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { SqlCommentsRepository } from '../../infrastructure/sql.comments.repository';
 
 export class UpdateCommentCommand {
   constructor(
-    public id: DbId,
+    public id: SqlDbId,
     public createCommentDto: InputCreateCommentDto,
     public user: CurrentUserType
   ) {}
@@ -14,18 +14,16 @@ export class UpdateCommentCommand {
 
 @CommandHandler(UpdateCommentCommand)
 export class UpdateCommentUseCase {
-  constructor(private readonly commentRepository: CommentsRepository) {}
+  constructor(private readonly sqlCommentRepository: SqlCommentsRepository) {}
 
   async execute(command: UpdateCommentCommand): Promise<boolean> {
     const commentId = command.id;
     const { userId } = command.user;
     const { content } = command.createCommentDto;
-    const comment = await this.commentRepository.getById(commentId);
+    const comment = await this.sqlCommentRepository.getById(commentId);
     if (!comment) throw new NotFoundException();
-    if (comment.commentatorInfo.userId !== userId)
-      throw new ForbiddenException();
-    comment.update(content);
-    await this.commentRepository.save(comment);
+    if (comment.userId.toString() !== userId) throw new ForbiddenException();
+    await this.sqlCommentRepository.update(commentId, content);
     return true;
   }
 }
