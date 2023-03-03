@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   CurrentUserType,
-  DbId,
   Direction,
   LikeStatus,
   PaginatedType,
@@ -15,11 +14,7 @@ import {
   ICommentModel
 } from '../domain/entities/comment.entity';
 import { QueryComments } from '../api/types/query.comments.type';
-import {
-  bannedFilter,
-  getPaginatedType,
-  makeDirectionToNumber
-} from '../../helper/query/query.repository.helper';
+import { getPaginatedType } from '../../helper/query/query.repository.helper';
 import { IPostModel, Post } from '../../posts/domain/entities/post.entity';
 import {
   CommentLike,
@@ -40,43 +35,79 @@ export class SqlCommentsQueryRepository {
 
   async getAllByPostId(
     query: QueryComments,
-    postId: DbId,
+    postId: SqlDbId,
     user?: CurrentUserType
   ): Promise<PaginatedType<OutputCommentDto>> {
-    const post = await this.postsModel.findById(postId);
-    if (!post) throw new NotFoundException();
+    const post = await this.dataSource.query(
+      `SELECT * FROM "Posts" WHERE id=$1;`,
+      [postId]
+    );
+    if (!post[0]) throw new NotFoundException();
     const {
       sortBy = 'createdAt',
       sortDirection = Direction.DESC,
       pageNumber = 1,
       pageSize = 10
     } = query;
-    const sortDirectionNumber = makeDirectionToNumber(sortDirection);
+
     const skipNumber = (+pageNumber - 1) * +pageSize;
 
-    const finalFilter = {
-      ...bannedFilter('commentatorInfo.isBanned'),
-      postId: postId.toString()
-    };
-    const countAllDocuments = await this.commentsModel.countDocuments(
-      finalFilter
-    );
-    const result = await this.commentsModel
-      .find(finalFilter)
-      .sort({ [sortBy]: sortDirectionNumber })
-      .skip(skipNumber)
-      .limit(+pageSize);
-    const mappedComments = result.map(this._getOutputComment);
-    const mappedCommentsWithStatusLike = await this._setStatusLike(
-      mappedComments,
-      user?.userId
-    );
+    const queryString = `SELECT c.* , u.login FROM "Comments" c
+                         LEFT JOIN "Users" u ON c."userId"=u.id
+                         WHERE
+                         "postId"=${postId}
+                         AND
+                         u."isBanned"=false
+                         ORDER BY "${sortBy}" ${sortDirection}
+                         LIMIT ${pageSize}
+                         OFFSET ${skipNumber}`;
+
+    const queryStringForLength = `SELECT COUNT(c.*) FROM "Comments" c
+                         LEFT JOIN "Users" u ON c."userId"=u.id
+                         WHERE
+                         "postId"=${postId}
+                         AND
+                         u."isBanned"=false`;
+
+    const result = await this.dataSource.query(queryString);
+    const resultCount = await this.dataSource.query(queryStringForLength);
+
     return getPaginatedType(
-      mappedCommentsWithStatusLike,
+      result.map(this.sqlGetOutputComment),
       +pageSize,
       +pageNumber,
-      countAllDocuments
+      +resultCount[0].count
     );
+    //todo after like
+    //
+    // const mappedCommentsWithStatusLike = await this._setStatusLike(
+    //   mappedComments,
+    //   user?.userId
+    // );
+
+    // const finalFilter = {
+    //   ...bannedFilter('commentatorInfo.isBanned'),
+    //   postId: postId.toString()
+    // };
+    // const countAllDocuments = await this.commentsModel.countDocuments(
+    //   finalFilter
+    // );
+    // const result = await this.commentsModel
+    //   .find(finalFilter)
+    //   .sort({ [sortBy]: sortDirectionNumber })
+    //   .skip(skipNumber)
+    //   .limit(+pageSize);
+    // const mappedComments = result.map(this._getOutputComment);
+    // const mappedCommentsWithStatusLike = await this._setStatusLike(
+    //   mappedComments,
+    //   user?.userId
+    // );
+    // return getPaginatedType(
+    //   mappedCommentsWithStatusLike,
+    //   +pageSize,
+    //   +pageNumber,
+    //   countAllDocuments
+    // );
   }
   async getById(
     id: SqlDbId,

@@ -72,10 +72,10 @@ export class PostsController {
   @Get(':postId/comments')
   async findAllCommentsByPostId(
     @Query() query: QueryComments,
-    @Param('postId', new CheckIdAndParseToDBId()) postId: DbId,
+    @Param('postId', new CheckId()) postId: SqlDbId,
     @CurrentUser() user: CurrentUserType
   ): Promise<PaginatedType<OutputCommentDto>> {
-    return await this.commentsQueryRepository.getAllByPostId(
+    return await this.sqlCommentsQueryRepository.getAllByPostId(
       query,
       postId,
       user
