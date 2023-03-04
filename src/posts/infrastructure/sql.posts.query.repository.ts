@@ -49,14 +49,14 @@ export class SqlPostsQueryRepository {
                          p."blogId",
                          p."createdAt",
                          b.name AS "blogName",
-                         COUNT(CASE WHEN pl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
-                         COUNT(CASE WHEN pl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount",
+                         COUNT(CASE WHEN pl."myStatus" = 'Like' AND u2."isBanned"=false THEN 1 ELSE NULL END) AS "likesCount",
+                         COUNT(CASE WHEN pl."myStatus" = 'Dislike' AND u2."isBanned"=false THEN 1 ELSE NULL END) AS "dislikesCount",
                          ${this.getUserStatus(user)}
                          array_to_json(ARRAY(
                          SELECT (u.login, u.id, pl2."addedAt")
                          FROM "PostLikes" pl2
                          INNER JOIN "Users" u ON pl2."userId" = u.id
-                         WHERE pl2."postId" = p.id AND pl2."myStatus" = 'Like'
+                         WHERE pl2."postId" = p.id AND pl2."myStatus" = 'Like' AND u."isBanned"=false
                          ORDER BY pl2."addedAt" DESC
                          LIMIT 3
                          )) AS "lastLikesUser"
@@ -64,6 +64,7 @@ export class SqlPostsQueryRepository {
                          LEFT JOIN "Blogs" b ON p."blogId"=b.id 
                          LEFT JOIN "Users" u ON b."userId"=u.id
                          LEFT JOIN "PostLikes" pl ON p.id = pl."postId"
+                         LEFT JOIN "Users" u2 ON pl."userId"=u2.id
                          WHERE
                          b."isBanned"=false
                          AND
@@ -126,14 +127,14 @@ export class SqlPostsQueryRepository {
                          p."blogId",
                          p."createdAt",
                          b.name AS "blogName",
-                         COUNT(CASE WHEN pl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
-                         COUNT(CASE WHEN pl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount",
+                         COUNT(CASE WHEN pl."myStatus" = 'Like' AND u2."isBanned"=false THEN 1 ELSE NULL END) AS "likesCount",
+                         COUNT(CASE WHEN pl."myStatus" = 'Dislike' AND u2."isBanned"=false THEN 1 ELSE NULL END) AS "dislikesCount",
                          ${this.getUserStatus(user)}
                          array_to_json(ARRAY(
                          SELECT (u.login, u.id, pl2."addedAt")
                          FROM "PostLikes" pl2
                          INNER JOIN "Users" u ON pl2."userId" = u.id
-                         WHERE pl2."postId" = p.id AND pl2."myStatus" = 'Like'
+                         WHERE pl2."postId" = p.id AND pl2."myStatus" = 'Like' AND u."isBanned"=false
                          ORDER BY pl2."addedAt" DESC
                          LIMIT 3
                          )) AS "lastLikesUser"
@@ -141,6 +142,7 @@ export class SqlPostsQueryRepository {
                          LEFT JOIN "Blogs" b ON p."blogId"=b.id 
                          LEFT JOIN "Users" u ON b."userId"=u.id
                          LEFT JOIN "PostLikes" pl ON p.id = pl."postId"
+                         LEFT JOIN "Users" u2 ON pl."userId"=u2.id
                          WHERE
                          b."isBanned"=false
                          AND
@@ -188,14 +190,14 @@ export class SqlPostsQueryRepository {
                          p."blogId",
                          p."createdAt",
                          b.name AS "blogName",
-                         COUNT(CASE WHEN pl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
-                         COUNT(CASE WHEN pl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount",
+                         COUNT(CASE WHEN pl."myStatus" = 'Like' AND u2."isBanned"=false THEN 1 ELSE NULL END) AS "likesCount",
+                         COUNT(CASE WHEN pl."myStatus" = 'Dislike' AND u2."isBanned"=false THEN 1 ELSE NULL END) AS "dislikesCount",
                          ${this.getUserStatus(user)}
                          array_to_json(ARRAY(
                          SELECT (u.login, u.id, pl2."addedAt")
                          FROM "PostLikes" pl2
                          INNER JOIN "Users" u ON pl2."userId" = u.id
-                         WHERE pl2."postId" = p.id AND pl2."myStatus" = 'Like'
+                         WHERE pl2."postId" = p.id AND pl2."myStatus" = 'Like' AND u."isBanned"=false
                          ORDER BY pl2."addedAt" DESC
                          LIMIT 3
                          )) AS "lastLikesUser"
@@ -203,6 +205,7 @@ export class SqlPostsQueryRepository {
                          LEFT JOIN "Blogs" b ON p."blogId"=b.id 
                          LEFT JOIN "Users" u ON b."userId"=u.id
                          LEFT JOIN "PostLikes" pl ON p.id = pl."postId"
+                         LEFT JOIN "Users" u2 ON pl."userId"=u2.id
                          WHERE
                          b."isBanned"=false
                          AND
@@ -218,16 +221,6 @@ export class SqlPostsQueryRepository {
                          p."createdAt",
                          b.name`;
 
-    // const result = await this.dataSource.query(
-    //   `SELECT p.*,
-    //    b.name AS "blogName",
-    //    b."isBanned" AS "blogIsBanned",
-    //    u."isBanned" AS "ownerIsBanned"
-    //    FROM "Posts" p
-    //    LEFT JOIN "Blogs" b ON p."blogId"=b.id
-    //    LEFT JOIN "Users" u ON b."userId"=u.id
-    //    WHERE p.id=${id}`
-    // );
     const result = await this.dataSource.query(queryString);
     if (!result[0]) throw new NotFoundException();
     return this.sqlGetOutputPostDto(result[0]);

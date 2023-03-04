@@ -13,11 +13,17 @@ import {
 } from '../../helper/auth/basic.auth';
 import {
   createUser,
+  createUsers,
   loginAndGetPairToken,
-  saveUser
+  loginAndGetPairTokens,
+  saveUser,
+  saveUsers
 } from '../../helper/factories/users.factory';
 import { OutputSuperAdminUserDto } from '../../../src/superadmin/users/api/dto/outputSuperAdminUserDto';
-import { PaginatedType } from '../../../src/global-types/global.types';
+import {
+  LikeStatus,
+  PaginatedType
+} from '../../../src/global-types/global.types';
 import { incorrectUser } from '../../stubs/users.stub';
 import {
   errorsMessageForBadBan,
@@ -29,6 +35,12 @@ import { savePost } from '../../helper/factories/posts.factory';
 import { saveComment } from '../../helper/factories/comments.factory';
 import { OutputPostDto } from '../../../src/posts/api/dto/output.post.dto';
 import { OutputBlogDto } from '../../../src/blogs/api/dto/output.blog.dto';
+import { OutputCommentDto } from '../../../src/comments/api/dto/output.comment.dto';
+import { correctComment } from '../../stubs/comments.stub';
+import { saveCommentLike } from '../../helper/factories/comment.likes.factory';
+import { savePostLike } from '../../helper/factories/post.likes.factory';
+import { correctPost } from '../../stubs/posts.stub';
+import { correctBlog } from '../../stubs/blogs.stub';
 
 describe('SuperAdminUsersController new (e2e)', () => {
   let configuredNesApp: INestApplication;
@@ -259,6 +271,63 @@ describe('SuperAdminUsersController new (e2e)', () => {
       await request(app)
         .get(CommentsPath + '/' + commentId)
         .expect(HttpStatus.NOT_FOUND);
+    });
+    it(`4.4 should return 204 with correct data and check like(post/comment)`, async () => {
+      const users = createUsers(2);
+      const userIds = await saveUsers(app, users);
+      const pairTokens = await loginAndGetPairTokens(app, users);
+      const blogId = await saveBlog(app, pairTokens[0].accessToken);
+      const postId = await savePost(app, pairTokens[0].accessToken, blogId);
+      const commentId = await saveComment(
+        app,
+        pairTokens[0].accessToken,
+        postId
+      );
+      await saveCommentLike(app, pairTokens[1].accessToken, commentId);
+      await savePostLike(app, pairTokens[1].accessToken, postId);
+
+      await request(app)
+        .put(superAdminUsersPath + '/' + userIds[1] + '/ban')
+        .auth(superAdminLogin, superAdminPassword)
+        .send(banInfo)
+        .expect(HttpStatus.NO_CONTENT);
+
+      const response = await request(app)
+        .get(CommentsPath + '/' + commentId)
+        .expect(HttpStatus.OK);
+
+      expect(response.body).toEqual<OutputCommentDto>({
+        id: commentId,
+        ...correctComment,
+        commentatorInfo: {
+          userId: userIds[0],
+          userLogin: users[0].login
+        },
+        createdAt: expect.any(String),
+        likesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: LikeStatus.None
+        }
+      });
+
+      const response2 = await request(app)
+        .get(PostsPath + '/' + postId)
+        .expect(HttpStatus.OK);
+
+      expect(response2.body).toEqual<OutputPostDto>({
+        id: postId,
+        ...correctPost,
+        blogId: blogId,
+        blogName: correctBlog.name,
+        createdAt: expect.any(String),
+        extendedLikesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: LikeStatus.None,
+          newestLikes: []
+        }
+      });
     });
   });
 });

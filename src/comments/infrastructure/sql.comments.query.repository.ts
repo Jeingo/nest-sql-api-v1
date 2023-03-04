@@ -50,13 +50,14 @@ export class SqlCommentsQueryRepository {
 
     const queryString = `SELECT
       c.id, c.content, c."createdAt", c."userId", u.login,
-      COUNT(CASE WHEN cl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
-      COUNT(CASE WHEN cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount"
+      COUNT(CASE WHEN cl."myStatus" = 'Like' AND u2."isBanned"=false THEN 1 ELSE NULL END) AS "likesCount",
+      COUNT(CASE WHEN cl."myStatus" = 'Dislike' AND u2."isBanned"=false THEN 1 ELSE NULL END) AS "dislikesCount"
       ${this.getUserStatus(user)}
       FROM
       "Comments" c
       LEFT JOIN "CommentLikes" cl ON c.id = cl."commentId"
       LEFT JOIN "Users" u ON c."userId"=u.id
+      LEFT JOIN "Users" u2 ON cl."userId"=u2.id
       WHERE c."postId"=${postId}
       AND u."isBanned"=false
       GROUP BY
@@ -88,13 +89,14 @@ export class SqlCommentsQueryRepository {
   ): Promise<OutputCommentDto> {
     const queryString = `SELECT
       c.id, c.content, c."createdAt", c."userId", u.login,
-      COUNT(CASE WHEN cl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
-      COUNT(CASE WHEN cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount"
+      COUNT(CASE WHEN cl."myStatus" = 'Like' AND u2."isBanned"=false THEN 1 ELSE NULL END) AS "likesCount",
+      COUNT(CASE WHEN cl."myStatus" = 'Dislike' AND u2."isBanned"=false THEN 1 ELSE NULL END) AS "dislikesCount"
       ${this.getUserStatus(user)}
       FROM
       "Comments" c
       LEFT JOIN "CommentLikes" cl ON c.id = cl."commentId"
       LEFT JOIN "Users" u ON c."userId"=u.id
+      LEFT JOIN "Users" u2 ON cl."userId"=u2.id
       WHERE c.id=${id}
       AND u."isBanned"=false
       GROUP BY
