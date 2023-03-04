@@ -4,9 +4,10 @@ import {
   LikeStatus,
   SqlDbId
 } from '../../../global-types/global.types';
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { SqlPostsRepository } from '../../infrastructure/sql.posts.repository';
 import { SqlPostLikesRepository } from '../../../post-likes/infrastructure/sql.post.likes.repository';
+import { BlogsUsersBanRepository } from '../../../blogger/users/infrastructure/blogs.users.ban.repository';
 
 export class UpdateStatusLikeInPostCommand {
   constructor(
@@ -20,7 +21,8 @@ export class UpdateStatusLikeInPostCommand {
 export class UpdateStatusLikeInPostUseCase {
   constructor(
     private readonly sqlPostsRepository: SqlPostsRepository,
-    private readonly sqlPostLikesRepository: SqlPostLikesRepository
+    private readonly sqlPostLikesRepository: SqlPostLikesRepository,
+    private readonly blogsUsersBanRepository: BlogsUsersBanRepository
   ) {}
 
   async execute(command: UpdateStatusLikeInPostCommand): Promise<boolean> {
@@ -30,6 +32,11 @@ export class UpdateStatusLikeInPostUseCase {
 
     const post = await this.sqlPostsRepository.getById(postId);
     if (!post) throw new NotFoundException();
+    const userIsBannedForBlog = await this.blogsUsersBanRepository.isBannedUser(
+      post.blogId.toString(),
+      user.userId
+    );
+    if (userIsBannedForBlog) throw new ForbiddenException();
 
     await this.sqlPostLikesRepository.updateLike(
       postId,

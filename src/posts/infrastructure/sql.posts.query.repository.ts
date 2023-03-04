@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { IPostModel, Post, PostDocument } from '../domain/entities/post.entity';
+import { IPostModel, Post } from '../domain/entities/post.entity';
 import {
   CurrentUserType,
   Direction,
@@ -9,13 +9,12 @@ import {
   SqlDbId
 } from '../../global-types/global.types';
 import { OutputPostDto } from '../api/dto/output.post.dto';
-import { NewestLikesType, QueryPosts } from '../api/types/query.posts.type';
+import { QueryPosts } from '../api/types/query.posts.type';
 import { getPaginatedType } from '../../helper/query/query.repository.helper';
 import { Blog, IBlogModel } from '../../blogs/domain/entities/blog.entity';
 import {
   IPostLikeModel,
-  PostLike,
-  PostLikeDocument
+  PostLike
 } from '../../post-likes/domain/entities/post.like.entity';
 import { PostsSqlType } from '../../type-for-sql-entity/posts.sql.type';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -43,15 +42,40 @@ export class SqlPostsQueryRepository {
 
     const skipNumber = (+pageNumber - 1) * +pageSize;
 
-    const queryString = `SELECT p.*,
-                         b.name AS "blogName"
+    const queryString = `SELECT p.id,
+                         p.title,
+                         p."shortDescription",
+                         p.content,
+                         p."blogId",
+                         p."createdAt",
+                         b.name AS "blogName",
+                         COUNT(CASE WHEN pl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
+                         COUNT(CASE WHEN pl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount",
+                         ${this.getUserStatus(user)}
+                         array_to_json(ARRAY(
+                         SELECT (u.login, u.id, pl2."addedAt")
+                         FROM "PostLikes" pl2
+                         INNER JOIN "Users" u ON pl2."userId" = u.id
+                         WHERE pl2."postId" = p.id AND pl2."myStatus" = 'Like'
+                         ORDER BY pl2."addedAt" DESC
+                         LIMIT 3
+                         )) AS "lastLikesUser"
                          FROM "Posts" p
                          LEFT JOIN "Blogs" b ON p."blogId"=b.id 
                          LEFT JOIN "Users" u ON b."userId"=u.id
+                         LEFT JOIN "PostLikes" pl ON p.id = pl."postId"
                          WHERE
                          b."isBanned"=false
                          AND
                          u."isBanned"=false
+                         GROUP BY 
+                         p.id,
+                         p.title,
+                         p."shortDescription",
+                         p.content,
+                         p."blogId",
+                         p."createdAt",
+                         b.name
                          ORDER BY "${sortBy}" ${sortDirection}
                          LIMIT ${pageSize}
                          OFFSET ${skipNumber}`;
@@ -68,7 +92,6 @@ export class SqlPostsQueryRepository {
     const result = await this.dataSource.query(queryString);
     const resultCount = await this.dataSource.query(queryStringForLength);
 
-    //todo after add like
     return getPaginatedType(
       result.map(this.sqlGetOutputPostDto),
       +pageSize,
@@ -96,17 +119,42 @@ export class SqlPostsQueryRepository {
 
     const skipNumber = (+pageNumber - 1) * +pageSize;
 
-    const queryString = `SELECT p.*,
-                         b.name AS "blogName"
+    const queryString = `SELECT p.id,
+                         p.title,
+                         p."shortDescription",
+                         p.content,
+                         p."blogId",
+                         p."createdAt",
+                         b.name AS "blogName",
+                         COUNT(CASE WHEN pl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
+                         COUNT(CASE WHEN pl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount",
+                         ${this.getUserStatus(user)}
+                         array_to_json(ARRAY(
+                         SELECT (u.login, u.id, pl2."addedAt")
+                         FROM "PostLikes" pl2
+                         INNER JOIN "Users" u ON pl2."userId" = u.id
+                         WHERE pl2."postId" = p.id AND pl2."myStatus" = 'Like'
+                         ORDER BY pl2."addedAt" DESC
+                         LIMIT 3
+                         )) AS "lastLikesUser"
                          FROM "Posts" p
                          LEFT JOIN "Blogs" b ON p."blogId"=b.id 
                          LEFT JOIN "Users" u ON b."userId"=u.id
+                         LEFT JOIN "PostLikes" pl ON p.id = pl."postId"
                          WHERE
                          b."isBanned"=false
                          AND
                          u."isBanned"=false
                          AND
                          p."blogId"=${blogId}
+                         GROUP BY 
+                         p.id,
+                         p.title,
+                         p."shortDescription",
+                         p.content,
+                         p."blogId",
+                         p."createdAt",
+                         b.name
                          ORDER BY "${sortBy}" ${sortDirection}
                          LIMIT ${pageSize}
                          OFFSET ${skipNumber}`;
@@ -125,7 +173,6 @@ export class SqlPostsQueryRepository {
     const result = await this.dataSource.query(queryString);
     const resultCount = await this.dataSource.query(queryStringForLength);
 
-    //todo after add like
     return getPaginatedType(
       result.map(this.sqlGetOutputPostDto),
       +pageSize,
@@ -134,42 +181,81 @@ export class SqlPostsQueryRepository {
     );
   }
   async getById(id: SqlDbId, user?: CurrentUserType): Promise<OutputPostDto> {
-    const result = await this.dataSource.query(
-      `SELECT p.*,
-       b.name AS "blogName",
-       b."isBanned" AS "blogIsBanned",
-       u."isBanned" AS "ownerIsBanned"
-       FROM "Posts" p 
-       LEFT JOIN "Blogs" b ON p."blogId"=b.id 
-       LEFT JOIN "Users" u ON b."userId"=u.id
-       WHERE p.id=${id}`
-    );
+    const queryString = `SELECT p.id,
+                         p.title,
+                         p."shortDescription",
+                         p.content,
+                         p."blogId",
+                         p."createdAt",
+                         b.name AS "blogName",
+                         COUNT(CASE WHEN pl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
+                         COUNT(CASE WHEN pl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount",
+                         ${this.getUserStatus(user)}
+                         array_to_json(ARRAY(
+                         SELECT (u.login, u.id, pl2."addedAt")
+                         FROM "PostLikes" pl2
+                         INNER JOIN "Users" u ON pl2."userId" = u.id
+                         WHERE pl2."postId" = p.id AND pl2."myStatus" = 'Like'
+                         ORDER BY pl2."addedAt" DESC
+                         LIMIT 3
+                         )) AS "lastLikesUser"
+                         FROM "Posts" p
+                         LEFT JOIN "Blogs" b ON p."blogId"=b.id 
+                         LEFT JOIN "Users" u ON b."userId"=u.id
+                         LEFT JOIN "PostLikes" pl ON p.id = pl."postId"
+                         WHERE
+                         b."isBanned"=false
+                         AND
+                         u."isBanned"=false
+                         AND
+                         p.id=${id}
+                         GROUP BY 
+                         p.id,
+                         p.title,
+                         p."shortDescription",
+                         p.content,
+                         p."blogId",
+                         p."createdAt",
+                         b.name`;
+
+    // const result = await this.dataSource.query(
+    //   `SELECT p.*,
+    //    b.name AS "blogName",
+    //    b."isBanned" AS "blogIsBanned",
+    //    u."isBanned" AS "ownerIsBanned"
+    //    FROM "Posts" p
+    //    LEFT JOIN "Blogs" b ON p."blogId"=b.id
+    //    LEFT JOIN "Users" u ON b."userId"=u.id
+    //    WHERE p.id=${id}`
+    // );
+    const result = await this.dataSource.query(queryString);
     if (!result[0]) throw new NotFoundException();
-    if (result[0].blogIsBanned || result[0].ownerIsBanned)
-      throw new NotFoundException();
     return this.sqlGetOutputPostDto(result[0]);
-    //todo after add like
-    //
-    // if (user && mappedResult) {
-    //   const like = await this.postLikesModel.findOne({
-    //     userId: user.userId,
-    //     postId: mappedResult.id,
-    //     isBanned: false
-    //   });
-    //   if (like) {
-    //     mappedResult.extendedLikesInfo.myStatus = like.myStatus;
-    //   }
-    // }
-    // if (mappedResult) {
-    //   const lastThreeLikes = await this._getLastThreeLikes(mappedResult.id);
-    //   if (lastThreeLikes) {
-    //     mappedResult.extendedLikesInfo.newestLikes = lastThreeLikes;
-    //   }
-    // }
   }
   private sqlGetOutputPostDto(
-    post: PostsSqlType & { blogName: string }
+    post: PostsSqlType & {
+      blogName: string;
+      likesCount: string;
+      dislikesCount: string;
+      likeStatus: string;
+      dislikeStatus: string;
+      lastLikesUser: any;
+    }
   ): OutputPostDto {
+    const myStatus = +post.likeStatus
+      ? LikeStatus.Like
+      : +post.dislikeStatus
+      ? LikeStatus.DisLike
+      : LikeStatus.None;
+
+    const lastLikesUserResult = post.lastLikesUser.map((u) => {
+      return {
+        login: u.f1,
+        userId: u.f2.toString(),
+        addedAt: new Date(u.f3).toISOString()
+      };
+    });
+
     return {
       id: post.id.toString(),
       title: post.title,
@@ -179,76 +265,18 @@ export class SqlPostsQueryRepository {
       blogName: post.blogName,
       createdAt: post.createdAt.toISOString(),
       extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: LikeStatus.None,
-        newestLikes: []
+        likesCount: +post.likesCount,
+        dislikesCount: +post.dislikesCount,
+        myStatus: myStatus,
+        newestLikes: lastLikesUserResult
       }
     };
   }
-  private _getOutputPostDto(post: PostDocument): OutputPostDto {
-    return {
-      id: post._id.toString(),
-      title: post.title,
-      shortDescription: post.shortDescription,
-      content: post.content,
-      blogId: post.blogId,
-      blogName: post.blogName,
-      createdAt: post.createdAt,
-      extendedLikesInfo: {
-        likesCount: post.extendedLikesInfo.likesCount,
-        dislikesCount: post.extendedLikesInfo.dislikesCount,
-        myStatus: LikeStatus.None,
-        newestLikes: []
-      }
-    };
-  }
-  private async _setStatusLike(posts: Array<OutputPostDto>, userId: string) {
-    if (!userId) return posts;
-    for (let i = 0; i < posts.length; i++) {
-      const like = await this.postLikesModel.findOne({
-        userId: userId,
-        postId: posts[i].id,
-        isBanned: false
-      });
-      if (like) {
-        posts[i].extendedLikesInfo.myStatus = like.myStatus;
-      }
+  getUserStatus(user: CurrentUserType): string {
+    if (user) {
+      return `COUNT(CASE WHEN pl."userId" = ${user.userId} AND pl."myStatus" = 'Like' THEN 1 ELSE NULL END )AS "likeStatus",
+              COUNT(CASE WHEN pl."userId" = ${user.userId} AND pl."myStatus" = 'Dislike' THEN 1 ELSE NULL END )AS "dislikeStatus",`;
     }
-    return posts;
-  }
-  private async _setThreeLastUser(posts: Array<OutputPostDto>) {
-    for (let i = 0; i < posts.length; i++) {
-      const lastThreeLikes = await this._getLastThreeLikes(posts[i].id);
-      if (lastThreeLikes) {
-        posts[i].extendedLikesInfo.newestLikes = lastThreeLikes;
-      }
-    }
-    return posts;
-  }
-  private async _getLastThreeLikes(
-    postId: string
-  ): Promise<NewestLikesType[] | null> {
-    const desc = -1;
-    const threeLastUser = 3;
-    const likeStatus = LikeStatus.Like;
-    const result = await this.postLikesModel
-      .find({
-        postId: postId,
-        myStatus: likeStatus,
-        isBanned: false
-      })
-      .sort({ addedAt: desc })
-      .limit(threeLastUser);
-
-    if (!result) return null;
-    return result.map(this._getOutputExtendedLike);
-  }
-  private _getOutputExtendedLike(like: PostLikeDocument): NewestLikesType {
-    return {
-      addedAt: like.addedAt,
-      userId: like.userId,
-      login: like.login
-    };
+    return ``;
   }
 }

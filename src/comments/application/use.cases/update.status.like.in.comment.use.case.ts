@@ -5,8 +5,9 @@ import {
   SqlDbId
 } from '../../../global-types/global.types';
 import { SqlCommentsRepository } from '../../infrastructure/sql.comments.repository';
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { SqlCommentLikesRepository } from '../../../comment-likes/infrastructure/sql.comment.likes.repository';
+import { BlogsUsersBanRepository } from '../../../blogger/users/infrastructure/blogs.users.ban.repository';
 
 export class UpdateLikeStatusInCommentCommand {
   constructor(
@@ -20,7 +21,8 @@ export class UpdateLikeStatusInCommentCommand {
 export class UpdateLikeStatusInCommentUseCase {
   constructor(
     private readonly sqlCommentRepository: SqlCommentsRepository,
-    private readonly sqlCommentLikesRepository: SqlCommentLikesRepository
+    private readonly sqlCommentLikesRepository: SqlCommentLikesRepository,
+    private readonly blogsUsersBanRepository: BlogsUsersBanRepository
   ) {}
 
   async execute(command: UpdateLikeStatusInCommentCommand): Promise<boolean> {
@@ -30,6 +32,13 @@ export class UpdateLikeStatusInCommentUseCase {
 
     const comment = await this.sqlCommentRepository.getById(commentId);
     if (!comment) throw new NotFoundException();
+    const userIsBannedForBlog =
+      await this.blogsUsersBanRepository.isBannedUserByPostId(
+        comment.postId.toString(),
+        user.userId
+      );
+    if (userIsBannedForBlog) throw new ForbiddenException();
+
     await this.sqlCommentLikesRepository.updateLike(
       commentId,
       user.userId,

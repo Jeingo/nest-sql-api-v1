@@ -3,6 +3,7 @@ import { setConfigNestApp } from '../../configuration.test';
 import request from 'supertest';
 import {
   bloggerUsersPath,
+  CommentsPath,
   PostsPath
 } from '../../helper/paths-to-endpoints/paths';
 import {
@@ -124,10 +125,42 @@ describe('BloggerUsersController new (e2e)', () => {
         .expect(HttpStatus.FORBIDDEN);
 
       await request(app)
+        .put(PostsPath + '/' + postId + '/like-status')
+        .set(authHeader, bearerAccessToken(pairTokens[1].accessToken))
+        .send({
+          likeStatus: 'Like'
+        })
+        .expect(HttpStatus.FORBIDDEN);
+
+      const response = await request(app)
         .post(PostsPath + '/' + postId + '/comments')
         .set(authHeader, bearerAccessToken(pairTokens[2].accessToken))
         .send(correctComment)
         .expect(HttpStatus.CREATED);
+
+      await request(app)
+        .put(PostsPath + '/' + postId + '/like-status')
+        .set(authHeader, bearerAccessToken(pairTokens[2].accessToken))
+        .send({
+          likeStatus: 'Like'
+        })
+        .expect(HttpStatus.NO_CONTENT);
+
+      await request(app)
+        .put(CommentsPath + '/' + response.body.id + '/like-status')
+        .set(authHeader, bearerAccessToken(pairTokens[1].accessToken))
+        .send({
+          likeStatus: 'Like'
+        })
+        .expect(HttpStatus.FORBIDDEN);
+
+      await request(app)
+        .put(CommentsPath + '/' + response.body.id + '/like-status')
+        .set(authHeader, bearerAccessToken(pairTokens[2].accessToken))
+        .send({
+          likeStatus: 'Like'
+        })
+        .expect(HttpStatus.NO_CONTENT);
     });
   });
 });
