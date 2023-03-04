@@ -113,6 +113,7 @@ import { SqlCommentsRepository } from './comments/infrastructure/sql.comments.re
 import { SqlCommentsQueryRepository } from './comments/infrastructure/sql.comments.query.repository';
 import { SqlBloggerCommentsQueryRepository } from './blogger/blogs/infrastructure/sql.blogger.comments.query.repository';
 import { SqlCommentLikesRepository } from './comment-likes/infrastructure/sql.comment.likes.repository';
+import { SqlPostLikesRepository } from './post-likes/infrastructure/sql.post.likes.repository';
 
 const useCases = [
   RegistrationUserUseCase,
@@ -180,7 +181,8 @@ const sql = [
   SqlCommentsRepository,
   SqlCommentsQueryRepository,
   SqlBloggerCommentsQueryRepository,
-  SqlCommentLikesRepository
+  SqlCommentLikesRepository,
+  SqlPostLikesRepository
 ];
 
 const queryRepositories = [

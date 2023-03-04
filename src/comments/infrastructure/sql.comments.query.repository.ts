@@ -151,13 +151,13 @@ export class SqlCommentsQueryRepository {
       login: string;
       likesCount: string;
       dislikesCount: string;
-      likeStatus: number;
-      dislikeStatus: number;
+      likeStatus: string;
+      dislikeStatus: string;
     }
   ): OutputCommentDto {
-    const myStatus = comment.likeStatus
+    const myStatus = +comment.likeStatus
       ? LikeStatus.Like
-      : comment.dislikeStatus
+      : +comment.dislikeStatus
       ? LikeStatus.DisLike
       : LikeStatus.None;
     return {

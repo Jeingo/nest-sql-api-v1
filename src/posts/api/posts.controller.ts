@@ -19,14 +19,10 @@ import { OutputCommentDto } from '../../comments/api/dto/output.comment.dto';
 import { GetUserGuard } from '../../auth/infrastructure/guards/get.user.guard';
 import { InputCreateCommentDto } from '../../comments/api/dto/input.create.comment.dto';
 import { InputUpdatePostLikeDto } from './dto/input.update.post.like.dto';
-import {
-  CheckId,
-  CheckIdAndParseToDBId
-} from '../../helper/pipes/check.id.validator.pipe';
+import { CheckId } from '../../helper/pipes/check.id.validator.pipe';
 import { CurrentUser } from '../../helper/get-decorators/current.user.decorator';
 import {
   CurrentUserType,
-  DbId,
   PaginatedType,
   SqlDbId
 } from '../../global-types/global.types';
@@ -100,15 +96,14 @@ export class PostsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put(':postId/like-status')
   async updateStatusLike(
-    @Param('postId', new CheckIdAndParseToDBId()) postId: DbId,
+    @Param('postId', new CheckId()) postId: SqlDbId,
     @Body() updatePostLikeDto: InputUpdatePostLikeDto,
     @CurrentUser() user: CurrentUserType
   ) {
     await this.commandBus.execute(
       new UpdateStatusLikeInPostCommand(
-        user.userId,
+        user,
         postId,
-        user.login,
         updatePostLikeDto.likeStatus
       )
     );

@@ -1,15 +1,17 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { DbId, LikeStatus } from '../../../global-types/global.types';
-import { PostsRepository } from '../../infrastructure/posts.repository';
+import {
+  CurrentUserType,
+  LikeStatus,
+  SqlDbId
+} from '../../../global-types/global.types';
 import { NotFoundException } from '@nestjs/common';
-import { BlogsRepository } from '../../../blogs/infrastructure/blogs.repository';
-import { PostLikesRepository } from '../../../post-likes/infrastructure/post.likes.repository';
+import { SqlPostsRepository } from '../../infrastructure/sql.posts.repository';
+import { SqlPostLikesRepository } from '../../../post-likes/infrastructure/sql.post.likes.repository';
 
 export class UpdateStatusLikeInPostCommand {
   constructor(
-    public userId: string,
-    public postId: DbId,
-    public login: string,
+    public user: CurrentUserType,
+    public postId: SqlDbId,
     public newLikeStatus: LikeStatus
   ) {}
 }
@@ -17,40 +19,24 @@ export class UpdateStatusLikeInPostCommand {
 @CommandHandler(UpdateStatusLikeInPostCommand)
 export class UpdateStatusLikeInPostUseCase {
   constructor(
-    private readonly postsRepository: PostsRepository,
-    private readonly blogsRepository: BlogsRepository,
-    private readonly postLikesRepository: PostLikesRepository
+    private readonly sqlPostsRepository: SqlPostsRepository,
+    private readonly sqlPostLikesRepository: SqlPostLikesRepository
   ) {}
 
   async execute(command: UpdateStatusLikeInPostCommand): Promise<boolean> {
     const postId = command.postId;
-    const userId = command.userId;
-    const login = command.login;
+    const user = command.user;
     const newLikeStatus = command.newLikeStatus;
 
-    let lastLikeStatus: LikeStatus = LikeStatus.None;
-
-    const post = await this.postsRepository.getById(postId);
+    const post = await this.sqlPostsRepository.getById(postId);
     if (!post) throw new NotFoundException();
-    let like = await this.postLikesRepository.getByUserIdAndPostId(
-      userId,
-      postId.toString()
-    );
-    if (!like) {
-      like = this.postLikesRepository.create(
-        userId,
-        postId.toString(),
-        newLikeStatus,
-        login
-      );
-    } else {
-      lastLikeStatus = like.myStatus;
-      like.update(newLikeStatus);
-    }
-    post.updateLike(lastLikeStatus, newLikeStatus);
 
-    await this.postLikesRepository.save(like);
-    await this.postsRepository.save(post);
+    await this.sqlPostLikesRepository.updateLike(
+      postId,
+      user.userId,
+      newLikeStatus
+    );
+
     return true;
   }
 }
