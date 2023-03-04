@@ -143,8 +143,7 @@ export class SqlCommentsQueryRepository {
 
     if (!result[0]) throw new NotFoundException();
 
-    const mappedResult = this.sqlGetOutputComment(result[0]);
-    return mappedResult;
+    return this.sqlGetOutputComment(result[0]);
   }
   private sqlGetOutputComment(
     comment: CommentsSqlType & {
