@@ -48,13 +48,11 @@ export class SqlCommentsQueryRepository {
 
     const skipNumber = (+pageNumber - 1) * +pageSize;
 
-    let queryString;
-
-    if (!user) {
-      queryString = `SELECT
+    const queryString = `SELECT
       c.id, c.content, c."createdAt", c."userId", u.login,
       COUNT(CASE WHEN cl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
       COUNT(CASE WHEN cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount"
+      ${this.getUserStatus(user)}
       FROM
       "Comments" c
       LEFT JOIN "CommentLikes" cl ON c.id = cl."commentId"
@@ -66,25 +64,6 @@ export class SqlCommentsQueryRepository {
       ORDER BY c."${sortBy}" ${sortDirection}
       LIMIT ${pageSize}
       OFFSET ${skipNumber};`;
-    } else {
-      queryString = `SELECT
-      c.id, c.content, c."createdAt", c."userId", u.login,
-      COUNT(CASE WHEN cl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
-      COUNT(CASE WHEN cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount",
-      COUNT(CASE WHEN cl."userId" = ${user.userId} AND cl."myStatus" = 'Like' THEN 1 ELSE NULL END )AS "likeStatus",
-      COUNT(CASE WHEN cl."userId" = ${user.userId} AND cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END )AS "dislikeStatus"
-      FROM
-      "Comments" c
-      LEFT JOIN "CommentLikes" cl ON c.id = cl."commentId"
-      LEFT JOIN "Users" u ON c."userId"=u.id
-      WHERE c."postId"=${postId}
-      AND u."isBanned"=false
-      GROUP BY
-      c.id, c.content, c."createdAt", c."userId", u.login
-      ORDER BY c."${sortBy}" ${sortDirection}
-      LIMIT ${pageSize}
-      OFFSET ${skipNumber};`;
-    }
 
     const queryStringForLength = `SELECT COUNT(c.*) FROM "Comments" c
                          LEFT JOIN "Users" u ON c."userId"=u.id
@@ -107,13 +86,11 @@ export class SqlCommentsQueryRepository {
     id: SqlDbId,
     user?: CurrentUserType
   ): Promise<OutputCommentDto> {
-    let queryString;
-
-    if (!user) {
-      queryString = `SELECT
+    const queryString = `SELECT
       c.id, c.content, c."createdAt", c."userId", u.login,
       COUNT(CASE WHEN cl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
       COUNT(CASE WHEN cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount"
+      ${this.getUserStatus(user)}
       FROM
       "Comments" c
       LEFT JOIN "CommentLikes" cl ON c.id = cl."commentId"
@@ -122,22 +99,6 @@ export class SqlCommentsQueryRepository {
       AND u."isBanned"=false
       GROUP BY
       c.id, c.content, c."createdAt", c."userId", u.login;`;
-    } else {
-      queryString = `SELECT
-      c.id, c.content, c."createdAt", c."userId", u.login,
-      COUNT(CASE WHEN cl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
-      COUNT(CASE WHEN cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount",
-      COUNT(CASE WHEN cl."userId" = ${user.userId} AND cl."myStatus" = 'Like' THEN 1 ELSE NULL END )AS "likeStatus",
-      COUNT(CASE WHEN cl."userId" = ${user.userId} AND cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END )AS "dislikeStatus"
-      FROM
-      "Comments" c
-      LEFT JOIN "CommentLikes" cl ON c.id = cl."commentId"
-      LEFT JOIN "Users" u ON c."userId"=u.id
-      WHERE c.id=${id}
-      AND u."isBanned"=false
-      GROUP BY
-      c.id, c.content, c."createdAt", c."userId", u.login;`;
-    }
 
     const result = await this.dataSource.query(queryString);
 
@@ -173,5 +134,12 @@ export class SqlCommentsQueryRepository {
         myStatus: myStatus
       }
     };
+  }
+  getUserStatus(user: CurrentUserType): string {
+    if (user) {
+      return `, COUNT(CASE WHEN cl."userId" = ${user.userId} AND cl."myStatus" = 'Like' THEN 1 ELSE NULL END )AS "likeStatus",
+              COUNT(CASE WHEN cl."userId" = ${user.userId} AND cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END )AS "dislikeStatus"`;
+    }
+    return ``;
   }
 }

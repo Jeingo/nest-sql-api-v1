@@ -39,8 +39,12 @@ export class SqlBloggerCommentsQueryRepository {
 
     const skipNumber = (+pageNumber - 1) * +pageSize;
 
-    const queryString = `SELECT c.*, u2.login, p.title, b.id AS "blogId", b.name AS "blogName"
+    const queryString = `SELECT c.id, c.content, c."createdAt", c."userId", c."postId", u2.login, p.title, b.id AS "blogId", b.name AS "blogName",
+                         COUNT(CASE WHEN cl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
+                         COUNT(CASE WHEN cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount"
+                         ${this.getUserStatus(user)}
                          FROM "Comments" c
+                         LEFT JOIN "CommentLikes" cl ON c.id = cl."commentId"
                          LEFT JOIN "Users" u2 ON c."userId"=u2.id
                          LEFT JOIN "Posts" p ON c."postId"=p.id 
                          LEFT JOIN "Blogs" b ON p."blogId"=b.id
@@ -49,6 +53,8 @@ export class SqlBloggerCommentsQueryRepository {
                          u.id=${user.userId}
                          AND
                          u2."isBanned"=false
+                         GROUP BY
+                         c.id, c.content, c."createdAt", c."userId", c."postId", u2.login, p.title, b.id, b.name
                          ORDER BY "${sortBy}" ${sortDirection}
                          LIMIT ${pageSize}
                          OFFSET ${skipNumber}`;
@@ -72,13 +78,6 @@ export class SqlBloggerCommentsQueryRepository {
       +pageNumber,
       +resultCount[0].count
     );
-
-    // const finishFilter = {
-    //   bloggerId: user.userId,
-    //   ...bannedFilter('commentatorInfo.isBanned')
-    // };
-
-    //todo after like
   }
   protected _getOutputBloggerCommentsDto(
     comment: CommentsSqlType & {
@@ -86,8 +85,18 @@ export class SqlBloggerCommentsQueryRepository {
       title: string;
       blogId: number;
       blogName: string;
+      likesCount: string;
+      dislikesCount: string;
+      likeStatus: string;
+      dislikeStatus: string;
     }
   ): OutputBloggerCommentsDto {
+    const myStatus = +comment.likeStatus
+      ? LikeStatus.Like
+      : +comment.dislikeStatus
+      ? LikeStatus.DisLike
+      : LikeStatus.None;
+
     return {
       id: comment.id.toString(),
       content: comment.content,
@@ -97,9 +106,9 @@ export class SqlBloggerCommentsQueryRepository {
         userLogin: comment.login
       },
       likesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: LikeStatus.None
+        likesCount: +comment.likesCount,
+        dislikesCount: +comment.dislikesCount,
+        myStatus: myStatus
       },
       postInfo: {
         id: comment.postId.toString(),
@@ -108,5 +117,12 @@ export class SqlBloggerCommentsQueryRepository {
         blogName: comment.blogName
       }
     };
+  }
+  getUserStatus(user: CurrentUserType): string {
+    if (user) {
+      return `, COUNT(CASE WHEN cl."userId" = ${user.userId} AND cl."myStatus" = 'Like' THEN 1 ELSE NULL END )AS "likeStatus",
+              COUNT(CASE WHEN cl."userId" = ${user.userId} AND cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END )AS "dislikeStatus"`;
+    }
+    return ``;
   }
 }
