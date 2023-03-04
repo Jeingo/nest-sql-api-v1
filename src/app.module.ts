@@ -112,6 +112,7 @@ import { BlogsUsersBanRepository } from './blogger/users/infrastructure/blogs.us
 import { SqlCommentsRepository } from './comments/infrastructure/sql.comments.repository';
 import { SqlCommentsQueryRepository } from './comments/infrastructure/sql.comments.query.repository';
 import { SqlBloggerCommentsQueryRepository } from './blogger/blogs/infrastructure/sql.blogger.comments.query.repository';
+import { SqlCommentLikesRepository } from './comment-likes/infrastructure/sql.comment.likes.repository';
 
 const useCases = [
   RegistrationUserUseCase,
@@ -178,7 +179,8 @@ const sql = [
   SqlPostsRepository,
   SqlCommentsRepository,
   SqlCommentsQueryRepository,
-  SqlBloggerCommentsQueryRepository
+  SqlBloggerCommentsQueryRepository,
+  SqlCommentLikesRepository
 ];
 
 const queryRepositories = [

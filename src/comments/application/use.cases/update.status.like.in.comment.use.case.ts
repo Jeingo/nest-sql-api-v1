@@ -1,17 +1,17 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import {
   CurrentUserType,
-  DbId,
-  LikeStatus
+  LikeStatus,
+  SqlDbId
 } from '../../../global-types/global.types';
-import { CommentsRepository } from '../../infrastructure/comments.repository';
-import { CommentLikesRepository } from '../../../comment-likes/infrastructure/comment.likes.repository';
-import { CommentsAndLikesRepository } from '../../infrastructure/comments.and.likes.repository';
+import { SqlCommentsRepository } from '../../infrastructure/sql.comments.repository';
+import { NotFoundException } from '@nestjs/common';
+import { SqlCommentLikesRepository } from '../../../comment-likes/infrastructure/sql.comment.likes.repository';
 
 export class UpdateLikeStatusInCommentCommand {
   constructor(
     public user: CurrentUserType,
-    public commentId: DbId,
+    public commentId: SqlDbId,
     public newLikeStatus: LikeStatus
   ) {}
 }
@@ -19,9 +19,8 @@ export class UpdateLikeStatusInCommentCommand {
 @CommandHandler(UpdateLikeStatusInCommentCommand)
 export class UpdateLikeStatusInCommentUseCase {
   constructor(
-    private readonly commentRepository: CommentsRepository,
-    private readonly commentLikesRepository: CommentLikesRepository,
-    private readonly commentsAndLikesRepository: CommentsAndLikesRepository
+    private readonly sqlCommentRepository: SqlCommentsRepository,
+    private readonly sqlCommentLikesRepository: SqlCommentLikesRepository
   ) {}
 
   async execute(command: UpdateLikeStatusInCommentCommand): Promise<boolean> {
@@ -29,23 +28,13 @@ export class UpdateLikeStatusInCommentUseCase {
     const commentId = command.commentId;
     const newLikeStatus = command.newLikeStatus;
 
-    const commentForLikeUpdate = await this.commentsAndLikesRepository.get(
+    const comment = await this.sqlCommentRepository.getById(commentId);
+    if (!comment) throw new NotFoundException();
+    await this.sqlCommentLikesRepository.updateLike(
       commentId,
-      user.userId
-    );
-
-    commentForLikeUpdate.commentDocument.updateLikeNew(
-      user,
-      newLikeStatus,
-      commentForLikeUpdate.commentLikeDocument
-    );
-
-    await this.commentsAndLikesRepository.save(
-      commentForLikeUpdate,
-      user,
+      user.userId,
       newLikeStatus
     );
-
     return true;
   }
 }

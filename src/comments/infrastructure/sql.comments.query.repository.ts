@@ -8,11 +8,7 @@ import {
 } from '../../global-types/global.types';
 import { OutputCommentDto } from '../api/dto/output.comment.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  Comment,
-  CommentDocument,
-  ICommentModel
-} from '../domain/entities/comment.entity';
+import { Comment, ICommentModel } from '../domain/entities/comment.entity';
 import { QueryComments } from '../api/types/query.comments.type';
 import { getPaginatedType } from '../../helper/query/query.repository.helper';
 import { IPostModel, Post } from '../../posts/domain/entities/post.entity';
@@ -52,20 +48,48 @@ export class SqlCommentsQueryRepository {
 
     const skipNumber = (+pageNumber - 1) * +pageSize;
 
-    const queryString = `SELECT c.* , u.login FROM "Comments" c
-                         LEFT JOIN "Users" u ON c."userId"=u.id
-                         WHERE
-                         "postId"=${postId}
-                         AND
-                         u."isBanned"=false
-                         ORDER BY "${sortBy}" ${sortDirection}
-                         LIMIT ${pageSize}
-                         OFFSET ${skipNumber}`;
+    let queryString;
+
+    if (!user) {
+      queryString = `SELECT
+      c.id, c.content, c."createdAt", c."userId", u.login,
+      COUNT(CASE WHEN cl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
+      COUNT(CASE WHEN cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount"
+      FROM
+      "Comments" c
+      LEFT JOIN "CommentLikes" cl ON c.id = cl."commentId"
+      LEFT JOIN "Users" u ON c."userId"=u.id
+      WHERE c."postId"=${postId}
+      AND u."isBanned"=false
+      GROUP BY
+      c.id, c.content, c."createdAt", c."userId", u.login
+      ORDER BY c."${sortBy}" ${sortDirection}
+      LIMIT ${pageSize}
+      OFFSET ${skipNumber};`;
+    } else {
+      queryString = `SELECT
+      c.id, c.content, c."createdAt", c."userId", u.login,
+      COUNT(CASE WHEN cl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
+      COUNT(CASE WHEN cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount",
+      COUNT(CASE WHEN cl."userId" = ${user.userId} AND cl."myStatus" = 'Like' THEN 1 ELSE NULL END )AS "likeStatus",
+      COUNT(CASE WHEN cl."userId" = ${user.userId} AND cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END )AS "dislikeStatus"
+      FROM
+      "Comments" c
+      LEFT JOIN "CommentLikes" cl ON c.id = cl."commentId"
+      LEFT JOIN "Users" u ON c."userId"=u.id
+      WHERE c."postId"=${postId}
+      AND u."isBanned"=false
+      GROUP BY
+      c.id, c.content, c."createdAt", c."userId", u.login
+      ORDER BY c."${sortBy}" ${sortDirection}
+      LIMIT ${pageSize}
+      OFFSET ${skipNumber};`;
+    }
 
     const queryStringForLength = `SELECT COUNT(c.*) FROM "Comments" c
                          LEFT JOIN "Users" u ON c."userId"=u.id
                          WHERE
-                         "postId"=${postId}
+                         c."postId"=${postId}
                          AND
                          u."isBanned"=false`;
 
@@ -78,65 +102,64 @@ export class SqlCommentsQueryRepository {
       +pageNumber,
       +resultCount[0].count
     );
-    //todo after like
-    //
-    // const mappedCommentsWithStatusLike = await this._setStatusLike(
-    //   mappedComments,
-    //   user?.userId
-    // );
-
-    // const finalFilter = {
-    //   ...bannedFilter('commentatorInfo.isBanned'),
-    //   postId: postId.toString()
-    // };
-    // const countAllDocuments = await this.commentsModel.countDocuments(
-    //   finalFilter
-    // );
-    // const result = await this.commentsModel
-    //   .find(finalFilter)
-    //   .sort({ [sortBy]: sortDirectionNumber })
-    //   .skip(skipNumber)
-    //   .limit(+pageSize);
-    // const mappedComments = result.map(this._getOutputComment);
-    // const mappedCommentsWithStatusLike = await this._setStatusLike(
-    //   mappedComments,
-    //   user?.userId
-    // );
-    // return getPaginatedType(
-    //   mappedCommentsWithStatusLike,
-    //   +pageSize,
-    //   +pageNumber,
-    //   countAllDocuments
-    // );
   }
   async getById(
     id: SqlDbId,
     user?: CurrentUserType
   ): Promise<OutputCommentDto> {
-    const result = await this.dataSource.query(
-      `SELECT c.*, u."isBanned" AS "ownerIsBanned", u.login FROM "Comments" c LEFT JOIN "Users" u ON c."userId"=u.id WHERE c.id=${id}`
-    );
+    let queryString;
+
+    if (!user) {
+      queryString = `SELECT
+      c.id, c.content, c."createdAt", c."userId", u.login,
+      COUNT(CASE WHEN cl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
+      COUNT(CASE WHEN cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount"
+      FROM
+      "Comments" c
+      LEFT JOIN "CommentLikes" cl ON c.id = cl."commentId"
+      LEFT JOIN "Users" u ON c."userId"=u.id
+      WHERE c.id=${id}
+      AND u."isBanned"=false
+      GROUP BY
+      c.id, c.content, c."createdAt", c."userId", u.login;`;
+    } else {
+      queryString = `SELECT
+      c.id, c.content, c."createdAt", c."userId", u.login,
+      COUNT(CASE WHEN cl."myStatus" = 'Like' THEN 1 ELSE NULL END) AS "likesCount",
+      COUNT(CASE WHEN cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END) AS "dislikesCount",
+      COUNT(CASE WHEN cl."userId" = ${user.userId} AND cl."myStatus" = 'Like' THEN 1 ELSE NULL END )AS "likeStatus",
+      COUNT(CASE WHEN cl."userId" = ${user.userId} AND cl."myStatus" = 'Dislike' THEN 1 ELSE NULL END )AS "dislikeStatus"
+      FROM
+      "Comments" c
+      LEFT JOIN "CommentLikes" cl ON c.id = cl."commentId"
+      LEFT JOIN "Users" u ON c."userId"=u.id
+      WHERE c.id=${id}
+      AND u."isBanned"=false
+      GROUP BY
+      c.id, c.content, c."createdAt", c."userId", u.login;`;
+    }
+
+    const result = await this.dataSource.query(queryString);
+
     if (!result[0]) throw new NotFoundException();
-    if (result[0].ownerIsBanned) throw new NotFoundException();
+
     const mappedResult = this.sqlGetOutputComment(result[0]);
     return mappedResult;
-
-    //todo after like
-    //
-    // if (user?.userId && mappedResult) {
-    //   const like = await this.commentLikesModel.findOne({
-    //     userId: user.userId,
-    //     commentId: mappedResult.id,
-    //     isBanned: false
-    //   });
-    //   if (like) {
-    //     mappedResult.likesInfo.myStatus = like.myStatus;
-    //   }
-    // }
   }
   private sqlGetOutputComment(
-    comment: CommentsSqlType & { login: string }
+    comment: CommentsSqlType & {
+      login: string;
+      likesCount: number;
+      dislikesCount: number;
+      likeStatus: number;
+      dislikeStatus: number;
+    }
   ): OutputCommentDto {
+    const myStatus = comment.likeStatus
+      ? LikeStatus.Like
+      : comment.dislikeStatus
+      ? LikeStatus.DisLike
+      : LikeStatus.None;
     return {
       id: comment.id.toString(),
       content: comment.content,
@@ -146,42 +169,10 @@ export class SqlCommentsQueryRepository {
       },
       createdAt: comment.createdAt.toISOString(),
       likesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: LikeStatus.None
+        likesCount: comment.likesCount,
+        dislikesCount: comment.dislikesCount,
+        myStatus: myStatus
       }
     };
-  }
-  private _getOutputComment(comment: CommentDocument): OutputCommentDto {
-    return {
-      id: comment._id.toString(),
-      content: comment.content,
-      commentatorInfo: {
-        userId: comment.commentatorInfo.userId,
-        userLogin: comment.commentatorInfo.userLogin
-      },
-      createdAt: comment.createdAt,
-      likesInfo: {
-        likesCount: comment.likesInfo.likesCount,
-        dislikesCount: comment.likesInfo.dislikesCount,
-        myStatus: LikeStatus.None
-      }
-    };
-  }
-  private async _setStatusLike(
-    comments: Array<OutputCommentDto>,
-    userId: string
-  ) {
-    if (!userId) return comments;
-    for (let i = 0; i < comments.length; i++) {
-      const like = await this.commentLikesModel.findOne({
-        userId: userId,
-        commentId: comments[i].id
-      });
-      if (like) {
-        comments[i].likesInfo.myStatus = like.myStatus;
-      }
-    }
-    return comments;
   }
 }

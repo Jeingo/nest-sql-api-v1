@@ -14,16 +14,9 @@ import { OutputCommentDto } from './dto/output.comment.dto';
 import { GetUserGuard } from '../../auth/infrastructure/guards/get.user.guard';
 import { InputCreateCommentDto } from './dto/input.create.comment.dto';
 import { InputUpdateLikeDto } from './dto/input.update.like.dto';
-import {
-  CheckId,
-  CheckIdAndParseToDBId
-} from '../../helper/pipes/check.id.validator.pipe';
+import { CheckId } from '../../helper/pipes/check.id.validator.pipe';
 import { CurrentUser } from '../../helper/get-decorators/current.user.decorator';
-import {
-  CurrentUserType,
-  DbId,
-  SqlDbId
-} from '../../global-types/global.types';
+import { CurrentUserType, SqlDbId } from '../../global-types/global.types';
 import { JwtAuthGuard } from '../../auth/infrastructure/guards/jwt.auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateCommentCommand } from '../application/use.cases/update.comment.use.case';
@@ -67,7 +60,7 @@ export class CommentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put(':commentId/like-status')
   async updateStatusLike(
-    @Param('commentId', new CheckIdAndParseToDBId()) commentId: DbId,
+    @Param('commentId', new CheckId()) commentId: SqlDbId,
     @Body() updateLikeDto: InputUpdateLikeDto,
     @CurrentUser() user: CurrentUserType
   ) {
