@@ -149,8 +149,8 @@ export class SqlCommentsQueryRepository {
   private sqlGetOutputComment(
     comment: CommentsSqlType & {
       login: string;
-      likesCount: number;
-      dislikesCount: number;
+      likesCount: string;
+      dislikesCount: string;
       likeStatus: number;
       dislikeStatus: number;
     }
@@ -169,8 +169,8 @@ export class SqlCommentsQueryRepository {
       },
       createdAt: comment.createdAt.toISOString(),
       likesInfo: {
-        likesCount: comment.likesCount,
-        dislikesCount: comment.dislikesCount,
+        likesCount: +comment.likesCount,
+        dislikesCount: +comment.dislikesCount,
         myStatus: myStatus
       }
     };
