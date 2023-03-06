@@ -12,7 +12,7 @@ import { DataSource } from 'typeorm';
 import { BlogsSqlType } from '../../type-for-sql-entity/blogs.sql.type';
 
 @Injectable()
-export class SqlBlogsQueryRepository {
+export class BlogsQueryRepository {
   constructor(@InjectDataSource() protected readonly dataSource: DataSource) {}
 
   async getAll(query: QueryBlogs): Promise<PaginatedType<OutputBlogDto>> {

@@ -5,14 +5,14 @@ import {
   ValidatorConstraintInterface
 } from 'class-validator';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { SqlUsersRepository } from '../../users/infrastructure/sql.users.repository';
+import { UsersRepository } from '../../users/infrastructure/users-repository.service';
 
 @ValidatorConstraint({ async: true })
 @Injectable()
 export class EmailConfirmationCodeIsCorrectConstraint
   implements ValidatorConstraintInterface
 {
-  constructor(private readonly sqlUsersRepository: SqlUsersRepository) {}
+  constructor(private readonly sqlUsersRepository: UsersRepository) {}
 
   async validate(confirmationCode: string) {
     const user = await this.sqlUsersRepository.getByUUIDCode(confirmationCode);

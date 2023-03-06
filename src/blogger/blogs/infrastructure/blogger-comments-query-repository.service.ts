@@ -13,7 +13,7 @@ import { DataSource } from 'typeorm';
 import { CommentsSqlType } from '../../../type-for-sql-entity/comments.sql.type';
 
 @Injectable()
-export class SqlBloggerCommentsQueryRepository {
+export class BloggerCommentsQueryRepository {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async getAllForBlogger(

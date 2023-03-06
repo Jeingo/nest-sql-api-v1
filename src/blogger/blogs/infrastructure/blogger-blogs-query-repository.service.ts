@@ -7,10 +7,10 @@ import {
 } from '../../../global-types/global.types';
 import { getPaginatedType } from '../../../helper/query/query.repository.helper';
 import { OutputBlogDto } from '../../../blogs/api/dto/output.blog.dto';
-import { SqlBlogsQueryRepository } from '../../../blogs/infrastructure/sql.blogs.query.repository';
+import { BlogsQueryRepository } from '../../../blogs/infrastructure/blogs-query-repository.service';
 
 @Injectable()
-export class SqlBloggerBlogsQueryRepository extends SqlBlogsQueryRepository {
+export class BloggerBlogsQueryRepository extends BlogsQueryRepository {
   async getAllForBlogger(
     query: QueryBlogs,
     user: CurrentUserType

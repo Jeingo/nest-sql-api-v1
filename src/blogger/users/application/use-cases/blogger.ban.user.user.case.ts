@@ -5,8 +5,8 @@ import {
 } from '../../../../global-types/global.types';
 import { InputBloggerUserBanDto } from '../../api/dto/input.blogger.user.ban.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { SqlUsersRepository } from '../../../../users/infrastructure/sql.users.repository';
-import { SqlBlogsRepository } from '../../../../blogs/infrastructure/sql.blogs.repository';
+import { UsersRepository } from '../../../../users/infrastructure/users-repository.service';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
 import { BlogsUsersBanRepository } from '../../infrastructure/blogs.users.ban.repository';
 
 export class BloggerBanUserCommand {
@@ -20,8 +20,8 @@ export class BloggerBanUserCommand {
 @CommandHandler(BloggerBanUserCommand)
 export class BloggerBanUserUseCase {
   constructor(
-    private readonly sqlUsersRepository: SqlUsersRepository,
-    private readonly sqlBlogsRepository: SqlBlogsRepository,
+    private readonly sqlUsersRepository: UsersRepository,
+    private readonly sqlBlogsRepository: BlogsRepository,
     private readonly blogsUsersBanRepository: BlogsUsersBanRepository
   ) {}
 

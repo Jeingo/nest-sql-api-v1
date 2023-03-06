@@ -6,7 +6,7 @@ import { UsersSqlType } from '../../type-for-sql-entity/users.sql.type';
 import { SqlDbId } from '../../global-types/global.types';
 
 @Injectable()
-export class SqlUsersRepository {
+export class UsersRepository {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async create(

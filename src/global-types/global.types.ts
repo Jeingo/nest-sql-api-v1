@@ -1,7 +1,3 @@
-import { Types } from 'mongoose';
-
-export type DbId = Types.ObjectId;
-
 export type SqlDbId = string;
 
 export enum Direction {
@@ -30,5 +26,4 @@ export class PaginatedType<T> {
 
 export type CurrentUserType = {
   userId: string;
-  login: string;
 };

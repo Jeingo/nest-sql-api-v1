@@ -2,9 +2,9 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { CurrentUserType, SqlDbId } from '../../../global-types/global.types';
 import { InputCreateCommentDto } from '../../api/dto/input.create.comment.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { SqlPostsRepository } from '../../../posts/infrastructure/sql.posts.repository';
-import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
-import { SqlCommentsRepository } from '../../infrastructure/sql.comments.repository';
+import { PostsRepository } from '../../../posts/infrastructure/posts-repository.service';
+import { UsersRepository } from '../../../users/infrastructure/users-repository.service';
+import { CommentsRepository } from '../../infrastructure/comments-repository.service';
 import { BlogsUsersBanRepository } from '../../../blogger/users/infrastructure/blogs.users.ban.repository';
 
 export class CreateCommentCommand {
@@ -18,9 +18,9 @@ export class CreateCommentCommand {
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentUseCase {
   constructor(
-    private readonly sqlCommentRepository: SqlCommentsRepository,
-    private readonly sqlPostsRepository: SqlPostsRepository,
-    private readonly sqlUsersRepository: SqlUsersRepository,
+    private readonly sqlCommentRepository: CommentsRepository,
+    private readonly sqlPostsRepository: PostsRepository,
+    private readonly sqlUsersRepository: UsersRepository,
     private readonly blogsUsersBanRepository: BlogsUsersBanRepository
   ) {}
 

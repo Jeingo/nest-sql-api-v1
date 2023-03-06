@@ -8,7 +8,7 @@ import { DataSource } from 'typeorm';
 import { BlogsSqlType } from '../../../type-for-sql-entity/blogs.sql.type';
 
 @Injectable()
-export class SqlSuperAdminBlogsQueryRepository {
+export class SuperAdminBlogsQueryRepository {
   constructor(@InjectDataSource() protected readonly dataSource: DataSource) {}
 
   async getAll(

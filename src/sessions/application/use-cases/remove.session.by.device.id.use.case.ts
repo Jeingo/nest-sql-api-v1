@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { SqlSessionsRepository } from '../../infrastructure/sql.sessions.repository';
+import { SessionsRepository } from '../../infrastructure/sessions-repository.service';
 import { validate } from 'uuid';
 
 export class RemoveSessionByDeviceIdCommand {
@@ -9,7 +9,7 @@ export class RemoveSessionByDeviceIdCommand {
 
 @CommandHandler(RemoveSessionByDeviceIdCommand)
 export class RemoveSessionByDeviceIdUseCase {
-  constructor(private readonly sqlSessionsRepository: SqlSessionsRepository) {}
+  constructor(private readonly sqlSessionsRepository: SessionsRepository) {}
 
   async execute(command: RemoveSessionByDeviceIdCommand): Promise<boolean> {
     const sessionId = command.id;

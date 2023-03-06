@@ -5,8 +5,8 @@ import {
 } from '../../../../global-types/global.types';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { InputUpdatePostDto } from '../../api/dto/input.update.post.dto';
-import { SqlPostsRepository } from '../../../../posts/infrastructure/sql.posts.repository';
-import { SqlBlogsRepository } from '../../../../blogs/infrastructure/sql.blogs.repository';
+import { PostsRepository } from '../../../../posts/infrastructure/posts-repository.service';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
 
 export class UpdatePostCommand {
   constructor(
@@ -20,8 +20,8 @@ export class UpdatePostCommand {
 @CommandHandler(UpdatePostCommand)
 export class UpdatePostUseCase {
   constructor(
-    private readonly sqlPostsRepository: SqlPostsRepository,
-    private readonly sqlBlogRepository: SqlBlogsRepository
+    private readonly sqlPostsRepository: PostsRepository,
+    private readonly sqlBlogRepository: BlogsRepository
   ) {}
 
   async execute(command: UpdatePostCommand): Promise<boolean> {

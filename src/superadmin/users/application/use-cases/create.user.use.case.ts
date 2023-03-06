@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { InputCreateUserDto } from '../../api/dto/input.create.user.dto';
-import { SqlUsersRepository } from '../../../../users/infrastructure/sql.users.repository';
+import { UsersRepository } from '../../../../users/infrastructure/users-repository.service';
 import { SqlDbId } from '../../../../global-types/global.types';
 
 export class CreateUserCommand {
@@ -9,7 +9,7 @@ export class CreateUserCommand {
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserUseCase {
-  constructor(private readonly sqlUsersRepository: SqlUsersRepository) {}
+  constructor(private readonly sqlUsersRepository: UsersRepository) {}
 
   async execute(command: CreateUserCommand): Promise<SqlDbId> {
     const { login, password, email } = command.createUserDto;

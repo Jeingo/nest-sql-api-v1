@@ -14,7 +14,7 @@ import { DataSource } from 'typeorm';
 import { CommentsSqlType } from '../../type-for-sql-entity/comments.sql.type';
 
 @Injectable()
-export class SqlCommentsQueryRepository {
+export class CommentsQueryRepository {
   constructor(@InjectDataSource() protected readonly dataSource: DataSource) {}
 
   async getAllByPostId(

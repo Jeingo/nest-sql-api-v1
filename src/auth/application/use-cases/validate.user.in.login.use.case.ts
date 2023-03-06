@@ -2,7 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { InputLoginUserDto } from '../../api/dto/input.login.user.dto';
 import bcrypt from 'bcrypt';
 import { UnauthorizedException } from '@nestjs/common';
-import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
+import { UsersRepository } from '../../../users/infrastructure/users-repository.service';
 
 export class ValidateUserInLoginCommand {
   constructor(public loginUserDto: InputLoginUserDto) {}
@@ -10,7 +10,7 @@ export class ValidateUserInLoginCommand {
 
 @CommandHandler(ValidateUserInLoginCommand)
 export class ValidateUserInLoginUseCase {
-  constructor(private readonly sqlUsersRepository: SqlUsersRepository) {}
+  constructor(private readonly sqlUsersRepository: UsersRepository) {}
 
   async execute(command: ValidateUserInLoginCommand): Promise<string> {
     const { loginOrEmail, password } = command.loginUserDto;

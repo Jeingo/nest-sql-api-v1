@@ -9,13 +9,13 @@ import {
   Token
 } from '../../../adapters/jwt/types/jwt.type';
 import { JwtAdapter } from '../../../adapters/jwt/jwt.service';
-import { SqlSessionsRepository } from '../../../sessions/infrastructure/sql.sessions.repository';
+import { SessionsRepository } from '../../../sessions/infrastructure/sessions-repository.service';
 
 @Injectable()
 export class CookieGuard implements CanActivate {
   constructor(
     private readonly jwtAdapter: JwtAdapter,
-    private readonly sqlSessionsRepository: SqlSessionsRepository
+    private readonly sqlSessionsRepository: SessionsRepository
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

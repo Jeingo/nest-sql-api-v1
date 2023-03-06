@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { InputConfirmationCodeDto } from '../../api/dto/input.confirmation.code.dto';
-import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
+import { UsersRepository } from '../../../users/infrastructure/users-repository.service';
 
 export class ConfirmEmailCommand {
   constructor(public confirmationCodeDto: InputConfirmationCodeDto) {}
@@ -8,7 +8,7 @@ export class ConfirmEmailCommand {
 
 @CommandHandler(ConfirmEmailCommand)
 export class ConfirmEmailUseCase {
-  constructor(private readonly sqlUsersRepository: SqlUsersRepository) {}
+  constructor(private readonly sqlUsersRepository: UsersRepository) {}
 
   async execute(command: ConfirmEmailCommand): Promise<boolean> {
     const code = command.confirmationCodeDto.code;

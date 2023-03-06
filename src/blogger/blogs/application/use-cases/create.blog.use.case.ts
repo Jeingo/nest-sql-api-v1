@@ -4,7 +4,7 @@ import {
   CurrentUserType,
   SqlDbId
 } from '../../../../global-types/global.types';
-import { SqlBlogsRepository } from '../../../../blogs/infrastructure/sql.blogs.repository';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
 
 export class CreateBlogCommand {
   constructor(
@@ -15,7 +15,7 @@ export class CreateBlogCommand {
 
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogUseCase {
-  constructor(private readonly sqlBlogsRepository: SqlBlogsRepository) {}
+  constructor(private readonly sqlBlogsRepository: BlogsRepository) {}
 
   async execute(command: CreateBlogCommand): Promise<SqlDbId> {
     const { name, description, websiteUrl } = command.createBlogDto;

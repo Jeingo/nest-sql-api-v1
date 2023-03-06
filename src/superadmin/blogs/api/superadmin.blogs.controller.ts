@@ -11,7 +11,7 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { SqlSuperAdminBlogsQueryRepository } from '../infrastructure/superadmin.blogs.query.repository';
+import { SuperAdminBlogsQueryRepository } from '../infrastructure/superadmin.blogs.query.repository';
 import { QueryBlogs } from '../../../blogs/api/types/query.blogs.type';
 import { OutputSuperAdminBlogDto } from './dto/output.superadmin.blog.dto';
 import { BasicAuthGuard } from '../../../auth/infrastructure/guards/basic.auth.guard';
@@ -26,7 +26,7 @@ import { BanBlogCommand } from '../application/use-cases/ban.blog.use.case';
 export class SuperAdminBlogsController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly superAdminBlogsQueryRepository: SqlSuperAdminBlogsQueryRepository
+    private readonly superAdminBlogsQueryRepository: SuperAdminBlogsQueryRepository
   ) {}
 
   @HttpCode(HttpStatus.OK)

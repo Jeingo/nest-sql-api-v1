@@ -1,13 +1,9 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtAdapter } from '../../../adapters/jwt/jwt.service';
-import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
 
 @Injectable()
 export class GetUserGuard implements CanActivate {
-  constructor(
-    private readonly jwtAdapter: JwtAdapter,
-    private readonly sqlUsersRepository: SqlUsersRepository
-  ) {}
+  constructor(private readonly jwtAdapter: JwtAdapter) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -20,15 +16,13 @@ export class GetUserGuard implements CanActivate {
     if (authorizationField[0] !== 'Bearer') {
       return true;
     }
-
+    if (!this.jwtAdapter.checkExpirationAccessToken(authorizationField[1])) {
+      return true;
+    }
     const payload = this.jwtAdapter.getAccessTokenPayload(
       authorizationField[1]
     );
-    if (!payload) {
-      return true;
-    }
-    const user = await this.sqlUsersRepository.getById(payload.userId);
-    request.user = { userId: user?.id.toString(), login: user?.login };
+    request.user = { userId: payload.userId };
     return true;
   }
 }

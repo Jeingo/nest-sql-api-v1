@@ -40,14 +40,14 @@ import { CreateSessionCommand } from '../../sessions/application/use-cases/creat
 import { UpdateSessionCommand } from '../../sessions/application/use-cases/update.session.use.case';
 import { RemoveSessionCommand } from '../../sessions/application/use-cases/remove.session.use.case';
 import { CurrentUserType } from '../../global-types/global.types';
-import { SqlUsersQueryRepository } from '../infrastructure/sql.users.query.respository';
+import { UsersQueryRepository } from '../infrastructure/users.query.respository';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly jwtAdapter: JwtAdapter,
     private readonly configService: ConfigService<IConfigType>,
-    private readonly sqlUsersQueryRepository: SqlUsersQueryRepository,
+    private readonly sqlUsersQueryRepository: UsersQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 

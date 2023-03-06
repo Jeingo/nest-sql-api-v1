@@ -4,7 +4,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
-export class SqlUsersQueryRepository {
+export class UsersQueryRepository {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async getMeById(id: string): Promise<OutputUserMeDto> {

@@ -21,14 +21,14 @@ import { PaginatedType } from '../../../global-types/global.types';
 import { RemoveUserCommand } from '../application/use-cases/remove.user.use.case';
 import { InputBanUserDto } from './dto/input.ban.user.dto';
 import { BanUserCommand } from '../application/use-cases/ban.user.use.case';
-import { SqlSuperAdminUsersQueryRepository } from '../infrastructure/sql.superadmin.users.query.repository';
+import { SuperAdminUsersQueryRepository } from '../infrastructure/super-admin-users-query-repository.service';
 import { CheckId } from '../../../helper/pipes/check.id.validator.pipe';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
 export class SuperAdminUsersController {
   constructor(
-    private readonly sqlSuperAdminUsersQueryRepository: SqlSuperAdminUsersQueryRepository,
+    private readonly sqlSuperAdminUsersQueryRepository: SuperAdminUsersQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 

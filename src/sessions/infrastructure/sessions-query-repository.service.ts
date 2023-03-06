@@ -5,7 +5,7 @@ import { DataSource } from 'typeorm';
 import { SessionSqlType } from '../../type-for-sql-entity/session.sql.type';
 
 @Injectable()
-export class SqlSessionsQueryRepository {
+export class SessionsQueryRepository {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
   async findAllActiveSession(
     userId: string

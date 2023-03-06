@@ -2,7 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { SqlDbId } from '../../../../global-types/global.types';
 import { InputBanBlogDto } from '../../api/dto/input.ban.blog.dto';
 import { NotFoundException } from '@nestjs/common';
-import { SqlBlogsRepository } from '../../../../blogs/infrastructure/sql.blogs.repository';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
 
 export class BanBlogCommand {
   constructor(public blogId: SqlDbId, public banBlogDto: InputBanBlogDto) {}
@@ -10,7 +10,7 @@ export class BanBlogCommand {
 
 @CommandHandler(BanBlogCommand)
 export class BanBlogUseCase {
-  constructor(private readonly sqlBlogsRepository: SqlBlogsRepository) {}
+  constructor(private readonly sqlBlogsRepository: BlogsRepository) {}
 
   async execute(command: BanBlogCommand): Promise<boolean> {
     const blogId = command.blogId;

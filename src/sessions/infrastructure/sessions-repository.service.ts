@@ -5,7 +5,7 @@ import { SqlDbId } from '../../global-types/global.types';
 import { SessionSqlType } from '../../type-for-sql-entity/session.sql.type';
 
 @Injectable()
-export class SqlSessionsRepository {
+export class SessionsRepository {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
   async create(
     issueAt: number,

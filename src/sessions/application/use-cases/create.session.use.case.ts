@@ -2,7 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { ConfigService } from '@nestjs/config';
 import { IConfigType } from '../../../configuration/configuration';
 import { JwtService } from '@nestjs/jwt';
-import { SqlSessionsRepository } from '../../infrastructure/sql.sessions.repository';
+import { SessionsRepository } from '../../infrastructure/sessions-repository.service';
 
 export class CreateSessionCommand {
   constructor(
@@ -17,7 +17,7 @@ export class CreateSessionUseCase {
   constructor(
     private readonly configService: ConfigService<IConfigType>,
     private readonly jwtService: JwtService,
-    private readonly sqlSessionsRepository: SqlSessionsRepository
+    private readonly sqlSessionsRepository: SessionsRepository
   ) {}
 
   async execute(command: CreateSessionCommand): Promise<string> {

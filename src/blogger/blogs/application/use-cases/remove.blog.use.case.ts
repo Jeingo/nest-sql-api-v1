@@ -4,7 +4,7 @@ import {
   SqlDbId
 } from '../../../../global-types/global.types';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { SqlBlogsRepository } from '../../../../blogs/infrastructure/sql.blogs.repository';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
 
 export class RemoveBlogCommand {
   constructor(public id: SqlDbId, public user: CurrentUserType) {}
@@ -12,7 +12,7 @@ export class RemoveBlogCommand {
 
 @CommandHandler(RemoveBlogCommand)
 export class RemoveBlogUseCase {
-  constructor(private readonly sqlBlogRepository: SqlBlogsRepository) {}
+  constructor(private readonly sqlBlogRepository: BlogsRepository) {}
 
   async execute(command: RemoveBlogCommand): Promise<boolean> {
     const { userId } = command.user;

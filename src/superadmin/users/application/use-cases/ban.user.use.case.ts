@@ -1,8 +1,8 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { InputBanUserDto } from '../../api/dto/input.ban.user.dto';
 import { NotFoundException } from '@nestjs/common';
-import { SqlUsersRepository } from '../../../../users/infrastructure/sql.users.repository';
-import { SqlSessionsRepository } from '../../../../sessions/infrastructure/sql.sessions.repository';
+import { UsersRepository } from '../../../../users/infrastructure/users-repository.service';
+import { SessionsRepository } from '../../../../sessions/infrastructure/sessions-repository.service';
 
 export class BanUserCommand {
   constructor(public banUserDto: InputBanUserDto, public id: string) {}
@@ -11,8 +11,8 @@ export class BanUserCommand {
 @CommandHandler(BanUserCommand)
 export class BanUserUseCase {
   constructor(
-    private readonly sqlUsersRepository: SqlUsersRepository,
-    private readonly sqlSessionRepository: SqlSessionsRepository
+    private readonly sqlUsersRepository: UsersRepository,
+    private readonly sqlSessionRepository: SessionsRepository
   ) {}
 
   async execute(command: BanUserCommand): Promise<boolean> {

@@ -13,10 +13,7 @@ import { PostsController } from './posts/api/posts.controller';
 import { SecurityDevicesController } from './sessions/api/security.devices.controller';
 import { TestingController } from './testing/api/testing.controller';
 import { TestingService } from './testing/application/testing.service';
-import {
-  CheckId,
-  CheckIdAndParseToDBId
-} from './helper/pipes/check.id.validator.pipe';
+import { CheckId } from './helper/pipes/check.id.validator.pipe';
 import { EmailNotExistConstraint } from './helper/validation-decorators/email.not.exist.decorator';
 import { LoginExistConstraint } from './helper/validation-decorators/login.exist.decorator';
 import { EmailConfirmationCodeIsCorrectConstraint } from './helper/validation-decorators/email.confirmation.code.is.correct.decorator';
@@ -53,31 +50,31 @@ import { RemoveSessionByDeviceIdUseCase } from './sessions/application/use-cases
 import { BloggerBlogsController } from './blogger/blogs/api/blogger.blogs.controller';
 import { SuperAdminBlogsController } from './superadmin/blogs/api/superadmin.blogs.controller';
 import { SuperAdminUsersController } from './superadmin/users/api/superadmin.users.controller';
-import { SqlSuperAdminBlogsQueryRepository } from './superadmin/blogs/infrastructure/superadmin.blogs.query.repository';
+import { SuperAdminBlogsQueryRepository } from './superadmin/blogs/infrastructure/superadmin.blogs.query.repository';
 import { BindWithUserUseCase } from './superadmin/blogs/application/use-cases/bind.with.user.use.case';
 import { BanUserUseCase } from './superadmin/users/application/use-cases/ban.user.use.case';
 import { BloggerUsersController } from './blogger/users/api/blogger.users.controller';
-import { SqlBloggerUsersQueryRepository } from './blogger/users/infrastructure/blogger.users.query.repository';
+import { BloggerUsersQueryRepository } from './blogger/users/infrastructure/blogger.users.query.repository';
 import { BloggerBanUserUseCase } from './blogger/users/application/use-cases/blogger.ban.user.user.case';
 import { BanBlogUseCase } from './superadmin/blogs/application/use-cases/ban.blog.use.case';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SqlUsersRepository } from './users/infrastructure/sql.users.repository';
-import { SqlSuperAdminUsersQueryRepository } from './superadmin/users/infrastructure/sql.superadmin.users.query.repository';
-import { SqlUsersQueryRepository } from './auth/infrastructure/sql.users.query.respository';
-import { SqlSessionsRepository } from './sessions/infrastructure/sql.sessions.repository';
-import { SqlSessionsQueryRepository } from './sessions/infrastructure/sql.sessions.query.repository';
-import { SqlBlogsRepository } from './blogs/infrastructure/sql.blogs.repository';
-import { SqlBloggerBlogsQueryRepository } from './blogger/blogs/infrastructure/sql.blogger.blogs.query.repository';
-import { SqlBlogsQueryRepository } from './blogs/infrastructure/sql.blogs.query.repository';
-import { SqlBloggerPostsQueryRepository } from './blogger/blogs/infrastructure/sql.blogger.posts.query.repository';
-import { SqlPostsQueryRepository } from './posts/infrastructure/sql.posts.query.repository';
-import { SqlPostsRepository } from './posts/infrastructure/sql.posts.repository';
+import { UsersRepository } from './users/infrastructure/users-repository.service';
+import { SuperAdminUsersQueryRepository } from './superadmin/users/infrastructure/super-admin-users-query-repository.service';
+import { UsersQueryRepository } from './auth/infrastructure/users.query.respository';
+import { SessionsRepository } from './sessions/infrastructure/sessions-repository.service';
+import { SessionsQueryRepository } from './sessions/infrastructure/sessions-query-repository.service';
+import { BlogsRepository } from './blogs/infrastructure/blogs-repository.service';
+import { BloggerBlogsQueryRepository } from './blogger/blogs/infrastructure/blogger-blogs-query-repository.service';
+import { BlogsQueryRepository } from './blogs/infrastructure/blogs-query-repository.service';
+import { BloggerPostsQueryRepository } from './blogger/blogs/infrastructure/blogger-posts-query-repository.service';
+import { PostsQueryRepository } from './posts/infrastructure/posts-query-repository.service';
+import { PostsRepository } from './posts/infrastructure/posts-repository.service';
 import { BlogsUsersBanRepository } from './blogger/users/infrastructure/blogs.users.ban.repository';
-import { SqlCommentsRepository } from './comments/infrastructure/sql.comments.repository';
-import { SqlCommentsQueryRepository } from './comments/infrastructure/sql.comments.query.repository';
-import { SqlBloggerCommentsQueryRepository } from './blogger/blogs/infrastructure/sql.blogger.comments.query.repository';
-import { SqlCommentLikesRepository } from './comment-likes/infrastructure/sql.comment.likes.repository';
-import { SqlPostLikesRepository } from './post-likes/infrastructure/sql.post.likes.repository';
+import { CommentsRepository } from './comments/infrastructure/comments-repository.service';
+import { CommentsQueryRepository } from './comments/infrastructure/comments-query-repository.service';
+import { BloggerCommentsQueryRepository } from './blogger/blogs/infrastructure/blogger-comments-query-repository.service';
+import { CommentLikesRepository } from './comment-likes/infrastructure/comment-likes-repository.service';
+import { PostLikesRepository } from './post-likes/infrastructure/post-likes-repository.service';
 
 const useCases = [
   RegistrationUserUseCase,
@@ -118,30 +115,29 @@ const services = [
   EmailService,
   TestingService
 ];
-const repositories = [BlogsUsersBanRepository];
-
-const sql = [
-  SqlSuperAdminUsersQueryRepository,
-  SqlUsersRepository,
-  SqlUsersQueryRepository,
-  SqlSessionsRepository,
-  SqlSessionsQueryRepository,
-  SqlBlogsRepository,
-  SqlBloggerBlogsQueryRepository,
-  SqlBlogsQueryRepository,
-  SqlBloggerPostsQueryRepository,
-  SqlPostsQueryRepository,
-  SqlPostsRepository,
-  SqlCommentsRepository,
-  SqlCommentsQueryRepository,
-  SqlBloggerCommentsQueryRepository,
-  SqlCommentLikesRepository,
-  SqlPostLikesRepository
+const repositories = [
+  BlogsUsersBanRepository,
+  UsersRepository,
+  SessionsRepository,
+  BlogsRepository,
+  PostsRepository,
+  CommentsRepository,
+  CommentLikesRepository,
+  PostLikesRepository
 ];
 
 const queryRepositories = [
-  SqlSuperAdminBlogsQueryRepository,
-  SqlBloggerUsersQueryRepository
+  SuperAdminBlogsQueryRepository,
+  BloggerUsersQueryRepository,
+  SuperAdminUsersQueryRepository,
+  UsersQueryRepository,
+  SessionsQueryRepository,
+  BloggerBlogsQueryRepository,
+  BlogsQueryRepository,
+  BloggerPostsQueryRepository,
+  PostsQueryRepository,
+  CommentsQueryRepository,
+  BloggerCommentsQueryRepository
 ];
 const decorators = [
   EmailNotExistConstraint,
@@ -149,7 +145,6 @@ const decorators = [
   LoginExistConstraint,
   EmailConfirmationCodeIsCorrectConstraint,
   PasswordRecoveryCodeIsCorrectConstraint,
-  CheckIdAndParseToDBId,
   CheckId
 ];
 const strategies = [JwtStrategy, BasicStrategy];
@@ -161,10 +156,10 @@ const controllers = [
   PostsController,
   SecurityDevicesController,
   TestingController,
-  BloggerBlogsController,
   SuperAdminBlogsController,
   SuperAdminUsersController,
-  BloggerUsersController
+  BloggerUsersController,
+  BloggerBlogsController
 ];
 
 @Module({
@@ -198,8 +193,7 @@ const controllers = [
     ...queryRepositories,
     ...decorators,
     ...strategies,
-    ...useCases,
-    ...sql
+    ...useCases
   ]
 })
 export class AppModule {}

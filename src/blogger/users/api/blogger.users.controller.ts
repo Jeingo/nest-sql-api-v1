@@ -17,7 +17,7 @@ import {
   SqlDbId
 } from '../../../global-types/global.types';
 import { OutputBloggerUserDto } from './dto/output.blogger.user.dto';
-import { SqlBloggerUsersQueryRepository } from '../infrastructure/blogger.users.query.repository';
+import { BloggerUsersQueryRepository } from '../infrastructure/blogger.users.query.repository';
 import { QueryBannedUsers } from './types/query.banned.users.type';
 import { InputBloggerUserBanDto } from './dto/input.blogger.user.ban.dto';
 import { BloggerBanUserCommand } from '../application/use-cases/blogger.ban.user.user.case';
@@ -27,7 +27,7 @@ import { CurrentUser } from '../../../helper/get-decorators/current.user.decorat
 @Controller('blogger/users')
 export class BloggerUsersController {
   constructor(
-    private readonly sqlBloggerUsersQueryRepository: SqlBloggerUsersQueryRepository,
+    private readonly sqlBloggerUsersQueryRepository: BloggerUsersQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 

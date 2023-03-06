@@ -33,6 +33,16 @@ export class JwtAdapter {
       return false;
     }
   }
+  checkExpirationAccessToken(token: Token): boolean {
+    try {
+      this.jwtService.verify(token, {
+        secret: this.configService.get('JWT_SECRET')
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
   getRefreshTokenPayload(refreshToken: Token): RefreshTokenPayloadType | null {
     try {
       return this.jwtService.decode(refreshToken) as RefreshTokenPayloadType;

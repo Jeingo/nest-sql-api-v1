@@ -1,8 +1,8 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { SqlDbId } from '../../../../global-types/global.types';
 import { BadRequestException } from '@nestjs/common';
-import { SqlUsersRepository } from '../../../../users/infrastructure/sql.users.repository';
-import { SqlBlogsRepository } from '../../../../blogs/infrastructure/sql.blogs.repository';
+import { UsersRepository } from '../../../../users/infrastructure/users-repository.service';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
 
 export class BindWithUserCommand {
   constructor(public blogId: SqlDbId, public userId: SqlDbId) {}
@@ -11,8 +11,8 @@ export class BindWithUserCommand {
 @CommandHandler(BindWithUserCommand)
 export class BindWithUserUseCase {
   constructor(
-    private readonly sqlUsersRepository: SqlUsersRepository,
-    private readonly sqlBlogsRepository: SqlBlogsRepository
+    private readonly sqlUsersRepository: UsersRepository,
+    private readonly sqlBlogsRepository: BlogsRepository
   ) {}
 
   async execute(command: BindWithUserCommand): Promise<boolean> {

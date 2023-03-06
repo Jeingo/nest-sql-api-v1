@@ -12,7 +12,7 @@ import { DataSource } from 'typeorm';
 import { UsersSqlType } from '../../../type-for-sql-entity/users.sql.type';
 
 @Injectable()
-export class SqlSuperAdminUsersQueryRepository {
+export class SuperAdminUsersQueryRepository {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async getAll(

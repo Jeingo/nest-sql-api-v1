@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { InputEmailDto } from '../../api/dto/input.email.dto';
 import { EmailManager } from '../../../adapters/email/email.manager';
-import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
+import { UsersRepository } from '../../../users/infrastructure/users-repository.service';
 
 export class ResendEmailConfirmationCommand {
   constructor(public emailDto: InputEmailDto) {}
@@ -10,7 +10,7 @@ export class ResendEmailConfirmationCommand {
 @CommandHandler(ResendEmailConfirmationCommand)
 export class ResendEmailConfirmationUseCase {
   constructor(
-    private readonly sqlUsersRepository: SqlUsersRepository,
+    private readonly sqlUsersRepository: UsersRepository,
     private readonly emailManager: EmailManager
   ) {}
 

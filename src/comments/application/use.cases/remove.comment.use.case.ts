@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { CurrentUserType, SqlDbId } from '../../../global-types/global.types';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { SqlCommentsRepository } from '../../infrastructure/sql.comments.repository';
+import { CommentsRepository } from '../../infrastructure/comments-repository.service';
 
 export class RemoveCommentCommand {
   constructor(public id: SqlDbId, public user: CurrentUserType) {}
@@ -9,7 +9,7 @@ export class RemoveCommentCommand {
 
 @CommandHandler(RemoveCommentCommand)
 export class RemoveCommentUseCase {
-  constructor(private readonly sqlCommentRepository: SqlCommentsRepository) {}
+  constructor(private readonly sqlCommentRepository: CommentsRepository) {}
 
   async execute(command: RemoveCommentCommand): Promise<boolean> {
     const commentId = command.id;

@@ -19,14 +19,14 @@ import {
   PaginatedType,
   SqlDbId
 } from '../../global-types/global.types';
-import { SqlBlogsQueryRepository } from '../infrastructure/sql.blogs.query.repository';
-import { SqlPostsQueryRepository } from '../../posts/infrastructure/sql.posts.query.repository';
+import { BlogsQueryRepository } from '../infrastructure/blogs-query-repository.service';
+import { PostsQueryRepository } from '../../posts/infrastructure/posts-query-repository.service';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
-    private readonly sqlBlogsQueryRepository: SqlBlogsQueryRepository,
-    private readonly sqlPostsQueryRepository: SqlPostsQueryRepository
+    private readonly sqlBlogsQueryRepository: BlogsQueryRepository,
+    private readonly sqlPostsQueryRepository: PostsQueryRepository
   ) {}
 
   @HttpCode(HttpStatus.OK)

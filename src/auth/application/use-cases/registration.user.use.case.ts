@@ -1,7 +1,7 @@
 import { InputRegistrationUserDto } from '../../api/dto/input.registration.user.dto';
 import { EmailManager } from '../../../adapters/email/email.manager';
 import { CommandHandler } from '@nestjs/cqrs';
-import { SqlUsersRepository } from '../../../users/infrastructure/sql.users.repository';
+import { UsersRepository } from '../../../users/infrastructure/users-repository.service';
 import { SqlDbId } from '../../../global-types/global.types';
 
 export class RegistrationUserCommand {
@@ -11,7 +11,7 @@ export class RegistrationUserCommand {
 @CommandHandler(RegistrationUserCommand)
 export class RegistrationUserUseCase {
   constructor(
-    private readonly sqlUsersRepository: SqlUsersRepository,
+    private readonly sqlUsersRepository: UsersRepository,
     private readonly emailManager: EmailManager
   ) {}
 

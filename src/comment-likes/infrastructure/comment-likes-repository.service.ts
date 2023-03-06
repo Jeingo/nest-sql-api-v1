@@ -4,30 +4,29 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
-export class SqlPostLikesRepository {
+export class CommentLikesRepository {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
-
   async updateLike(
-    postId: string,
+    commentId: string,
     userId: string,
     newLikeStatus: LikeStatus
   ): Promise<boolean> {
     const result = await this.dataSource.query(
-      `SELECT * FROM "PostLikes"
+      `SELECT * FROM "CommentLikes"
              WHERE "userId"=${userId}
-             AND "postId"=${postId}`
+             AND "commentId"=${commentId}`
     );
     if (result.length !== 0) {
-      await this.dataSource.query(`UPDATE "PostLikes"
+      await this.dataSource.query(`UPDATE "CommentLikes"
                          SET "myStatus"='${newLikeStatus}'
                          WHERE "userId"=${userId}
-                         AND "postId"=${postId}`);
+                         AND "commentId"=${commentId}`);
     } else {
       await this.dataSource.query(
-        `INSERT INTO "PostLikes" 
-             ("myStatus", "postId", "userId", "addedAt") 
+        `INSERT INTO "CommentLikes" 
+             ("myStatus", "commentId", "userId") 
              VALUES
-             ('${newLikeStatus}', ${postId}, ${userId}, now());`
+             ('${newLikeStatus}', ${commentId}, ${userId});`
       );
     }
     return true;

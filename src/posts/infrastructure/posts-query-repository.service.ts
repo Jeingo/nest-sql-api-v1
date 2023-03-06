@@ -14,7 +14,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
-export class SqlPostsQueryRepository {
+export class PostsQueryRepository {
   constructor(@InjectDataSource() protected readonly dataSource: DataSource) {}
 
   async getAll(

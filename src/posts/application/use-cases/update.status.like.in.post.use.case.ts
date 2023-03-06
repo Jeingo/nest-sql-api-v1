@@ -5,8 +5,8 @@ import {
   SqlDbId
 } from '../../../global-types/global.types';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { SqlPostsRepository } from '../../infrastructure/sql.posts.repository';
-import { SqlPostLikesRepository } from '../../../post-likes/infrastructure/sql.post.likes.repository';
+import { PostsRepository } from '../../infrastructure/posts-repository.service';
+import { PostLikesRepository } from '../../../post-likes/infrastructure/post-likes-repository.service';
 import { BlogsUsersBanRepository } from '../../../blogger/users/infrastructure/blogs.users.ban.repository';
 
 export class UpdateStatusLikeInPostCommand {
@@ -20,8 +20,8 @@ export class UpdateStatusLikeInPostCommand {
 @CommandHandler(UpdateStatusLikeInPostCommand)
 export class UpdateStatusLikeInPostUseCase {
   constructor(
-    private readonly sqlPostsRepository: SqlPostsRepository,
-    private readonly sqlPostLikesRepository: SqlPostLikesRepository,
+    private readonly sqlPostsRepository: PostsRepository,
+    private readonly sqlPostLikesRepository: PostLikesRepository,
     private readonly blogsUsersBanRepository: BlogsUsersBanRepository
   ) {}
 

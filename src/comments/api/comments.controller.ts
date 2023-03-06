@@ -21,12 +21,12 @@ import { CommandBus } from '@nestjs/cqrs';
 import { UpdateCommentCommand } from '../application/use.cases/update.comment.use.case';
 import { RemoveCommentCommand } from '../application/use.cases/remove.comment.use.case';
 import { UpdateLikeStatusInCommentCommand } from '../application/use.cases/update.status.like.in.comment.use.case';
-import { SqlCommentsQueryRepository } from '../infrastructure/sql.comments.query.repository';
+import { CommentsQueryRepository } from '../infrastructure/comments-query-repository.service';
 
 @Controller('comments')
 export class CommentsController {
   constructor(
-    private readonly sqlCommentsQueryRepository: SqlCommentsQueryRepository,
+    private readonly sqlCommentsQueryRepository: CommentsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 

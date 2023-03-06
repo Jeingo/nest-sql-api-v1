@@ -17,7 +17,7 @@ import { DataSource } from 'typeorm';
 import { UsersBlogsBanSqlType } from '../../../type-for-sql-entity/users.blogs.ban.sql.type';
 
 @Injectable()
-export class SqlBloggerUsersQueryRepository {
+export class BloggerUsersQueryRepository {
   constructor(@InjectDataSource() protected readonly dataSource: DataSource) {}
 
   async getBannedUserByBlogId(

@@ -2,7 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { CurrentUserType, SqlDbId } from '../../../global-types/global.types';
 import { InputCreateCommentDto } from '../../api/dto/input.create.comment.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { SqlCommentsRepository } from '../../infrastructure/sql.comments.repository';
+import { CommentsRepository } from '../../infrastructure/comments-repository.service';
 
 export class UpdateCommentCommand {
   constructor(
@@ -14,7 +14,7 @@ export class UpdateCommentCommand {
 
 @CommandHandler(UpdateCommentCommand)
 export class UpdateCommentUseCase {
-  constructor(private readonly sqlCommentRepository: SqlCommentsRepository) {}
+  constructor(private readonly sqlCommentRepository: CommentsRepository) {}
 
   async execute(command: UpdateCommentCommand): Promise<boolean> {
     const commentId = command.id;

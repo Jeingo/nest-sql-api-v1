@@ -35,17 +35,17 @@ import { InputUpdatePostDto } from './dto/input.update.post.dto';
 import { RemovePostCommand } from '../application/use-cases/remove.post.use.case';
 import { QueryComments } from '../../../comments/api/types/query.comments.type';
 import { OutputBloggerCommentsDto } from './dto/output.blogger.comments.dto';
-import { SqlBloggerBlogsQueryRepository } from '../infrastructure/sql.blogger.blogs.query.repository';
-import { SqlBloggerPostsQueryRepository } from '../infrastructure/sql.blogger.posts.query.repository';
-import { SqlBloggerCommentsQueryRepository } from '../infrastructure/sql.blogger.comments.query.repository';
+import { BloggerBlogsQueryRepository } from '../infrastructure/blogger-blogs-query-repository.service';
+import { BloggerPostsQueryRepository } from '../infrastructure/blogger-posts-query-repository.service';
+import { BloggerCommentsQueryRepository } from '../infrastructure/blogger-comments-query-repository.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
 export class BloggerBlogsController {
   constructor(
-    private readonly sqlBloggerBlogsQueryRepository: SqlBloggerBlogsQueryRepository,
-    private readonly sqlBloggerPostsQueryRepository: SqlBloggerPostsQueryRepository,
-    private readonly sqlBloggerCommentsQueryRepository: SqlBloggerCommentsQueryRepository,
+    private readonly sqlBloggerBlogsQueryRepository: BloggerBlogsQueryRepository,
+    private readonly sqlBloggerPostsQueryRepository: BloggerPostsQueryRepository,
+    private readonly sqlBloggerCommentsQueryRepository: BloggerCommentsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 

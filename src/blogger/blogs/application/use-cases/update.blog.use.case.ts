@@ -5,7 +5,7 @@ import {
 } from '../../../../global-types/global.types';
 import { InputUpdateBlogDto } from '../../api/dto/input.update.blog.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { SqlBlogsRepository } from '../../../../blogs/infrastructure/sql.blogs.repository';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
 
 export class UpdateBlogCommand {
   constructor(
@@ -17,7 +17,7 @@ export class UpdateBlogCommand {
 
 @CommandHandler(UpdateBlogCommand)
 export class UpdateBlogUseCase {
-  constructor(private readonly sqlBlogRepository: SqlBlogsRepository) {}
+  constructor(private readonly sqlBlogRepository: BlogsRepository) {}
 
   async execute(command: UpdateBlogCommand): Promise<boolean> {
     const { name, description, websiteUrl } = command.updateBlogDto;

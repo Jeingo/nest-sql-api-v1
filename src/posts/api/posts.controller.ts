@@ -28,14 +28,14 @@ import { JwtAuthGuard } from '../../auth/infrastructure/guards/jwt.auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateCommentCommand } from '../../comments/application/use.cases/create.comment.use.case';
 import { UpdateStatusLikeInPostCommand } from '../application/use-cases/update.status.like.in.post.use.case';
-import { SqlPostsQueryRepository } from '../infrastructure/sql.posts.query.repository';
-import { SqlCommentsQueryRepository } from '../../comments/infrastructure/sql.comments.query.repository';
+import { PostsQueryRepository } from '../infrastructure/posts-query-repository.service';
+import { CommentsQueryRepository } from '../../comments/infrastructure/comments-query-repository.service';
 
 @Controller('posts')
 export class PostsController {
   constructor(
-    private readonly sqlPostsQueryRepository: SqlPostsQueryRepository,
-    private readonly sqlCommentsQueryRepository: SqlCommentsQueryRepository,
+    private readonly sqlPostsQueryRepository: PostsQueryRepository,
+    private readonly sqlCommentsQueryRepository: CommentsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}
 
