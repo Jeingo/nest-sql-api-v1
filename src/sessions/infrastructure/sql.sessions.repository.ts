@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ISessionModel, Session } from '../domain/entities/session.entity';
-import { InjectModel } from '@nestjs/mongoose';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { SqlDbId } from '../../global-types/global.types';
@@ -8,10 +6,7 @@ import { SessionSqlType } from '../../type-for-sql-entity/session.sql.type';
 
 @Injectable()
 export class SqlSessionsRepository {
-  constructor(
-    @InjectModel(Session.name) private sessionsModel: ISessionModel,
-    @InjectDataSource() private readonly dataSource: DataSource
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
   async create(
     issueAt: number,
     deviceId: string,

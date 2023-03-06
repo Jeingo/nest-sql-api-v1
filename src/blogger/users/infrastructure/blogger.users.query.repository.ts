@@ -12,20 +12,13 @@ import {
 import { OutputBloggerUserDto } from '../api/dto/output.blogger.user.dto';
 import { QueryBannedUsers } from '../api/types/query.banned.users.type';
 import { getPaginatedType } from '../../../helper/query/query.repository.helper';
-import { InjectModel } from '@nestjs/mongoose';
-import { IUserModel, User } from '../../../users/domain/entities/user.entity';
-import { Blog, IBlogModel } from '../../../blogs/domain/entities/blog.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { UsersBlogsBanSqlType } from '../../../type-for-sql-entity/users.blogs.ban.sql.type';
 
 @Injectable()
 export class SqlBloggerUsersQueryRepository {
-  constructor(
-    @InjectModel(User.name) protected usersModel: IUserModel,
-    @InjectModel(Blog.name) protected blogsModel: IBlogModel,
-    @InjectDataSource() protected readonly dataSource: DataSource
-  ) {}
+  constructor(@InjectDataSource() protected readonly dataSource: DataSource) {}
 
   async getBannedUserByBlogId(
     blogId: SqlDbId,

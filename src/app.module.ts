@@ -1,48 +1,16 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './configuration/configuration';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { Blog, BlogSchema } from './blogs/domain/entities/blog.entity';
-import { Post, PostSchema } from './posts/domain/entities/post.entity';
-import { User, UserSchema } from './users/domain/entities/user.entity';
-import {
-  Comment,
-  CommentSchema
-} from './comments/domain/entities/comment.entity';
-import {
-  Session,
-  SessionSchema
-} from './sessions/domain/entities/session.entity';
-import {
-  PostLike,
-  PostLikeSchema
-} from './post-likes/domain/entities/post.like.entity';
-import {
-  CommentLike,
-  CommentLikeSchema
-} from './comment-likes/domain/entities/comment.like.entity';
 import { AuthController } from './auth/api/auth.controller';
-import { UsersRepository } from './users/infrastructure/users.repository';
 import { JwtAdapter } from './adapters/jwt/jwt.service';
 import { JwtService } from '@nestjs/jwt';
-import { SessionsRepository } from './sessions/infrastructure/sessions.repository';
 import { EmailManager } from './adapters/email/email.manager';
 import { EmailService } from './adapters/email/email.service';
 import { BlogsController } from './blogs/api/blogs.controller';
-import { BlogsQueryRepository } from './blogs/infrastructure/blogs.query.repository';
-import { BlogsRepository } from './blogs/infrastructure/blogs.repository';
-import { PostsQueryRepository } from './posts/infrastructure/posts.query.repository';
-import { PostsRepository } from './posts/infrastructure/posts.repository';
-import { PostLikesRepository } from './post-likes/infrastructure/post.likes.repository';
-import { CommentLikesRepository } from './comment-likes/infrastructure/comment.likes.repository';
 import { CommentsController } from './comments/api/comments.controller';
-import { CommentsQueryRepository } from './comments/infrastructure/comments.query.repository';
-import { CommentsRepository } from './comments/infrastructure/comments.repository';
 import { PostsController } from './posts/api/posts.controller';
-import { IsBlogIdConstraint } from './helper/validation-decorators/is.blog.id.decorator';
 import { SecurityDevicesController } from './sessions/api/security.devices.controller';
-import { SessionsQueryRepository } from './sessions/infrastructure/sessions.query.repository';
 import { TestingController } from './testing/api/testing.controller';
 import { TestingService } from './testing/application/testing.service';
 import {
@@ -85,17 +53,13 @@ import { RemoveSessionByDeviceIdUseCase } from './sessions/application/use-cases
 import { BloggerBlogsController } from './blogger/blogs/api/blogger.blogs.controller';
 import { SuperAdminBlogsController } from './superadmin/blogs/api/superadmin.blogs.controller';
 import { SuperAdminUsersController } from './superadmin/users/api/superadmin.users.controller';
-import { BloggerBlogsQueryRepository } from './blogger/blogs/infrastructure/blogger.blogs.query.repository';
 import { SqlSuperAdminBlogsQueryRepository } from './superadmin/blogs/infrastructure/superadmin.blogs.query.repository';
 import { BindWithUserUseCase } from './superadmin/blogs/application/use-cases/bind.with.user.use.case';
 import { BanUserUseCase } from './superadmin/users/application/use-cases/ban.user.use.case';
-import { CommentsAndLikesRepository } from './comments/infrastructure/comments.and.likes.repository';
-import { BloggerCommentsQueryRepository } from './blogger/blogs/infrastructure/blogger.comments.query.repository';
 import { BloggerUsersController } from './blogger/users/api/blogger.users.controller';
 import { SqlBloggerUsersQueryRepository } from './blogger/users/infrastructure/blogger.users.query.repository';
 import { BloggerBanUserUseCase } from './blogger/users/application/use-cases/blogger.ban.user.user.case';
 import { BanBlogUseCase } from './superadmin/blogs/application/use-cases/ban.blog.use.case';
-import { BloggerPostsQueryRepository } from './blogger/blogs/infrastructure/blogger.posts.query.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SqlUsersRepository } from './users/infrastructure/sql.users.repository';
 import { SqlSuperAdminUsersQueryRepository } from './superadmin/users/infrastructure/sql.superadmin.users.query.repository';
@@ -154,17 +118,7 @@ const services = [
   EmailService,
   TestingService
 ];
-const repositories = [
-  SessionsRepository,
-  BlogsRepository,
-  PostsRepository,
-  UsersRepository,
-  PostLikesRepository,
-  CommentsRepository,
-  CommentLikesRepository,
-  CommentsAndLikesRepository,
-  BlogsUsersBanRepository
-];
+const repositories = [BlogsUsersBanRepository];
 
 const sql = [
   SqlSuperAdminUsersQueryRepository,
@@ -186,18 +140,10 @@ const sql = [
 ];
 
 const queryRepositories = [
-  BlogsQueryRepository,
-  PostsQueryRepository,
-  CommentsQueryRepository,
-  SessionsQueryRepository,
-  BloggerBlogsQueryRepository,
   SqlSuperAdminBlogsQueryRepository,
-  BloggerCommentsQueryRepository,
-  SqlBloggerUsersQueryRepository,
-  BloggerPostsQueryRepository
+  SqlBloggerUsersQueryRepository
 ];
 const decorators = [
-  IsBlogIdConstraint,
   EmailNotExistConstraint,
   EmailExistAndDontConfirmedConstraint,
   LoginExistConstraint,
@@ -227,21 +173,6 @@ const controllers = [
       load: [configuration],
       isGlobal: true
     }),
-    MongooseModule.forRoot(
-      process.env.MONGO_URL || 'mongodb://127.0.0.1:27017',
-      {
-        dbName: process.env.DB_NAME || 'service'
-      }
-    ),
-    MongooseModule.forFeature([
-      { name: Blog.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
-      { name: User.name, schema: UserSchema },
-      { name: Comment.name, schema: CommentSchema },
-      { name: Session.name, schema: SessionSchema },
-      { name: PostLike.name, schema: PostLikeSchema },
-      { name: CommentLike.name, schema: CommentLikeSchema }
-    ]),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.PG_HOST,

@@ -18,7 +18,6 @@ import { CreateBlogCommand } from '../application/use-cases/create.blog.use.case
 import { JwtAuthGuard } from '../../../auth/infrastructure/guards/jwt.auth.guard';
 import { CurrentUser } from '../../../helper/get-decorators/current.user.decorator';
 import { QueryBlogs } from '../../../blogs/api/types/query.blogs.type';
-import { BloggerBlogsQueryRepository } from '../infrastructure/blogger.blogs.query.repository';
 import { CheckId } from '../../../helper/pipes/check.id.validator.pipe';
 import {
   CurrentUserType,
@@ -35,8 +34,6 @@ import { UpdatePostCommand } from '../application/use-cases/update.post.use.case
 import { InputUpdatePostDto } from './dto/input.update.post.dto';
 import { RemovePostCommand } from '../application/use-cases/remove.post.use.case';
 import { QueryComments } from '../../../comments/api/types/query.comments.type';
-import { BloggerCommentsQueryRepository } from '../infrastructure/blogger.comments.query.repository';
-import { BloggerPostsQueryRepository } from '../infrastructure/blogger.posts.query.repository';
 import { OutputBloggerCommentsDto } from './dto/output.blogger.comments.dto';
 import { SqlBloggerBlogsQueryRepository } from '../infrastructure/sql.blogger.blogs.query.repository';
 import { SqlBloggerPostsQueryRepository } from '../infrastructure/sql.blogger.posts.query.repository';
@@ -46,11 +43,8 @@ import { SqlBloggerCommentsQueryRepository } from '../infrastructure/sql.blogger
 @Controller('blogger/blogs')
 export class BloggerBlogsController {
   constructor(
-    private readonly bloggerBlogsQueryRepository: BloggerBlogsQueryRepository,
     private readonly sqlBloggerBlogsQueryRepository: SqlBloggerBlogsQueryRepository,
-    private readonly bloggerPostsQueryRepository: BloggerPostsQueryRepository,
     private readonly sqlBloggerPostsQueryRepository: SqlBloggerPostsQueryRepository,
-    private readonly bloggerCommentsQueryRepository: BloggerCommentsQueryRepository,
     private readonly sqlBloggerCommentsQueryRepository: SqlBloggerCommentsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}

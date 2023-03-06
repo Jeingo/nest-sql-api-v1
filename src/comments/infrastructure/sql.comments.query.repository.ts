@@ -7,27 +7,15 @@ import {
   SqlDbId
 } from '../../global-types/global.types';
 import { OutputCommentDto } from '../api/dto/output.comment.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, ICommentModel } from '../domain/entities/comment.entity';
 import { QueryComments } from '../api/types/query.comments.type';
 import { getPaginatedType } from '../../helper/query/query.repository.helper';
-import { IPostModel, Post } from '../../posts/domain/entities/post.entity';
-import {
-  CommentLike,
-  ICommentLikeModel
-} from '../../comment-likes/domain/entities/comment.like.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CommentsSqlType } from '../../type-for-sql-entity/comments.sql.type';
 
 @Injectable()
 export class SqlCommentsQueryRepository {
-  constructor(
-    @InjectModel(Comment.name) private commentsModel: ICommentModel,
-    @InjectModel(Post.name) private postsModel: IPostModel,
-    @InjectModel(CommentLike.name) private commentLikesModel: ICommentLikeModel,
-    @InjectDataSource() protected readonly dataSource: DataSource
-  ) {}
+  constructor(@InjectDataSource() protected readonly dataSource: DataSource) {}
 
   async getAllByPostId(
     query: QueryComments,

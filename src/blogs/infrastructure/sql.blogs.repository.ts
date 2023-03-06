@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument, IBlogModel } from '../domain/entities/blog.entity';
 import { SqlDbId } from '../../global-types/global.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -8,10 +6,7 @@ import { BlogsSqlType } from '../../type-for-sql-entity/blogs.sql.type';
 
 @Injectable()
 export class SqlBlogsRepository {
-  constructor(
-    @InjectModel(Blog.name) private blogsModel: IBlogModel,
-    @InjectDataSource() private readonly dataSource: DataSource
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async create(
     name: string,
@@ -77,12 +72,6 @@ export class SqlBlogsRepository {
                WHERE id=${blogId}`
     );
     return !!result[1];
-  }
-  async getByUserId(userId: string): Promise<BlogDocument[]> {
-    return this.blogsModel.find({ 'blogOwnerInfo.userId': userId });
-  }
-  async save(blog: BlogDocument): Promise<BlogDocument> {
-    return await blog.save();
   }
   async delete(id: SqlDbId): Promise<boolean> {
     const result = await this.dataSource.query(

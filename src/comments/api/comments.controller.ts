@@ -9,7 +9,6 @@ import {
   Put,
   UseGuards
 } from '@nestjs/common';
-import { CommentsQueryRepository } from '../infrastructure/comments.query.repository';
 import { OutputCommentDto } from './dto/output.comment.dto';
 import { GetUserGuard } from '../../auth/infrastructure/guards/get.user.guard';
 import { InputCreateCommentDto } from './dto/input.create.comment.dto';
@@ -27,7 +26,6 @@ import { SqlCommentsQueryRepository } from '../infrastructure/sql.comments.query
 @Controller('comments')
 export class CommentsController {
   constructor(
-    private readonly commentsQueryRepository: CommentsQueryRepository,
     private readonly sqlCommentsQueryRepository: SqlCommentsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}

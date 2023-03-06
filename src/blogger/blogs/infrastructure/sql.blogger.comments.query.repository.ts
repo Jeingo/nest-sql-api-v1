@@ -8,23 +8,13 @@ import {
 import { getPaginatedType } from '../../../helper/query/query.repository.helper';
 import { QueryComments } from '../../../comments/api/types/query.comments.type';
 import { OutputBloggerCommentsDto } from '../api/dto/output.blogger.comments.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { IPostModel, Post } from '../../../posts/domain/entities/post.entity';
-import {
-  Comment,
-  ICommentModel
-} from '../../../comments/domain/entities/comment.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CommentsSqlType } from '../../../type-for-sql-entity/comments.sql.type';
 
 @Injectable()
 export class SqlBloggerCommentsQueryRepository {
-  constructor(
-    @InjectModel(Post.name) protected postsModel: IPostModel,
-    @InjectModel(Comment.name) protected commentsModel: ICommentModel,
-    @InjectDataSource() private readonly dataSource: DataSource
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async getAllForBlogger(
     query: QueryComments,

@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog, IBlogModel } from '../../../blogs/domain/entities/blog.entity';
 import { QueryBlogs } from '../../../blogs/api/types/query.blogs.type';
 import { OutputSuperAdminBlogDto } from '../api/dto/output.superadmin.blog.dto';
 import { Direction, PaginatedType } from '../../../global-types/global.types';
@@ -11,10 +9,7 @@ import { BlogsSqlType } from '../../../type-for-sql-entity/blogs.sql.type';
 
 @Injectable()
 export class SqlSuperAdminBlogsQueryRepository {
-  constructor(
-    @InjectModel(Blog.name) private blogsModel: IBlogModel,
-    @InjectDataSource() protected readonly dataSource: DataSource
-  ) {}
+  constructor(@InjectDataSource() protected readonly dataSource: DataSource) {}
 
   async getAll(
     query: QueryBlogs

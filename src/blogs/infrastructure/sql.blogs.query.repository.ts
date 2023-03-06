@@ -1,6 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog, IBlogModel } from '../domain/entities/blog.entity';
 import { OutputBlogDto } from '../api/dto/output.blog.dto';
 import { QueryBlogs } from '../api/types/query.blogs.type';
 import { getPaginatedType } from '../../helper/query/query.repository.helper';
@@ -15,10 +13,7 @@ import { BlogsSqlType } from '../../type-for-sql-entity/blogs.sql.type';
 
 @Injectable()
 export class SqlBlogsQueryRepository {
-  constructor(
-    @InjectModel(Blog.name) protected blogsModel: IBlogModel,
-    @InjectDataSource() protected readonly dataSource: DataSource
-  ) {}
+  constructor(@InjectDataSource() protected readonly dataSource: DataSource) {}
 
   async getAll(query: QueryBlogs): Promise<PaginatedType<OutputBlogDto>> {
     const {

@@ -7,10 +7,8 @@ import {
   HttpStatus,
   UseGuards
 } from '@nestjs/common';
-import { BlogsQueryRepository } from '../infrastructure/blogs.query.repository';
 import { OutputBlogDto } from './dto/output.blog.dto';
 import { QueryBlogs } from './types/query.blogs.type';
-import { PostsQueryRepository } from '../../posts/infrastructure/posts.query.repository';
 import { QueryPosts } from '../../posts/api/types/query.posts.type';
 import { OutputPostDto } from '../../posts/api/dto/output.post.dto';
 import { GetUserGuard } from '../../auth/infrastructure/guards/get.user.guard';
@@ -27,8 +25,6 @@ import { SqlPostsQueryRepository } from '../../posts/infrastructure/sql.posts.qu
 @Controller('blogs')
 export class BlogsController {
   constructor(
-    private readonly blogsQueryRepository: BlogsQueryRepository,
-    private readonly postsQueryRepository: PostsQueryRepository,
     private readonly sqlBlogsQueryRepository: SqlBlogsQueryRepository,
     private readonly sqlPostsQueryRepository: SqlPostsQueryRepository
   ) {}

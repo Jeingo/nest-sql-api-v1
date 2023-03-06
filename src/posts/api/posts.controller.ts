@@ -10,10 +10,8 @@ import {
   Put,
   UseGuards
 } from '@nestjs/common';
-import { PostsQueryRepository } from '../infrastructure/posts.query.repository';
 import { OutputPostDto } from './dto/output.post.dto';
 import { QueryPosts } from './types/query.posts.type';
-import { CommentsQueryRepository } from '../../comments/infrastructure/comments.query.repository';
 import { QueryComments } from '../../comments/api/types/query.comments.type';
 import { OutputCommentDto } from '../../comments/api/dto/output.comment.dto';
 import { GetUserGuard } from '../../auth/infrastructure/guards/get.user.guard';
@@ -36,9 +34,7 @@ import { SqlCommentsQueryRepository } from '../../comments/infrastructure/sql.co
 @Controller('posts')
 export class PostsController {
   constructor(
-    private readonly postsQueryRepository: PostsQueryRepository,
     private readonly sqlPostsQueryRepository: SqlPostsQueryRepository,
-    private readonly commentsQueryRepository: CommentsQueryRepository,
     private readonly sqlCommentsQueryRepository: SqlCommentsQueryRepository,
     private readonly commandBus: CommandBus
   ) {}

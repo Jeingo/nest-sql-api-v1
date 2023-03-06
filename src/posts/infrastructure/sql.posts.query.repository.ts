@@ -1,6 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { IPostModel, Post } from '../domain/entities/post.entity';
 import {
   CurrentUserType,
   Direction,
@@ -11,23 +9,13 @@ import {
 import { OutputPostDto } from '../api/dto/output.post.dto';
 import { QueryPosts } from '../api/types/query.posts.type';
 import { getPaginatedType } from '../../helper/query/query.repository.helper';
-import { Blog, IBlogModel } from '../../blogs/domain/entities/blog.entity';
-import {
-  IPostLikeModel,
-  PostLike
-} from '../../post-likes/domain/entities/post.like.entity';
 import { PostsSqlType } from '../../type-for-sql-entity/posts.sql.type';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class SqlPostsQueryRepository {
-  constructor(
-    @InjectModel(Post.name) private postsModel: IPostModel,
-    @InjectModel(Blog.name) private blogsModel: IBlogModel,
-    @InjectModel(PostLike.name) private postLikesModel: IPostLikeModel,
-    @InjectDataSource() protected readonly dataSource: DataSource
-  ) {}
+  constructor(@InjectDataSource() protected readonly dataSource: DataSource) {}
 
   async getAll(
     query: QueryPosts,
