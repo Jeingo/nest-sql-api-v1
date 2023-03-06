@@ -59,11 +59,17 @@ export class BlogsQueryRepository {
   }
   async getById(id: SqlDbId): Promise<OutputBlogDto> {
     const result = await this.dataSource.query(
-      `SELECT b.*, u."isBanned" AS "ownerIsBanned" FROM "Blogs" b LEFT JOIN "Users" u ON b."userId"=u.id WHERE b.id=${id}`
+      `SELECT b.*
+             FROM "Blogs" b 
+             LEFT JOIN "Users" u ON b."userId"=u.id 
+             WHERE 
+             b.id=${id}
+             AND
+             b."isBanned"=false
+             AND
+             u."isBanned"=false`
     );
     if (!result[0]) throw new NotFoundException();
-    if (result[0].isBanned || result[0].ownerIsBanned)
-      throw new NotFoundException();
     return this.sqlGetOutputBlogDto(result[0]);
   }
   protected sqlGetOutputBlogDto(blog: BlogsSqlType): OutputBlogDto {
