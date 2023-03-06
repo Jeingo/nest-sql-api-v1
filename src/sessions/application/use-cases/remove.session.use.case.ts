@@ -7,9 +7,9 @@ export class RemoveSessionCommand {
 
 @CommandHandler(RemoveSessionCommand)
 export class RemoveSessionUseCase {
-  constructor(private readonly sqlSessionsRepository: SessionsRepository) {}
+  constructor(private readonly sessionsRepository: SessionsRepository) {}
 
   async execute(command: RemoveSessionCommand): Promise<boolean> {
-    return await this.sqlSessionsRepository.deleteSession(command.iat);
+    return await this.sessionsRepository.deleteSession(command.iat);
   }
 }

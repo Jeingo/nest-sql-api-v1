@@ -12,10 +12,10 @@ import { UsersRepository } from '../../users/infrastructure/users-repository.ser
 export class EmailConfirmationCodeIsCorrectConstraint
   implements ValidatorConstraintInterface
 {
-  constructor(private readonly sqlUsersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async validate(confirmationCode: string) {
-    const user = await this.sqlUsersRepository.getByUUIDCode(confirmationCode);
+    const user = await this.usersRepository.getByUUIDCode(confirmationCode);
     if (!user) {
       throw new BadRequestException(['code code is wrong']);
     }

@@ -8,11 +8,11 @@ export class ConfirmEmailCommand {
 
 @CommandHandler(ConfirmEmailCommand)
 export class ConfirmEmailUseCase {
-  constructor(private readonly sqlUsersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async execute(command: ConfirmEmailCommand): Promise<boolean> {
     const code = command.confirmationCodeDto.code;
-    await this.sqlUsersRepository.updateConfirmationEmail(code);
+    await this.usersRepository.updateConfirmationEmail(code);
 
     return true;
   }

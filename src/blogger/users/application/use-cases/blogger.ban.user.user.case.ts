@@ -20,8 +20,8 @@ export class BloggerBanUserCommand {
 @CommandHandler(BloggerBanUserCommand)
 export class BloggerBanUserUseCase {
   constructor(
-    private readonly sqlUsersRepository: UsersRepository,
-    private readonly sqlBlogsRepository: BlogsRepository,
+    private readonly usersRepository: UsersRepository,
+    private readonly blogsRepository: BlogsRepository,
     private readonly blogsUsersBanRepository: BlogsUsersBanRepository
   ) {}
 
@@ -29,11 +29,11 @@ export class BloggerBanUserUseCase {
     const { isBanned, banReason, blogId } = command.bloggerUserBanDto;
     const { userId } = command.user;
     const bannedUserId = command.userId;
-    const blog = await this.sqlBlogsRepository.getById(blogId);
+    const blog = await this.blogsRepository.getById(blogId);
     if (!blog) throw new NotFoundException();
     if (blog.userId.toString() !== userId) throw new ForbiddenException();
 
-    const user = await this.sqlUsersRepository.getById(bannedUserId);
+    const user = await this.usersRepository.getById(bannedUserId);
     if (!user) throw new NotFoundException();
 
     await this.blogsUsersBanRepository.ban(

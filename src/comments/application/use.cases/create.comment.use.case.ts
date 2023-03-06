@@ -18,9 +18,9 @@ export class CreateCommentCommand {
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentUseCase {
   constructor(
-    private readonly sqlCommentRepository: CommentsRepository,
-    private readonly sqlPostsRepository: PostsRepository,
-    private readonly sqlUsersRepository: UsersRepository,
+    private readonly commentsRepository: CommentsRepository,
+    private readonly postsRepository: PostsRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly blogsUsersBanRepository: BlogsUsersBanRepository
   ) {}
 
@@ -28,7 +28,7 @@ export class CreateCommentUseCase {
     const { content } = command.createCommentDto;
     const { userId } = command.user;
     const postId = command.postId;
-    const post = await this.sqlPostsRepository.getById(postId);
+    const post = await this.postsRepository.getById(postId);
     if (!post) throw new NotFoundException();
     const userIsBannedForBlog = await this.blogsUsersBanRepository.isBannedUser(
       post.blogId.toString(),
@@ -36,7 +36,7 @@ export class CreateCommentUseCase {
     );
     if (userIsBannedForBlog) throw new ForbiddenException();
 
-    const createdComment = await this.sqlCommentRepository.create(
+    const createdComment = await this.commentsRepository.create(
       content,
       userId,
       postId

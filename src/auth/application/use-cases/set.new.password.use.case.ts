@@ -8,11 +8,11 @@ export class SetNewPasswordCommand {
 
 @CommandHandler(SetNewPasswordCommand)
 export class SetNewPasswordUseCase {
-  constructor(private readonly sqlUsersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async execute(command: SetNewPasswordCommand): Promise<boolean> {
     const { recoveryCode, newPassword } = command.newPasswordDto;
-    await this.sqlUsersRepository.updatePassword(recoveryCode, newPassword);
+    await this.usersRepository.updatePassword(recoveryCode, newPassword);
     return true;
   }
 }

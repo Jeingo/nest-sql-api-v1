@@ -10,10 +10,10 @@ import { UsersRepository } from '../../users/infrastructure/users-repository.ser
 @ValidatorConstraint({ async: true })
 @Injectable()
 export class EmailNotExistConstraint implements ValidatorConstraintInterface {
-  constructor(private readonly sqlUsersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async validate(email: string) {
-    const user = await this.sqlUsersRepository.getByLoginOrEmail(email);
+    const user = await this.usersRepository.getByLoginOrEmail(email);
     return !user;
   }
   defaultMessage() {

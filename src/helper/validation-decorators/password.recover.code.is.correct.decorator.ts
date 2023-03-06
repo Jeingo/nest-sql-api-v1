@@ -12,10 +12,10 @@ import { UsersRepository } from '../../users/infrastructure/users-repository.ser
 export class PasswordRecoveryCodeIsCorrectConstraint
   implements ValidatorConstraintInterface
 {
-  constructor(private readonly sqlUsersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async validate(recoveryCode: string) {
-    const user = await this.sqlUsersRepository.getByUUIDCode(recoveryCode);
+    const user = await this.usersRepository.getByUUIDCode(recoveryCode);
     if (!user) {
       throw new BadRequestException(['recoveryCode code is wrong']);
     }

@@ -12,15 +12,15 @@ export class RemoveBlogCommand {
 
 @CommandHandler(RemoveBlogCommand)
 export class RemoveBlogUseCase {
-  constructor(private readonly sqlBlogRepository: BlogsRepository) {}
+  constructor(private readonly blogRepository: BlogsRepository) {}
 
   async execute(command: RemoveBlogCommand): Promise<boolean> {
     const { userId } = command.user;
     const blogId = command.id;
-    const blog = await this.sqlBlogRepository.getById(blogId);
+    const blog = await this.blogRepository.getById(blogId);
     if (!blog) throw new NotFoundException();
     if (blog.userId.toString() !== userId) throw new ForbiddenException();
-    await this.sqlBlogRepository.delete(blogId);
+    await this.blogRepository.delete(blogId);
     return true;
   }
 }

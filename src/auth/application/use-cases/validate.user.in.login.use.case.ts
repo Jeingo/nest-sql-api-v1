@@ -10,11 +10,11 @@ export class ValidateUserInLoginCommand {
 
 @CommandHandler(ValidateUserInLoginCommand)
 export class ValidateUserInLoginUseCase {
-  constructor(private readonly sqlUsersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async execute(command: ValidateUserInLoginCommand): Promise<string> {
     const { loginOrEmail, password } = command.loginUserDto;
-    const user = await this.sqlUsersRepository.getByLoginOrEmail(loginOrEmail);
+    const user = await this.usersRepository.getByLoginOrEmail(loginOrEmail);
     if (!user || user.isBanned) throw new UnauthorizedException();
     const result = await bcrypt.compare(password, user.hash);
     if (!result) throw new UnauthorizedException();

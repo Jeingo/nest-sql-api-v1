@@ -20,8 +20,8 @@ export class UpdateLikeStatusInCommentCommand {
 @CommandHandler(UpdateLikeStatusInCommentCommand)
 export class UpdateLikeStatusInCommentUseCase {
   constructor(
-    private readonly sqlCommentRepository: CommentsRepository,
-    private readonly sqlCommentLikesRepository: CommentLikesRepository,
+    private readonly commentsRepository: CommentsRepository,
+    private readonly commentLikesRepository: CommentLikesRepository,
     private readonly blogsUsersBanRepository: BlogsUsersBanRepository
   ) {}
 
@@ -30,7 +30,7 @@ export class UpdateLikeStatusInCommentUseCase {
     const commentId = command.commentId;
     const newLikeStatus = command.newLikeStatus;
 
-    const comment = await this.sqlCommentRepository.getById(commentId);
+    const comment = await this.commentsRepository.getById(commentId);
     if (!comment) throw new NotFoundException();
     const userIsBannedForBlog =
       await this.blogsUsersBanRepository.isBannedUserByPostId(
@@ -39,7 +39,7 @@ export class UpdateLikeStatusInCommentUseCase {
       );
     if (userIsBannedForBlog) throw new ForbiddenException();
 
-    await this.sqlCommentLikesRepository.updateLike(
+    await this.commentLikesRepository.updateLike(
       commentId,
       user.userId,
       newLikeStatus

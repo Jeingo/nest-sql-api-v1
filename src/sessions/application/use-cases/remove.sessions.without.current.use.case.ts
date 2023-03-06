@@ -7,10 +7,10 @@ export class RemoveSessionWithoutCurrentCommand {
 
 @CommandHandler(RemoveSessionWithoutCurrentCommand)
 export class RemoveSessionWithoutCurrentUseCase {
-  constructor(private readonly sqlSessionsRepository: SessionsRepository) {}
+  constructor(private readonly sessionsRepository: SessionsRepository) {}
 
   async execute(command: RemoveSessionWithoutCurrentCommand): Promise<boolean> {
-    return await this.sqlSessionsRepository.deleteSessionsWithoutCurrent(
+    return await this.sessionsRepository.deleteSessionsWithoutCurrent(
       command.userId,
       command.iat
     );

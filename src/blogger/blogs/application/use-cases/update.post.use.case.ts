@@ -20,8 +20,8 @@ export class UpdatePostCommand {
 @CommandHandler(UpdatePostCommand)
 export class UpdatePostUseCase {
   constructor(
-    private readonly sqlPostsRepository: PostsRepository,
-    private readonly sqlBlogRepository: BlogsRepository
+    private readonly postsRepository: PostsRepository,
+    private readonly blogsRepository: BlogsRepository
   ) {}
 
   async execute(command: UpdatePostCommand): Promise<boolean> {
@@ -29,17 +29,12 @@ export class UpdatePostUseCase {
     const { title, shortDescription, content } = command.updatePostDto;
     const blogId = command.blogId;
     const postId = command.id;
-    const blog = await this.sqlBlogRepository.getById(blogId);
-    const post = await this.sqlPostsRepository.getById(postId);
+    const blog = await this.blogsRepository.getById(blogId);
+    const post = await this.postsRepository.getById(postId);
     if (!post || !blog) throw new NotFoundException();
     if (blog.userId.toString() !== userId || post.blogId.toString() !== blogId)
       throw new ForbiddenException();
-    await this.sqlPostsRepository.update(
-      postId,
-      title,
-      shortDescription,
-      content
-    );
+    await this.postsRepository.update(postId, title, shortDescription, content);
     return true;
   }
 }

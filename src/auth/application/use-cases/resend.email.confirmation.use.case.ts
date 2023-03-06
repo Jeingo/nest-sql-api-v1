@@ -10,13 +10,13 @@ export class ResendEmailConfirmationCommand {
 @CommandHandler(ResendEmailConfirmationCommand)
 export class ResendEmailConfirmationUseCase {
   constructor(
-    private readonly sqlUsersRepository: UsersRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly emailManager: EmailManager
   ) {}
 
   async execute(command: ResendEmailConfirmationCommand): Promise<boolean> {
     const email = command.emailDto.email;
-    const user = await this.sqlUsersRepository.updateConfirmationCode(email);
+    const user = await this.usersRepository.updateConfirmationCode(email);
     await this.emailManager.sendRegistrationEmailConfirmation(user);
     return true;
   }

@@ -11,20 +11,20 @@ export class BindWithUserCommand {
 @CommandHandler(BindWithUserCommand)
 export class BindWithUserUseCase {
   constructor(
-    private readonly sqlUsersRepository: UsersRepository,
-    private readonly sqlBlogsRepository: BlogsRepository
+    private readonly usersRepository: UsersRepository,
+    private readonly blogsRepository: BlogsRepository
   ) {}
 
   async execute(command: BindWithUserCommand): Promise<boolean> {
     const blogId = command.blogId;
     const userId = command.userId;
-    const blog = await this.sqlBlogsRepository.getById(blogId);
-    const user = await this.sqlUsersRepository.getById(userId);
+    const blog = await this.blogsRepository.getById(blogId);
+    const user = await this.usersRepository.getById(userId);
     if (!blog || !user)
       throw new BadRequestException(['blogId is not correct']);
     if (blog.userId !== null)
       throw new BadRequestException(['blogId is not correct']);
-    await this.sqlBlogsRepository.bindWithUser(blogId, userId);
+    await this.blogsRepository.bindWithUser(blogId, userId);
     return true;
   }
 }

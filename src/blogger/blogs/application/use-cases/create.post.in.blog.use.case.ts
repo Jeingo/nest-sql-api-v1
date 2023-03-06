@@ -19,18 +19,18 @@ export class CreatePostInBlogCommand {
 @CommandHandler(CreatePostInBlogCommand)
 export class CreatePostInBlogUseCase {
   constructor(
-    private readonly sqlPostsRepository: PostsRepository,
-    private readonly sqlBlogRepository: BlogsRepository
+    private readonly postsRepository: PostsRepository,
+    private readonly blogRepository: BlogsRepository
   ) {}
 
   async execute(command: CreatePostInBlogCommand): Promise<SqlDbId> {
     const { title, shortDescription, content } = command.createPostDto;
     const blogId = command.blogId;
     const { userId } = command.user;
-    const foundBlog = await this.sqlBlogRepository.getById(blogId);
+    const foundBlog = await this.blogRepository.getById(blogId);
     if (!foundBlog) throw new NotFoundException();
     if (foundBlog.userId.toString() !== userId) throw new ForbiddenException();
-    const createdPost = await this.sqlPostsRepository.create(
+    const createdPost = await this.postsRepository.create(
       title,
       shortDescription,
       content,

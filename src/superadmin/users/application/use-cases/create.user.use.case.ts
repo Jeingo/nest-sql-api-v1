@@ -9,11 +9,11 @@ export class CreateUserCommand {
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserUseCase {
-  constructor(private readonly sqlUsersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async execute(command: CreateUserCommand): Promise<SqlDbId> {
     const { login, password, email } = command.createUserDto;
-    const user = await this.sqlUsersRepository.create(
+    const user = await this.usersRepository.create(
       login,
       password,
       email,

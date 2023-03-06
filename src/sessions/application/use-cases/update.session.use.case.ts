@@ -13,7 +13,7 @@ export class UpdateSessionUseCase {
   constructor(
     private readonly configService: ConfigService<IConfigType>,
     private readonly jwtService: JwtService,
-    private readonly sqlSessionsRepository: SessionsRepository
+    private readonly sessionsRepository: SessionsRepository
   ) {}
 
   async execute(command: UpdateSessionCommand): Promise<boolean> {
@@ -23,7 +23,7 @@ export class UpdateSessionUseCase {
     const issueAt = result.iat;
     const expireAt = result.exp;
     const deviceId = result.deviceId;
-    return await this.sqlSessionsRepository.updateSession(
+    return await this.sessionsRepository.updateSession(
       issueAt,
       expireAt,
       deviceId

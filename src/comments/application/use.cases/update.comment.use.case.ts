@@ -14,16 +14,16 @@ export class UpdateCommentCommand {
 
 @CommandHandler(UpdateCommentCommand)
 export class UpdateCommentUseCase {
-  constructor(private readonly sqlCommentRepository: CommentsRepository) {}
+  constructor(private readonly commentsRepository: CommentsRepository) {}
 
   async execute(command: UpdateCommentCommand): Promise<boolean> {
     const commentId = command.id;
     const { userId } = command.user;
     const { content } = command.createCommentDto;
-    const comment = await this.sqlCommentRepository.getById(commentId);
+    const comment = await this.commentsRepository.getById(commentId);
     if (!comment) throw new NotFoundException();
     if (comment.userId.toString() !== userId) throw new ForbiddenException();
-    await this.sqlCommentRepository.update(commentId, content);
+    await this.commentsRepository.update(commentId, content);
     return true;
   }
 }

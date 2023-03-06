@@ -8,10 +8,10 @@ export class RemoveUserCommand {
 
 @CommandHandler(RemoveUserCommand)
 export class RemoveUserUseCase {
-  constructor(private readonly sqlUsersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async execute(command: RemoveUserCommand): Promise<boolean> {
-    const result = await this.sqlUsersRepository.delete(command.id);
+    const result = await this.usersRepository.delete(command.id);
     if (!result) throw new NotFoundException();
     return true;
   }

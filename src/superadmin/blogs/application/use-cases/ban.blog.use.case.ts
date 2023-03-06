@@ -10,14 +10,14 @@ export class BanBlogCommand {
 
 @CommandHandler(BanBlogCommand)
 export class BanBlogUseCase {
-  constructor(private readonly sqlBlogsRepository: BlogsRepository) {}
+  constructor(private readonly blogsRepository: BlogsRepository) {}
 
   async execute(command: BanBlogCommand): Promise<boolean> {
     const blogId = command.blogId;
     const { isBanned } = command.banBlogDto;
-    const blog = await this.sqlBlogsRepository.getById(blogId);
+    const blog = await this.blogsRepository.getById(blogId);
     if (!blog) throw new NotFoundException();
-    await this.sqlBlogsRepository.banBlog(blogId, isBanned);
+    await this.blogsRepository.banBlog(blogId, isBanned);
     return true;
   }
 }

@@ -17,7 +17,7 @@ export class CreateSessionUseCase {
   constructor(
     private readonly configService: ConfigService<IConfigType>,
     private readonly jwtService: JwtService,
-    private readonly sqlSessionsRepository: SessionsRepository
+    private readonly sessionsRepository: SessionsRepository
   ) {}
 
   async execute(command: CreateSessionCommand): Promise<string> {
@@ -32,7 +32,7 @@ export class CreateSessionUseCase {
     const userId = result.userId;
     const deviceId = result.deviceId;
 
-    return await this.sqlSessionsRepository.create(
+    return await this.sessionsRepository.create(
       issueAt,
       deviceId,
       deviceName,

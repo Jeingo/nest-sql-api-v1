@@ -11,13 +11,13 @@ export class RegistrationUserCommand {
 @CommandHandler(RegistrationUserCommand)
 export class RegistrationUserUseCase {
   constructor(
-    private readonly sqlUsersRepository: UsersRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly emailManager: EmailManager
   ) {}
 
   async execute(command: RegistrationUserCommand): Promise<SqlDbId> {
     const { login, password, email } = command.registrationUserDto;
-    const createdUser = await this.sqlUsersRepository.create(
+    const createdUser = await this.usersRepository.create(
       login,
       password,
       email,

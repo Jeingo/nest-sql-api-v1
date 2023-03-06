@@ -18,20 +18,20 @@ export class RemovePostCommand {
 @CommandHandler(RemovePostCommand)
 export class RemovePostUseCase {
   constructor(
-    private readonly sqlPostsRepository: PostsRepository,
-    private readonly sqlBlogRepository: BlogsRepository
+    private readonly postsRepository: PostsRepository,
+    private readonly blogRepository: BlogsRepository
   ) {}
 
   async execute(command: RemovePostCommand): Promise<boolean> {
     const { userId } = command.user;
     const blogId = command.blogId;
     const postId = command.id;
-    const blog = await this.sqlBlogRepository.getById(blogId);
-    const post = await this.sqlPostsRepository.getById(postId);
+    const blog = await this.blogRepository.getById(blogId);
+    const post = await this.postsRepository.getById(postId);
     if (!post || !blog) throw new NotFoundException();
     if (blog.userId.toString() !== userId || post.blogId.toString() !== blogId)
       throw new ForbiddenException();
-    await this.sqlPostsRepository.delete(postId);
+    await this.postsRepository.delete(postId);
     return true;
   }
 }

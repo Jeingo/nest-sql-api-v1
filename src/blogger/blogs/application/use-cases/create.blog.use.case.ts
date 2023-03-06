@@ -15,12 +15,12 @@ export class CreateBlogCommand {
 
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogUseCase {
-  constructor(private readonly sqlBlogsRepository: BlogsRepository) {}
+  constructor(private readonly blogsRepository: BlogsRepository) {}
 
   async execute(command: CreateBlogCommand): Promise<SqlDbId> {
     const { name, description, websiteUrl } = command.createBlogDto;
     const { userId } = command.user;
-    const createdBlog = await this.sqlBlogsRepository.create(
+    const createdBlog = await this.blogsRepository.create(
       name,
       description,
       websiteUrl,

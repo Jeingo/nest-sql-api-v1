@@ -17,16 +17,16 @@ export class UpdateBlogCommand {
 
 @CommandHandler(UpdateBlogCommand)
 export class UpdateBlogUseCase {
-  constructor(private readonly sqlBlogRepository: BlogsRepository) {}
+  constructor(private readonly blogRepository: BlogsRepository) {}
 
   async execute(command: UpdateBlogCommand): Promise<boolean> {
     const { name, description, websiteUrl } = command.updateBlogDto;
     const blogId = command.id;
     const { userId } = command.user;
-    const blog = await this.sqlBlogRepository.getById(blogId);
+    const blog = await this.blogRepository.getById(blogId);
     if (!blog) throw new NotFoundException();
     if (blog.userId.toString() !== userId) throw new ForbiddenException();
-    await this.sqlBlogRepository.update(blogId, name, description, websiteUrl);
+    await this.blogRepository.update(blogId, name, description, websiteUrl);
     return true;
   }
 }

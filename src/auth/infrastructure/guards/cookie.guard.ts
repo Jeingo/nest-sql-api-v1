@@ -15,7 +15,7 @@ import { SessionsRepository } from '../../../sessions/infrastructure/sessions-re
 export class CookieGuard implements CanActivate {
   constructor(
     private readonly jwtAdapter: JwtAdapter,
-    private readonly sqlSessionsRepository: SessionsRepository
+    private readonly sessionsRepository: SessionsRepository
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -45,6 +45,6 @@ export class CookieGuard implements CanActivate {
     deviceId: string,
     iat: number
   ): Promise<boolean> {
-    return await this.sqlSessionsRepository.isActive(deviceId, iat);
+    return await this.sessionsRepository.isActive(deviceId, iat);
   }
 }

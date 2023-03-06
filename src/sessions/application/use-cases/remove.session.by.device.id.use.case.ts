@@ -9,15 +9,15 @@ export class RemoveSessionByDeviceIdCommand {
 
 @CommandHandler(RemoveSessionByDeviceIdCommand)
 export class RemoveSessionByDeviceIdUseCase {
-  constructor(private readonly sqlSessionsRepository: SessionsRepository) {}
+  constructor(private readonly sessionsRepository: SessionsRepository) {}
 
   async execute(command: RemoveSessionByDeviceIdCommand): Promise<boolean> {
     const sessionId = command.id;
     const userId = command.userId;
     if (!validate(sessionId)) throw new NotFoundException();
-    const session = await this.sqlSessionsRepository.get(sessionId);
+    const session = await this.sessionsRepository.get(sessionId);
     if (!session) throw new NotFoundException();
     if (session.userId.toString() !== userId) throw new ForbiddenException();
-    return await this.sqlSessionsRepository.deleteSessionByDeviceId(sessionId);
+    return await this.sessionsRepository.deleteSessionByDeviceId(sessionId);
   }
 }
