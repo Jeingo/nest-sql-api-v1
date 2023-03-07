@@ -75,6 +75,14 @@ import { CommentsQueryRepository } from './comments/infrastructure/comments-quer
 import { BloggerCommentsQueryRepository } from './blogger/blogs/infrastructure/blogger-comments-query-repository.service';
 import { CommentLikesRepository } from './comment-likes/infrastructure/comment-likes-repository.service';
 import { PostLikesRepository } from './post-likes/infrastructure/post-likes-repository.service';
+import { User } from './type-for-sql-entity/users.sql.type';
+import { Session } from './type-for-sql-entity/session.sql.type';
+import { Blog } from './type-for-sql-entity/blogs.sql.type';
+import { Post } from './type-for-sql-entity/posts.sql.type';
+import { Comment } from './type-for-sql-entity/comments.sql.type';
+import { UserBlogBan } from './type-for-sql-entity/users.blogs.ban.sql.type';
+import { CommentLike } from './type-for-sql-entity/comment.likes.sql.type';
+import { PostLike } from './type-for-sql-entity/post.likes.sql.type';
 
 const useCases = [
   RegistrationUserUseCase,
@@ -176,8 +184,18 @@ const controllers = [
       password: process.env.PG_PASSWORD,
       database: process.env.PG_DB_NAME,
       ssl: process.env.PG_SSL == 'true',
-      autoLoadEntities: false,
-      synchronize: false
+      entities: [
+        User,
+        Session,
+        Blog,
+        Post,
+        Comment,
+        CommentLike,
+        PostLike,
+        UserBlogBan
+      ],
+      autoLoadEntities: true,
+      synchronize: true
     }),
     ThrottlerModule.forRoot({
       ttl: parseInt(process.env.THROTTLE_TTL, 10),

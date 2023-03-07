@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UsersSqlType } from '../../type-for-sql-entity/users.sql.type';
 import { SqlDbId } from '../../global-types/global.types';
+import { v4 } from 'uuid';
 
 @Injectable()
 export class UsersRepository {
@@ -25,7 +26,7 @@ export class UsersRepository {
              "emailConfirmationCode", "emailExpirationDate", "emailIsConfirmed",
              "isBanned", "banDate", "banReason") 
              VALUES
-             ('${login}', '${hash}','${email}', now(), NULL, NULL, true, uuid_generate_v4 (), now() + interval '1 hour', ${isConfirmed}, false, NULL, NULL) RETURNING *;`
+             ('${login}', '${hash}','${email}', now(), NULL, NULL, true, '${v4()}', now() + interval '1 hour', ${isConfirmed}, false, NULL, NULL) RETURNING *;`
     );
     return result[0];
   }
@@ -39,7 +40,7 @@ export class UsersRepository {
 
   async updateConfirmationCode(email: string): Promise<UsersSqlType> {
     const queryString = `UPDATE "Users"
-                         SET "emailConfirmationCode"=uuid_generate_v4 ()
+                         SET "emailConfirmationCode"='${v4()}'
                          WHERE email='${email}' RETURNING *`;
 
     const result = await this.dataSource.query(queryString);
@@ -92,7 +93,7 @@ export class UsersRepository {
     email: string
   ): Promise<UsersSqlType> {
     const queryString = `UPDATE "Users"
-                         SET "passwordRecoveryCode"=uuid_generate_v4 (),
+                         SET "passwordRecoveryCode"='${v4()}',
                          "passwordRecoveryIsConfirmed"=false,
                          "passwordRecoveryExpirationDate"=now() + interval '1 hour'
                          WHERE email='${email}' RETURNING *`;
