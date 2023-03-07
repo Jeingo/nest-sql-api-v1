@@ -5,9 +5,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
 } from 'typeorm';
-import { Post } from './posts.sql.type';
-import { User } from './users.sql.type';
-import { CommentLike } from './comment.likes.sql.type';
+import { Post } from '../../posts/domain/posts.entity';
+import { User } from '../../users/domain/users.entity';
+import { CommentLike } from '../../comment-likes/domain/comment.likes.entity';
 
 export type CommentsSqlType = {
   id: number;

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { OutputSessionDto } from '../api/dto/output.session.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { SessionSqlType } from '../../type-for-sql-entity/session.sql.type';
+import { SessionSqlType } from '../domain/session.entity';
 
 @Injectable()
 export class SessionsQueryRepository {

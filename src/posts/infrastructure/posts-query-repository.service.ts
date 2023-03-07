@@ -9,7 +9,7 @@ import {
 import { OutputPostDto } from '../api/dto/output.post.dto';
 import { QueryPosts } from '../api/types/query.posts.type';
 import { getPaginatedType } from '../../helper/query/query.repository.helper';
-import { PostsSqlType } from '../../type-for-sql-entity/posts.sql.type';
+import { PostsSqlType } from '../domain/posts.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 

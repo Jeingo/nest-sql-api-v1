@@ -5,7 +5,7 @@ import { Direction, PaginatedType } from '../../../global-types/global.types';
 import { getPaginatedType } from '../../../helper/query/query.repository.helper';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { BlogsSqlType } from '../../../type-for-sql-entity/blogs.sql.type';
+import { BlogsSqlType } from '../../../blogs/domain/blogs.entity';
 
 @Injectable()
 export class SuperAdminBlogsQueryRepository {

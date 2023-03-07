@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './users.sql.type';
+import { User } from '../../users/domain/users.entity';
 
 export type SessionSqlType = {
   id: number;

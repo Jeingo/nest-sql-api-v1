@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SqlDbId } from '../../global-types/global.types';
-import { CommentsSqlType } from '../../type-for-sql-entity/comments.sql.type';
+import { CommentsSqlType } from '../domain/comments.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 

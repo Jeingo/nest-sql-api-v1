@@ -9,7 +9,7 @@ import {
 } from '../../global-types/global.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { BlogsSqlType } from '../../type-for-sql-entity/blogs.sql.type';
+import { BlogsSqlType } from '../domain/blogs.entity';
 
 @Injectable()
 export class BlogsQueryRepository {

@@ -9,7 +9,7 @@ import {
 import { getPaginatedType } from '../../../helper/query/query.repository.helper';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { UsersSqlType } from '../../../type-for-sql-entity/users.sql.type';
+import { UsersSqlType } from '../../../users/domain/users.entity';
 
 @Injectable()
 export class SuperAdminUsersQueryRepository {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { SqlDbId } from '../../global-types/global.types';
-import { SessionSqlType } from '../../type-for-sql-entity/session.sql.type';
+import { SessionSqlType } from '../domain/session.entity';
 
 @Injectable()
 export class SessionsRepository {

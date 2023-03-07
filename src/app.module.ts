@@ -75,14 +75,14 @@ import { CommentsQueryRepository } from './comments/infrastructure/comments-quer
 import { BloggerCommentsQueryRepository } from './blogger/blogs/infrastructure/blogger-comments-query-repository.service';
 import { CommentLikesRepository } from './comment-likes/infrastructure/comment-likes-repository.service';
 import { PostLikesRepository } from './post-likes/infrastructure/post-likes-repository.service';
-import { User } from './type-for-sql-entity/users.sql.type';
-import { Session } from './type-for-sql-entity/session.sql.type';
-import { Blog } from './type-for-sql-entity/blogs.sql.type';
-import { Post } from './type-for-sql-entity/posts.sql.type';
-import { Comment } from './type-for-sql-entity/comments.sql.type';
-import { UserBlogBan } from './type-for-sql-entity/users.blogs.ban.sql.type';
-import { CommentLike } from './type-for-sql-entity/comment.likes.sql.type';
-import { PostLike } from './type-for-sql-entity/post.likes.sql.type';
+import { User } from './users/domain/users.entity';
+import { Session } from './sessions/domain/session.entity';
+import { Blog } from './blogs/domain/blogs.entity';
+import { Post } from './posts/domain/posts.entity';
+import { Comment } from './comments/domain/comments.entity';
+import { UserBlogBan } from './users-blogs-ban/domain/users.blogs.ban.entity';
+import { CommentLike } from './comment-likes/domain/comment.likes.entity';
+import { PostLike } from './post-likes/domain/post.likes.entity';
 
 const useCases = [
   RegistrationUserUseCase,

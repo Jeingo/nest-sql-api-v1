@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SqlDbId } from '../../global-types/global.types';
-import { PostsSqlType } from '../../type-for-sql-entity/posts.sql.type';
+import { PostsSqlType } from '../domain/posts.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 

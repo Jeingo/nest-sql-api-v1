@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { LikeStatus } from '../global-types/global.types';
-import { User } from './users.sql.type';
-import { Post } from './posts.sql.type';
+import { LikeStatus } from '../../global-types/global.types';
+import { User } from '../../users/domain/users.entity';
+import { Post } from '../../posts/domain/posts.entity';
 
 export type PostLikesSqlType = {
   id: number;

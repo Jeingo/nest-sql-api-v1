@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './users.sql.type';
-import { Blog } from './blogs.sql.type';
+import { User } from '../../users/domain/users.entity';
+import { Blog } from '../../blogs/domain/blogs.entity';
 
-export type UsersBlogsBanSqlType = {
+export type UsersBlogsBanEntity = {
   banDate: Date;
   banReason: string;
   blogId: number;

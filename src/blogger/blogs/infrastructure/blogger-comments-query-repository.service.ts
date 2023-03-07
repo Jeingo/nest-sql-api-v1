@@ -10,7 +10,7 @@ import { QueryComments } from '../../../comments/api/types/query.comments.type';
 import { OutputBloggerCommentsDto } from '../api/dto/output.blogger.comments.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { CommentsSqlType } from '../../../type-for-sql-entity/comments.sql.type';
+import { CommentsSqlType } from '../../../comments/domain/comments.entity';
 
 @Injectable()
 export class BloggerCommentsQueryRepository {

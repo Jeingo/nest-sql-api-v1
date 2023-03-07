@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { UsersSqlType } from '../../type-for-sql-entity/users.sql.type';
+import { UsersSqlType } from '../domain/users.entity';
 import { SqlDbId } from '../../global-types/global.types';
 import { v4 } from 'uuid';
 

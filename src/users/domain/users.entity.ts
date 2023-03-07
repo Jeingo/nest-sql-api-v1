@@ -1,10 +1,10 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Session } from './session.sql.type';
-import { Blog } from './blogs.sql.type';
-import { Comment } from './comments.sql.type';
-import { UserBlogBan } from './users.blogs.ban.sql.type';
-import { CommentLike } from './comment.likes.sql.type';
-import { PostLike } from './post.likes.sql.type';
+import { Session } from '../../sessions/domain/session.entity';
+import { Blog } from '../../blogs/domain/blogs.entity';
+import { Comment } from '../../comments/domain/comments.entity';
+import { UserBlogBan } from '../../users-blogs-ban/domain/users.blogs.ban.entity';
+import { CommentLike } from '../../comment-likes/domain/comment.likes.entity';
+import { PostLike } from '../../post-likes/domain/post.likes.entity';
 
 export type UsersSqlType = {
   id: number;
