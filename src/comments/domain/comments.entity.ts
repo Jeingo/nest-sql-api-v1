@@ -28,6 +28,12 @@ export class Comment {
   @Column('timestamptz')
   createdAt: Date;
 
+  @Column('integer')
+  postId: number;
+
+  @Column('integer')
+  userId: number;
+
   @ManyToOne(() => Post, (post) => post.comments)
   post: Post;
 

@@ -18,6 +18,12 @@ export class CommentLike {
   @Column('enum', { enum: LikeStatus })
   myStatus: LikeStatus;
 
+  @Column('integer')
+  commentId: number;
+
+  @Column('integer')
+  userId: number;
+
   @ManyToOne(() => Comment, (comment) => comment.commentLikes)
   comment: Comment;
 

@@ -35,6 +35,9 @@ export class Post {
   @Column('timestamptz')
   createdAt: Date;
 
+  @Column('integer')
+  blogId: number;
+
   @ManyToOne(() => Blog, (blog) => blog.posts)
   blog: Blog;
 

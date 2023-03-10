@@ -22,6 +22,12 @@ export class PostLike {
   @Column('timestamptz')
   addedAt: Date;
 
+  @Column('integer')
+  postId: number;
+
+  @Column('integer')
+  userId: number;
+
   @ManyToOne(() => Post, (post) => post.postLikes)
   post: Post;
 

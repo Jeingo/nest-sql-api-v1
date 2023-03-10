@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   Entity,
   ManyToOne,
@@ -22,7 +23,7 @@ export type BlogsSqlType = {
 };
 
 @Entity('Blogs')
-export class Blog {
+export class Blog extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -45,7 +46,10 @@ export class Blog {
   isBanned: boolean;
 
   @Column('timestamptz', { nullable: true })
-  banDate: Date;
+  banDate: Date | null;
+
+  @Column('integer')
+  userId: number;
 
   @ManyToOne(() => User, (user) => user.blogs)
   user: User;

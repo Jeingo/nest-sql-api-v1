@@ -41,10 +41,10 @@ export class User {
   createdAt: Date;
 
   @Column('uuid', { nullable: true })
-  passwordRecoveryCode: string;
+  passwordRecoveryCode: string | null;
 
   @Column('timestamptz', { nullable: true })
-  passwordRecoveryExpirationDate: Date;
+  passwordRecoveryExpirationDate: Date | null;
 
   @Column('boolean')
   passwordRecoveryIsConfirmed: boolean;
@@ -62,10 +62,10 @@ export class User {
   isBanned: boolean;
 
   @Column('timestamptz', { nullable: true })
-  banDate: Date;
+  banDate: Date | null;
 
   @Column('varchar', { nullable: true, length: 500 })
-  banReason: string;
+  banReason: string | null;
 
   @OneToMany(() => Session, (session) => session.user)
   sessions: Session[];

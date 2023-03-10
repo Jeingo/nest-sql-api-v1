@@ -20,6 +20,12 @@ export class UserBlogBan {
   @Column('timestamptz')
   banDate: Date;
 
+  @Column('integer')
+  blogId: number;
+
+  @Column('integer')
+  userId: number;
+
   @ManyToOne(() => Blog, (blog) => blog.userBlogBans)
   blog: Blog;
 

@@ -31,6 +31,9 @@ export class Session {
   @Column('varchar')
   ip: string;
 
+  @Column('integer')
+  userId: number;
+
   @ManyToOne(() => User, (user) => user.sessions)
   user: User;
 }
