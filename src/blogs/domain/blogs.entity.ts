@@ -10,18 +10,6 @@ import { User } from '../../users/domain/users.entity';
 import { Post } from '../../posts/domain/posts.entity';
 import { UserBlogBan } from '../../users-blogs-ban/domain/users.blogs.ban.entity';
 
-export type BlogsSqlType = {
-  id: number;
-  name: string;
-  description: string;
-  websiteUrl: string;
-  createdAt: Date;
-  isMembership: boolean;
-  isBanned: boolean;
-  banDate: Date | null;
-  userId: number;
-};
-
 @Entity('Blogs')
 export class Blog extends BaseEntity {
   @PrimaryGeneratedColumn()

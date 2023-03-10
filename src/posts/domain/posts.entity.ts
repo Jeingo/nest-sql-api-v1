@@ -9,15 +9,6 @@ import { Blog } from '../../blogs/domain/blogs.entity';
 import { Comment } from '../../comments/domain/comments.entity';
 import { PostLike } from '../../post-likes/domain/post.likes.entity';
 
-export type PostsSqlType = {
-  id: number;
-  title: string;
-  shortDescription: string;
-  content: string;
-  createdAt: Date;
-  blogId: number;
-};
-
 @Entity('Posts')
 export class Post {
   @PrimaryGeneratedColumn()

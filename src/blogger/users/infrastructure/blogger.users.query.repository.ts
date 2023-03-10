@@ -14,7 +14,7 @@ import { QueryBannedUsers } from '../api/types/query.banned.users.type';
 import { getPaginatedType } from '../../../helper/query/query.repository.helper';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { UsersBlogsBanEntity } from '../../../users-blogs-ban/domain/users.blogs.ban.entity';
+import { UserBlogBan } from '../../../users-blogs-ban/domain/users.blogs.ban.entity';
 
 @Injectable()
 export class BloggerUsersQueryRepository {
@@ -73,7 +73,7 @@ export class BloggerUsersQueryRepository {
   }
 
   protected _getOutputBannedUserDto(
-    usersBlogsBan: (UsersBlogsBanEntity & { login: string; userId: number })[]
+    usersBlogsBan: (UserBlogBan & { login: string; userId: number })[]
   ): OutputBloggerUserDto[] {
     return usersBlogsBan.map((uub) => {
       return {

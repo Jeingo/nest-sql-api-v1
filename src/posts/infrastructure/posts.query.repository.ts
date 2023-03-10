@@ -9,7 +9,7 @@ import {
 import { OutputPostDto } from '../api/dto/output.post.dto';
 import { QueryPosts } from '../api/types/query.posts.type';
 import { getPaginatedType } from '../../helper/query/query.repository.helper';
-import { PostsSqlType } from '../domain/posts.entity';
+import { Post } from '../domain/posts.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -214,7 +214,7 @@ export class PostsQueryRepository {
     return this.sqlGetOutputPostDto(result[0]);
   }
   private sqlGetOutputPostDto(
-    post: PostsSqlType & {
+    post: Post & {
       blogName: string;
       likesCount: string;
       dislikesCount: string;

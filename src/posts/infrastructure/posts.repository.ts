@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SqlDbId } from '../../global-types/global.types';
-import { PostsSqlType } from '../domain/posts.entity';
+import { Post } from '../domain/posts.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -13,7 +13,7 @@ export class PostsRepository {
     shortDescription: string,
     content: string,
     blogId: string
-  ): Promise<PostsSqlType> {
+  ): Promise<Post> {
     const result = await this.dataSource.query(
       `INSERT INTO "Posts" 
              (title, "shortDescription", content, "createdAt","blogId") 
@@ -22,7 +22,7 @@ export class PostsRepository {
     );
     return result[0];
   }
-  async getById(id: SqlDbId): Promise<PostsSqlType> {
+  async getById(id: SqlDbId): Promise<Post> {
     const result = await this.dataSource.query(
       `SELECT * FROM "Posts" WHERE id=$1;`,
       [id]

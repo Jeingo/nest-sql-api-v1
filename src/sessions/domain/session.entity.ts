@@ -1,16 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../users/domain/users.entity';
 
-export type SessionSqlType = {
-  id: number;
-  issueAt: Date;
-  expireAt: Date;
-  deviceId: string;
-  deviceName: string;
-  ip: string;
-  userId: number;
-};
-
 @Entity('Session')
 export class Session {
   @PrimaryGeneratedColumn()

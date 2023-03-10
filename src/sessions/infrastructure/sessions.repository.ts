@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { SqlDbId } from '../../global-types/global.types';
-import { SessionSqlType } from '../domain/session.entity';
+import { Session } from '../domain/session.entity';
 
 @Injectable()
 export class SessionsRepository {
@@ -22,7 +22,7 @@ export class SessionsRepository {
     );
     return result[0].id.toString();
   }
-  async get(deviceId: string): Promise<SessionSqlType> {
+  async get(deviceId: string): Promise<Session> {
     const result = await this.dataSource.query(
       `SELECT * FROM "Session" WHERE "deviceId"='${deviceId}'`
     );

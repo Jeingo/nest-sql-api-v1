@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { OutputSessionDto } from '../api/dto/output.session.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { SessionSqlType } from '../domain/session.entity';
+import { Session } from '../domain/session.entity';
 
 @Injectable()
 export class SessionsQueryRepository {
@@ -18,7 +18,7 @@ export class SessionsQueryRepository {
     if (!result[0]) return null;
     return result.map(this._getOutputSession);
   }
-  private _getOutputSession(session: SessionSqlType): OutputSessionDto {
+  private _getOutputSession(session: Session): OutputSessionDto {
     return {
       ip: session.ip,
       title: session.deviceName,

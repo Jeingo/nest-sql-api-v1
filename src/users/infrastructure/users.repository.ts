@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { UsersSqlType } from '../domain/users.entity';
+import { User } from '../domain/users.entity';
 import { SqlDbId } from '../../global-types/global.types';
 import { v4 } from 'uuid';
 
@@ -15,7 +15,7 @@ export class UsersRepository {
     password: string,
     email: string,
     isConfirmed: boolean
-  ): Promise<UsersSqlType> {
+  ): Promise<User> {
     const passwordSalt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, passwordSalt);
 
@@ -30,7 +30,7 @@ export class UsersRepository {
     );
     return result[0];
   }
-  async getById(id: SqlDbId): Promise<UsersSqlType> {
+  async getById(id: SqlDbId): Promise<User> {
     const result = await this.dataSource.query(
       `SELECT * FROM "Users" WHERE id=$1;`,
       [id]
@@ -38,7 +38,7 @@ export class UsersRepository {
     return result[0];
   }
 
-  async updateConfirmationCode(email: string): Promise<UsersSqlType> {
+  async updateConfirmationCode(email: string): Promise<User> {
     const queryString = `UPDATE "Users"
                          SET "emailConfirmationCode"='${v4()}'
                          WHERE email='${email}' RETURNING *`;
@@ -62,7 +62,7 @@ export class UsersRepository {
 
     return !!result[0];
   }
-  async getByLoginOrEmail(uniqueField: string): Promise<UsersSqlType> {
+  async getByLoginOrEmail(uniqueField: string): Promise<User> {
     const queryString = `SELECT * FROM "Users"
                          WHERE login='${uniqueField}'
                          OR email='${uniqueField}'`;
@@ -71,7 +71,7 @@ export class UsersRepository {
 
     return result[0];
   }
-  async getByUUIDCode(code: string): Promise<UsersSqlType> {
+  async getByUUIDCode(code: string): Promise<User> {
     const queryString = `SELECT * FROM "Users"
                          WHERE "passwordRecoveryCode"='${code}'
                          OR "emailConfirmationCode"='${code}'`;
@@ -89,9 +89,7 @@ export class UsersRepository {
 
     return !!result[0];
   }
-  async updatePasswordRecoveryConfirmationCode(
-    email: string
-  ): Promise<UsersSqlType> {
+  async updatePasswordRecoveryConfirmationCode(email: string): Promise<User> {
     const queryString = `UPDATE "Users"
                          SET "passwordRecoveryCode"='${v4()}',
                          "passwordRecoveryIsConfirmed"=false,

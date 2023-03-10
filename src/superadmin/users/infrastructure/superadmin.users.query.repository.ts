@@ -9,7 +9,7 @@ import {
 import { getPaginatedType } from '../../../helper/query/query.repository.helper';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { UsersSqlType } from '../../../users/domain/users.entity';
+import { User } from '../../../users/domain/users.entity';
 
 @Injectable()
 export class SuperAdminUsersQueryRepository {
@@ -62,7 +62,7 @@ export class SuperAdminUsersQueryRepository {
     if (!result[0]) throw new NotFoundException();
     return this.getOutputUserSql(result[0]);
   }
-  private getOutputUserSql(user: UsersSqlType): OutputSuperAdminUserDto {
+  private getOutputUserSql(user: User): OutputSuperAdminUserDto {
     return {
       id: user.id.toString(),
       login: user.login,

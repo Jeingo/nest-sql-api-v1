@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SqlDbId } from '../../global-types/global.types';
-import { CommentsSqlType } from '../domain/comments.entity';
+import { Comment } from '../domain/comments.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -11,7 +11,7 @@ export class CommentsRepository {
     content: string,
     userId: string,
     postId: string
-  ): Promise<CommentsSqlType> {
+  ): Promise<Comment> {
     const result = await this.dataSource.query(
       `INSERT INTO "Comments" 
              (content, "createdAt", "postId", "userId") 
@@ -20,7 +20,7 @@ export class CommentsRepository {
     );
     return result[0];
   }
-  async getById(id: SqlDbId): Promise<CommentsSqlType> {
+  async getById(id: SqlDbId): Promise<Comment> {
     const result = await this.dataSource.query(
       `SELECT * FROM "Comments" WHERE id=$1;`,
       [id]

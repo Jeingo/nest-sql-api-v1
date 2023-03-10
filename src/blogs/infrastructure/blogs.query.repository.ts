@@ -9,7 +9,7 @@ import {
 } from '../../global-types/global.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { BlogsSqlType } from '../domain/blogs.entity';
+import { Blog } from '../domain/blogs.entity';
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -72,7 +72,7 @@ export class BlogsQueryRepository {
     if (!result[0]) throw new NotFoundException();
     return this.sqlGetOutputBlogDto(result[0]);
   }
-  protected sqlGetOutputBlogDto(blog: BlogsSqlType): OutputBlogDto {
+  protected sqlGetOutputBlogDto(blog: Blog): OutputBlogDto {
     return {
       id: blog.id.toString(),
       name: blog.name,

@@ -9,14 +9,6 @@ import { Post } from '../../posts/domain/posts.entity';
 import { User } from '../../users/domain/users.entity';
 import { CommentLike } from '../../comment-likes/domain/comment.likes.entity';
 
-export type CommentsSqlType = {
-  id: number;
-  content: string;
-  createdAt: Date;
-  postId: number;
-  userId: number;
-};
-
 @Entity('Comments')
 export class Comment {
   @PrimaryGeneratedColumn()

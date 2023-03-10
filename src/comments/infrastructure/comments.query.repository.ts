@@ -11,7 +11,7 @@ import { QueryComments } from '../api/types/query.comments.type';
 import { getPaginatedType } from '../../helper/query/query.repository.helper';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { CommentsSqlType } from '../domain/comments.entity';
+import { Comment } from '../domain/comments.entity';
 
 @Injectable()
 export class CommentsQueryRepository {
@@ -97,7 +97,7 @@ export class CommentsQueryRepository {
     return this.sqlGetOutputComment(result[0]);
   }
   private sqlGetOutputComment(
-    comment: CommentsSqlType & {
+    comment: Comment & {
       login: string;
       likesCount: string;
       dislikesCount: string;

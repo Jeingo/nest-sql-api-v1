@@ -2,13 +2,6 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../users/domain/users.entity';
 import { Blog } from '../../blogs/domain/blogs.entity';
 
-export type UsersBlogsBanEntity = {
-  banDate: Date;
-  banReason: string;
-  blogId: number;
-  userId: number;
-};
-
 @Entity('Users_Blogs_Ban')
 export class UserBlogBan {
   @PrimaryGeneratedColumn()

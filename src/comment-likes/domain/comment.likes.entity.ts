@@ -3,13 +3,6 @@ import { User } from '../../users/domain/users.entity';
 import { LikeStatus } from '../../global-types/global.types';
 import { Comment } from '../../comments/domain/comments.entity';
 
-export type CommentLikesSqlType = {
-  id: number;
-  myStatus: string;
-  commentId: number;
-  userId: number;
-};
-
 @Entity('CommentLikes')
 export class CommentLike {
   @PrimaryGeneratedColumn()

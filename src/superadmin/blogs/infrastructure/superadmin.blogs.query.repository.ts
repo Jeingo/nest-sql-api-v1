@@ -5,7 +5,7 @@ import { Direction, PaginatedType } from '../../../global-types/global.types';
 import { getPaginatedType } from '../../../helper/query/query.repository.helper';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { BlogsSqlType } from '../../../blogs/domain/blogs.entity';
+import { Blog } from '../../../blogs/domain/blogs.entity';
 
 @Injectable()
 export class SuperAdminBlogsQueryRepository {
@@ -51,7 +51,7 @@ export class SuperAdminBlogsQueryRepository {
     );
   }
   protected _getOutputSuperAdminBlogDto(
-    blog: BlogsSqlType & { login: string }
+    blog: Blog & { login: string }
   ): OutputSuperAdminBlogDto {
     return {
       id: blog.id.toString(),

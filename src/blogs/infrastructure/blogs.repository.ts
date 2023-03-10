@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SqlDbId } from '../../global-types/global.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { BlogsSqlType } from '../domain/blogs.entity';
+import { Blog } from '../domain/blogs.entity';
 
 @Injectable()
 export class BlogsRepository {
@@ -13,7 +13,7 @@ export class BlogsRepository {
     description: string,
     websiteUrl: string,
     userId: string
-  ): Promise<BlogsSqlType> {
+  ): Promise<Blog> {
     const result = await this.dataSource.query(
       `INSERT INTO "Blogs" 
              (name, description, "websiteUrl", "createdAt","isMembership",
@@ -23,7 +23,7 @@ export class BlogsRepository {
     );
     return result[0];
   }
-  async getById(id: SqlDbId): Promise<BlogsSqlType> {
+  async getById(id: SqlDbId): Promise<Blog> {
     const result = await this.dataSource.query(
       `SELECT * FROM "Blogs" WHERE id=$1;`,
       [id]
