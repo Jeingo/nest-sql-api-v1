@@ -5,8 +5,8 @@ import {
 } from '../../../../global-types/global.types';
 import { InputBloggerUserBanDto } from '../../api/dto/input.blogger.user.ban.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { UsersRepository } from '../../../../users/infrastructure/users-repository.service';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
+import { UsersRepository } from '../../../../users/infrastructure/users.repository';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
 import { BlogsUsersBanRepository } from '../../infrastructure/blogs.users.ban.repository';
 
 export class BloggerBanUserCommand {

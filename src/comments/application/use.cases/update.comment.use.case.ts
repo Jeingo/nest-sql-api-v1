@@ -2,7 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { CurrentUserType, SqlDbId } from '../../../global-types/global.types';
 import { InputCreateCommentDto } from '../../api/dto/input.create.comment.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { CommentsRepository } from '../../infrastructure/comments-repository.service';
+import { CommentsRepository } from '../../infrastructure/comments.repository';
 
 export class UpdateCommentCommand {
   constructor(

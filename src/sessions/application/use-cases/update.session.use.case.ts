@@ -2,7 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { ConfigService } from '@nestjs/config';
 import { IConfigType } from '../../../configuration/configuration';
 import { JwtService } from '@nestjs/jwt';
-import { SessionsRepository } from '../../infrastructure/sessions-repository.service';
+import { SessionsRepository } from '../../infrastructure/sessions.repository';
 
 export class UpdateSessionCommand {
   constructor(public refreshToken: string) {}

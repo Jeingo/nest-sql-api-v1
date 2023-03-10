@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { InputEmailDto } from '../../api/dto/input.email.dto';
 import { EmailManager } from '../../../adapters/email/email.manager';
-import { UsersRepository } from '../../../users/infrastructure/users-repository.service';
+import { UsersRepository } from '../../../users/infrastructure/users.repository';
 
 export class ResendEmailConfirmationCommand {
   constructor(public emailDto: InputEmailDto) {}

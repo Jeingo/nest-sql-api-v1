@@ -4,7 +4,7 @@ import {
   CurrentUserType,
   SqlDbId
 } from '../../../../global-types/global.types';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
 
 export class CreateBlogCommand {
   constructor(

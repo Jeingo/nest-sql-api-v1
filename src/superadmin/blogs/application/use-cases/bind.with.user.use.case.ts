@@ -1,8 +1,8 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { SqlDbId } from '../../../../global-types/global.types';
 import { BadRequestException } from '@nestjs/common';
-import { UsersRepository } from '../../../../users/infrastructure/users-repository.service';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
+import { UsersRepository } from '../../../../users/infrastructure/users.repository';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
 
 export class BindWithUserCommand {
   constructor(public blogId: SqlDbId, public userId: SqlDbId) {}

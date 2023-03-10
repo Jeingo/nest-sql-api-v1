@@ -19,8 +19,8 @@ import {
   PaginatedType,
   SqlDbId
 } from '../../global-types/global.types';
-import { BlogsQueryRepository } from '../infrastructure/blogs-query-repository.service';
-import { PostsQueryRepository } from '../../posts/infrastructure/posts-query-repository.service';
+import { BlogsQueryRepository } from '../infrastructure/blogs.query.repository';
+import { PostsQueryRepository } from '../../posts/infrastructure/posts.query.repository';
 
 @Controller('blogs')
 export class BlogsController {

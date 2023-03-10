@@ -4,8 +4,8 @@ import {
   SqlDbId
 } from '../../../../global-types/global.types';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { PostsRepository } from '../../../../posts/infrastructure/posts-repository.service';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
+import { PostsRepository } from '../../../../posts/infrastructure/posts.repository';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
 
 export class RemovePostCommand {
   constructor(

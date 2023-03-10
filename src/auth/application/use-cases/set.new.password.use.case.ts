@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { InputNewPasswordDto } from '../../api/dto/input.newpassword.dto';
-import { UsersRepository } from '../../../users/infrastructure/users-repository.service';
+import { UsersRepository } from '../../../users/infrastructure/users.repository';
 
 export class SetNewPasswordCommand {
   constructor(public newPasswordDto: InputNewPasswordDto) {}

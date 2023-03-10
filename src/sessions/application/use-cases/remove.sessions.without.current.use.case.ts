@@ -1,5 +1,5 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { SessionsRepository } from '../../infrastructure/sessions-repository.service';
+import { SessionsRepository } from '../../infrastructure/sessions.repository';
 
 export class RemoveSessionWithoutCurrentCommand {
   constructor(public userId: string, public iat: number) {}

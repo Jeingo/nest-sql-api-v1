@@ -2,7 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { InputLoginUserDto } from '../../api/dto/input.login.user.dto';
 import bcrypt from 'bcrypt';
 import { UnauthorizedException } from '@nestjs/common';
-import { UsersRepository } from '../../../users/infrastructure/users-repository.service';
+import { UsersRepository } from '../../../users/infrastructure/users.repository';
 
 export class ValidateUserInLoginCommand {
   constructor(public loginUserDto: InputLoginUserDto) {}

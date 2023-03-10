@@ -4,7 +4,7 @@ import {
   SqlDbId
 } from '../../../../global-types/global.types';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
 
 export class RemoveBlogCommand {
   constructor(public id: SqlDbId, public user: CurrentUserType) {}

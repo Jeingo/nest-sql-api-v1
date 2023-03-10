@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { EmailManager } from '../../../adapters/email/email.manager';
 import { InputRecoveryEmailDto } from '../../api/dto/input.recovery.email.dto';
-import { UsersRepository } from '../../../users/infrastructure/users-repository.service';
+import { UsersRepository } from '../../../users/infrastructure/users.repository';
 
 export class RecoveryPasswordCommand {
   constructor(public recoveryEmailDto: InputRecoveryEmailDto) {}

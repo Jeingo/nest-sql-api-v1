@@ -14,7 +14,7 @@ import { RefreshTokenPayloadType } from '../../adapters/jwt/types/jwt.type';
 import { CommandBus } from '@nestjs/cqrs';
 import { RemoveSessionWithoutCurrentCommand } from '../application/use-cases/remove.sessions.without.current.use.case';
 import { RemoveSessionByDeviceIdCommand } from '../application/use-cases/remove.session.by.device.id.use.case';
-import { SessionsQueryRepository } from '../infrastructure/sessions-query-repository.service';
+import { SessionsQueryRepository } from '../infrastructure/sessions.query.repository';
 
 @Controller('security/devices')
 export class SecurityDevicesController {

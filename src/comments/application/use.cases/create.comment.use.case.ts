@@ -2,9 +2,9 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { CurrentUserType, SqlDbId } from '../../../global-types/global.types';
 import { InputCreateCommentDto } from '../../api/dto/input.create.comment.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { PostsRepository } from '../../../posts/infrastructure/posts-repository.service';
-import { UsersRepository } from '../../../users/infrastructure/users-repository.service';
-import { CommentsRepository } from '../../infrastructure/comments-repository.service';
+import { PostsRepository } from '../../../posts/infrastructure/posts.repository';
+import { UsersRepository } from '../../../users/infrastructure/users.repository';
+import { CommentsRepository } from '../../infrastructure/comments.repository';
 import { BlogsUsersBanRepository } from '../../../blogger/users/infrastructure/blogs.users.ban.repository';
 
 export class CreateCommentCommand {

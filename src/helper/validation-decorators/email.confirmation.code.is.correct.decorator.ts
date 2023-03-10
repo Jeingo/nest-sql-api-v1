@@ -5,7 +5,7 @@ import {
   ValidatorConstraintInterface
 } from 'class-validator';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UsersRepository } from '../../users/infrastructure/users-repository.service';
+import { UsersRepository } from '../../users/infrastructure/users.repository';
 
 @ValidatorConstraint({ async: true })
 @Injectable()

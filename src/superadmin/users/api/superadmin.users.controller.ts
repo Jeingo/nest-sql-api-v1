@@ -21,7 +21,7 @@ import { PaginatedType } from '../../../global-types/global.types';
 import { RemoveUserCommand } from '../application/use-cases/remove.user.use.case';
 import { InputBanUserDto } from './dto/input.ban.user.dto';
 import { BanUserCommand } from '../application/use-cases/ban.user.use.case';
-import { SuperAdminUsersQueryRepository } from '../infrastructure/super-admin-users-query-repository.service';
+import { SuperAdminUsersQueryRepository } from '../infrastructure/superadmin.users.query.repository';
 import { CheckId } from '../../../helper/pipes/check.id.validator.pipe';
 
 @UseGuards(BasicAuthGuard)

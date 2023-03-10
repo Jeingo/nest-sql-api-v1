@@ -5,7 +5,7 @@ import {
 } from '../../../../global-types/global.types';
 import { InputUpdateBlogDto } from '../../api/dto/input.update.blog.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
 
 export class UpdateBlogCommand {
   constructor(

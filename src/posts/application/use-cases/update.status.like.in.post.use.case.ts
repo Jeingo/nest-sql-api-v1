@@ -5,8 +5,8 @@ import {
   SqlDbId
 } from '../../../global-types/global.types';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { PostsRepository } from '../../infrastructure/posts-repository.service';
-import { PostLikesRepository } from '../../../post-likes/infrastructure/post-likes-repository.service';
+import { PostsRepository } from '../../infrastructure/posts.repository';
+import { PostLikesRepository } from '../../../post-likes/infrastructure/post.likes.repository';
 import { BlogsUsersBanRepository } from '../../../blogger/users/infrastructure/blogs.users.ban.repository';
 
 export class UpdateStatusLikeInPostCommand {

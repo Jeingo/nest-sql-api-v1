@@ -2,7 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { SqlDbId } from '../../../../global-types/global.types';
 import { InputBanBlogDto } from '../../api/dto/input.ban.blog.dto';
 import { NotFoundException } from '@nestjs/common';
-import { BlogsRepository } from '../../../../blogs/infrastructure/blogs-repository.service';
+import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
 
 export class BanBlogCommand {
   constructor(public blogId: SqlDbId, public banBlogDto: InputBanBlogDto) {}

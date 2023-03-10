@@ -9,7 +9,7 @@ import {
   Token
 } from '../../../adapters/jwt/types/jwt.type';
 import { JwtAdapter } from '../../../adapters/jwt/jwt.service';
-import { SessionsRepository } from '../../../sessions/infrastructure/sessions-repository.service';
+import { SessionsRepository } from '../../../sessions/infrastructure/sessions.repository';
 
 @Injectable()
 export class CookieGuard implements CanActivate {

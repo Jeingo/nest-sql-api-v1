@@ -1,7 +1,7 @@
 import { InputRegistrationUserDto } from '../../api/dto/input.registration.user.dto';
 import { EmailManager } from '../../../adapters/email/email.manager';
 import { CommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../../users/infrastructure/users-repository.service';
+import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { SqlDbId } from '../../../global-types/global.types';
 
 export class RegistrationUserCommand {

@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { InputConfirmationCodeDto } from '../../api/dto/input.confirmation.code.dto';
-import { UsersRepository } from '../../../users/infrastructure/users-repository.service';
+import { UsersRepository } from '../../../users/infrastructure/users.repository';
 
 export class ConfirmEmailCommand {
   constructor(public confirmationCodeDto: InputConfirmationCodeDto) {}

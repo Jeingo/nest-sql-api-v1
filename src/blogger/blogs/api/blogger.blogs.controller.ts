@@ -35,9 +35,9 @@ import { InputUpdatePostDto } from './dto/input.update.post.dto';
 import { RemovePostCommand } from '../application/use-cases/remove.post.use.case';
 import { QueryComments } from '../../../comments/api/types/query.comments.type';
 import { OutputBloggerCommentsDto } from './dto/output.blogger.comments.dto';
-import { BloggerBlogsQueryRepository } from '../infrastructure/blogger-blogs-query-repository.service';
-import { BloggerPostsQueryRepository } from '../infrastructure/blogger-posts-query-repository.service';
-import { BloggerCommentsQueryRepository } from '../infrastructure/blogger-comments-query-repository.service';
+import { BloggerBlogsQueryRepository } from '../infrastructure/blogger.blogs.query.repository';
+import { BloggerPostsQueryRepository } from '../infrastructure/blogger.posts.query.repository';
+import { BloggerCommentsQueryRepository } from '../infrastructure/blogger.comments.query.repository';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')

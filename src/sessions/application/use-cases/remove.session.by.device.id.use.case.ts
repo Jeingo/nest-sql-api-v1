@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { SessionsRepository } from '../../infrastructure/sessions-repository.service';
+import { SessionsRepository } from '../../infrastructure/sessions.repository';
 import { validate } from 'uuid';
 
 export class RemoveSessionByDeviceIdCommand {

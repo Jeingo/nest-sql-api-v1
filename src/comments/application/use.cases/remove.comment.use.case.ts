@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { CurrentUserType, SqlDbId } from '../../../global-types/global.types';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { CommentsRepository } from '../../infrastructure/comments-repository.service';
+import { CommentsRepository } from '../../infrastructure/comments.repository';
 
 export class RemoveCommentCommand {
   constructor(public id: SqlDbId, public user: CurrentUserType) {}

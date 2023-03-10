@@ -4,9 +4,9 @@ import {
   LikeStatus,
   SqlDbId
 } from '../../../global-types/global.types';
-import { CommentsRepository } from '../../infrastructure/comments-repository.service';
+import { CommentsRepository } from '../../infrastructure/comments.repository';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { CommentLikesRepository } from '../../../comment-likes/infrastructure/comment-likes-repository.service';
+import { CommentLikesRepository } from '../../../comment-likes/infrastructure/comment.likes.repository';
 import { BlogsUsersBanRepository } from '../../../blogger/users/infrastructure/blogs.users.ban.repository';
 
 export class UpdateLikeStatusInCommentCommand {

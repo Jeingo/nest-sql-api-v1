@@ -1,8 +1,8 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { InputBanUserDto } from '../../api/dto/input.ban.user.dto';
 import { NotFoundException } from '@nestjs/common';
-import { UsersRepository } from '../../../../users/infrastructure/users-repository.service';
-import { SessionsRepository } from '../../../../sessions/infrastructure/sessions-repository.service';
+import { UsersRepository } from '../../../../users/infrastructure/users.repository';
+import { SessionsRepository } from '../../../../sessions/infrastructure/sessions.repository';
 
 export class BanUserCommand {
   constructor(public banUserDto: InputBanUserDto, public id: string) {}

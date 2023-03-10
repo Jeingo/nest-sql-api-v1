@@ -21,7 +21,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { UpdateCommentCommand } from '../application/use.cases/update.comment.use.case';
 import { RemoveCommentCommand } from '../application/use.cases/remove.comment.use.case';
 import { UpdateLikeStatusInCommentCommand } from '../application/use.cases/update.status.like.in.comment.use.case';
-import { CommentsQueryRepository } from '../infrastructure/comments-query-repository.service';
+import { CommentsQueryRepository } from '../infrastructure/comments.query.repository';
 
 @Controller('comments')
 export class CommentsController {

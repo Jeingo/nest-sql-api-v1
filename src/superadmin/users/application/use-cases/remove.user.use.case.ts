@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
-import { UsersRepository } from '../../../../users/infrastructure/users-repository.service';
+import { UsersRepository } from '../../../../users/infrastructure/users.repository';
 
 export class RemoveUserCommand {
   constructor(public id: string) {}

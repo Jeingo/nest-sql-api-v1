@@ -7,7 +7,7 @@ import {
 } from '../../../global-types/global.types';
 import { getPaginatedType } from '../../../helper/query/query.repository.helper';
 import { OutputBlogDto } from '../../../blogs/api/dto/output.blog.dto';
-import { BlogsQueryRepository } from '../../../blogs/infrastructure/blogs-query-repository.service';
+import { BlogsQueryRepository } from '../../../blogs/infrastructure/blogs.query.repository';
 
 @Injectable()
 export class BloggerBlogsQueryRepository extends BlogsQueryRepository {
