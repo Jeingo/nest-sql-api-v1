@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { SqlDbId } from '../../global-types/global.types';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Blog } from '../domain/blogs.entity';
 
 @Injectable()
 export class BlogsRepository {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
-
+  constructor(
+    @InjectDataSource() private readonly dataSource: DataSource,
+    @InjectRepository(Blog) private blogsRepository: Repository<Blog>
+  ) {}
+  async save(blog: Blog): Promise<Blog> {
+    return await this.blogsRepository.save(blog);
+  }
   async create(
     name: string,
     description: string,
@@ -24,11 +29,7 @@ export class BlogsRepository {
     return result[0];
   }
   async getById(id: SqlDbId): Promise<Blog> {
-    const result = await this.dataSource.query(
-      `SELECT * FROM "Blogs" WHERE id=$1;`,
-      [id]
-    );
-    return result[0];
+    return this.blogsRepository.findOneBy({ id: +id });
   }
   async update(
     blogId: SqlDbId,

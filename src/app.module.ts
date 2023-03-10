@@ -184,19 +184,19 @@ const controllers = [
       password: process.env.PG_PASSWORD,
       database: process.env.PG_DB_NAME,
       ssl: process.env.PG_SSL == 'true',
-      entities: [
-        User,
-        Session,
-        Blog,
-        Post,
-        Comment,
-        CommentLike,
-        PostLike,
-        UserBlogBan
-      ],
       autoLoadEntities: true,
       synchronize: true
     }),
+    TypeOrmModule.forFeature([
+      Blog,
+      User,
+      Session,
+      Post,
+      Comment,
+      CommentLike,
+      PostLike,
+      UserBlogBan
+    ]),
     ThrottlerModule.forRoot({
       ttl: parseInt(process.env.THROTTLE_TTL, 10),
       limit: parseInt(process.env.THROTTLE_LIMIT, 10)

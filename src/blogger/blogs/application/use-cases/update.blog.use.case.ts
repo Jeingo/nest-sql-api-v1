@@ -25,8 +25,9 @@ export class UpdateBlogUseCase {
     const { userId } = command.user;
     const blog = await this.blogRepository.getById(blogId);
     if (!blog) throw new NotFoundException();
-    if (blog.userId.toString() !== userId) throw new ForbiddenException();
-    await this.blogRepository.update(blogId, name, description, websiteUrl);
+    if (!blog.isOwner(userId)) throw new ForbiddenException();
+    blog.update(name, description, websiteUrl);
+    await this.blogRepository.save(blog);
     return true;
   }
 }
