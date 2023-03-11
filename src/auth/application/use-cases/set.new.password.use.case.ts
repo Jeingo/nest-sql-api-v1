@@ -12,7 +12,9 @@ export class SetNewPasswordUseCase {
 
   async execute(command: SetNewPasswordCommand): Promise<boolean> {
     const { recoveryCode, newPassword } = command.newPasswordDto;
-    await this.usersRepository.updatePassword(recoveryCode, newPassword);
+    const user = await this.usersRepository.getByUUIDCode(recoveryCode);
+    user.updatePassword(newPassword);
+    await this.usersRepository.save(user);
     return true;
   }
 }

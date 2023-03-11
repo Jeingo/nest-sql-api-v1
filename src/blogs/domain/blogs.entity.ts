@@ -48,11 +48,11 @@ export class Blog extends BaseEntity {
   @OneToMany(() => UserBlogBan, (userBlogBan) => userBlogBan.blog)
   userBlogBans: UserBlogBan[];
 
-  update(name: string, description: string, websiteUrl: string): this {
+  update(name: string, description: string, websiteUrl: string): boolean {
     this.name = name;
     this.description = description;
     this.websiteUrl = websiteUrl;
-    return this;
+    return true;
   }
 
   isOwner(userId): boolean {

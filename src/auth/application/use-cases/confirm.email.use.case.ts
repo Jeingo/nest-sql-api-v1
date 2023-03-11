@@ -12,8 +12,9 @@ export class ConfirmEmailUseCase {
 
   async execute(command: ConfirmEmailCommand): Promise<boolean> {
     const code = command.confirmationCodeDto.code;
-    await this.usersRepository.updateConfirmationEmail(code);
-
+    const user = await this.usersRepository.getByUUIDCode(code);
+    user.updateEmailConfirmationStatus();
+    await this.usersRepository.save(user);
     return true;
   }
 }

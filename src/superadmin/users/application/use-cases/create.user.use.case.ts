@@ -13,12 +13,8 @@ export class CreateUserUseCase {
 
   async execute(command: CreateUserCommand): Promise<SqlDbId> {
     const { login, password, email } = command.createUserDto;
-    const user = await this.usersRepository.create(
-      login,
-      password,
-      email,
-      true
-    );
+    const user = this.usersRepository.create(login, password, email, true);
+    await this.usersRepository.save(user);
     return user.id.toString();
   }
 }

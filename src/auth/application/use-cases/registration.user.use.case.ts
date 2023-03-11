@@ -17,13 +17,9 @@ export class RegistrationUserUseCase {
 
   async execute(command: RegistrationUserCommand): Promise<SqlDbId> {
     const { login, password, email } = command.registrationUserDto;
-    const createdUser = await this.usersRepository.create(
-      login,
-      password,
-      email,
-      false
-    );
-    await this.emailManager.sendRegistrationEmailConfirmation(createdUser);
-    return createdUser.id.toString();
+    const user = this.usersRepository.create(login, password, email, false);
+    await this.usersRepository.save(user);
+    await this.emailManager.sendRegistrationEmailConfirmation(user);
+    return user.id.toString();
   }
 }

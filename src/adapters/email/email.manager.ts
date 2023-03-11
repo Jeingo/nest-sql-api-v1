@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { EmailService } from './email.service';
+import { User } from '../../users/domain/users.entity';
 
 @Injectable()
 export class EmailManager {
   constructor(private readonly emailService: EmailService) {}
 
-  async sendRegistrationEmailConfirmation(user: any): Promise<void> {
+  async sendRegistrationEmailConfirmation(user: User): Promise<void> {
     const emailForm = {
       from: '"Backend-09" <backend.jeingo@gmail.com>',
       to: user.email,
@@ -14,7 +15,7 @@ export class EmailManager {
     };
     await this.emailService.sendEmail(emailForm);
   }
-  async sendPasswordRecoveryEmailConfirmation(user: any): Promise<void> {
+  async sendPasswordRecoveryEmailConfirmation(user: User): Promise<void> {
     const emailForm = {
       from: '"Backend-09" <backend.jeingo@gmail.com>',
       to: user.email,

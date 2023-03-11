@@ -17,16 +17,11 @@ export class BanUserUseCase {
 
   async execute(command: BanUserCommand): Promise<boolean> {
     const { isBanned, banReason } = command.banUserDto;
-
-    const result = await this.usersRepository.banUser(
-      isBanned,
-      banReason,
-      command.id
-    );
-    if (!result) throw new NotFoundException();
-
+    const user = await this.usersRepository.getById(command.id);
+    if (!user) throw new NotFoundException();
+    user.ban(isBanned, banReason);
+    await this.usersRepository.save(user);
     await this.sessionRepository.deleteByUserId(command.id);
-
     return true;
   }
 }

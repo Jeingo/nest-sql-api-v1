@@ -16,9 +16,10 @@ export class RecoveryPasswordUseCase {
 
   async execute(command: RecoveryPasswordCommand): Promise<boolean> {
     const email = command.recoveryEmailDto.email;
-    const user =
-      await this.usersRepository.updatePasswordRecoveryConfirmationCode(email);
+    const user = await this.usersRepository.getByLoginOrEmail(email);
     if (!user) return false;
+    user.updatePasswordRecoveryConfirmationCode();
+    await this.usersRepository.save(user);
     await this.emailManager.sendPasswordRecoveryEmailConfirmation(user);
     return true;
   }

@@ -11,8 +11,9 @@ export class RemoveUserUseCase {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   async execute(command: RemoveUserCommand): Promise<boolean> {
-    const result = await this.usersRepository.delete(command.id);
-    if (!result) throw new NotFoundException();
+    const user = await this.usersRepository.getById(command.id);
+    if (!user) throw new NotFoundException();
+    await this.usersRepository.delete(command.id);
     return true;
   }
 }
