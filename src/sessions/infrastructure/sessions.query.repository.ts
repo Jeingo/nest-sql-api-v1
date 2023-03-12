@@ -1,22 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { OutputSessionDto } from '../api/dto/output.session.dto';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Session } from '../domain/session.entity';
 
 @Injectable()
 export class SessionsQueryRepository {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Session) private sessionsRepository: Repository<Session>
+  ) {}
   async findAllActiveSession(
     userId: string
   ): Promise<OutputSessionDto[] | null> {
-    const result = await this.dataSource.query(
-      `SELECT * FROM "Session" WHERE "userId"=${userId} AND "expireAt" > to_timestamp(${
-        Date.now() / 1000.0
-      })`
-    );
-    if (!result[0]) return null;
-    return result.map(this._getOutputSession);
+    const result1 = await this.sessionsRepository
+      .createQueryBuilder()
+      .where(`"userId"=:userId`, { userId: +userId })
+      .andWhere(`"expireAt" > to_timestamp(:expireAt)`, {
+        expireAt: Date.now() / 1000
+      })
+      .getMany();
+    if (!result1) return null;
+    return result1.map(this._getOutputSession);
   }
   private _getOutputSession(session: Session): OutputSessionDto {
     return {
