@@ -41,7 +41,7 @@ export class SecurityDevicesController {
     @PayloadFromRefreshToken() payload: RefreshTokenPayloadType
   ) {
     await this.commandBus.execute(
-      new RemoveSessionWithoutCurrentCommand(payload.userId, payload.iat)
+      new RemoveSessionWithoutCurrentCommand(payload.userId, payload.deviceId)
     );
     return;
   }

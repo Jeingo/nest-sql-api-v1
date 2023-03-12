@@ -108,7 +108,7 @@ export class AuthController {
     @PayloadFromRefreshToken() payload: RefreshTokenPayloadType,
     @Res({ passthrough: true }) response: Response
   ) {
-    await this.commandBus.execute(new RemoveSessionCommand(payload.iat));
+    await this.commandBus.execute(new RemoveSessionCommand(payload.deviceId));
     response.clearCookie('refreshToken');
     return;
   }

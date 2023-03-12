@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../domain/users.entity';
 import { SqlDbId } from '../../global-types/global.types';
 
 @Injectable()
 export class UsersRepository {
   constructor(
-    @InjectDataSource() private readonly dataSource: DataSource,
     @InjectRepository(User) private usersRepository: Repository<User>
   ) {}
   create(
