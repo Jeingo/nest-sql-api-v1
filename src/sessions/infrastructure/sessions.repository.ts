@@ -53,7 +53,7 @@ export class SessionsRepository {
     return true;
   }
   async isActive(deviceId: string): Promise<boolean> {
-    const result = this.sessionsRepository.findOneBy({
+    const result = await this.sessionsRepository.findOneBy({
       deviceId: deviceId
     });
     return !!result;
