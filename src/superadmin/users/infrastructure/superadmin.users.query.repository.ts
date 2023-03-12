@@ -7,13 +7,15 @@ import {
   SqlDbId
 } from '../../../global-types/global.types';
 import { getPaginatedType } from '../../../helper/query/query.repository.helper';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../../../users/domain/users.entity';
 
 @Injectable()
 export class SuperAdminUsersQueryRepository {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(User) private usersRepository: Repository<User>
+  ) {}
 
   async getAll(
     query: QueryUsers
@@ -29,38 +31,33 @@ export class SuperAdminUsersQueryRepository {
     } = query;
 
     const skipNumber = (+pageNumber - 1) * +pageSize;
+    const direction = sortDirection.toUpperCase() as Direction;
     const banFilter = this.getBanFilter(banStatus);
 
-    const queryString = `SELECT * FROM "Users"
-                         WHERE ${banFilter}
-                         (login ILIKE '%${searchLoginTerm}%'
-                         OR email ILIKE '%${searchEmailTerm}%')
-                         ORDER BY "${sortBy}" ${sortDirection}
-                         LIMIT ${pageSize}
-                         OFFSET ${skipNumber}`;
+    const [users, count] = await this.usersRepository
+      .createQueryBuilder()
+      .where(
+        `${banFilter} (login ILIKE :searchLoginTerm OR email ILIKE :searchEmailTerm)`,
+        {
+          searchLoginTerm: `%${searchLoginTerm}%`,
+          searchEmailTerm: `%${searchEmailTerm}%`
+        }
+      )
+      .orderBy(`"${sortBy}"`, direction)
+      .limit(+pageSize)
+      .offset(skipNumber)
+      .getManyAndCount();
 
-    const queryStringForLength = `SELECT COUNT(*) FROM "Users"
-                                  WHERE ${banFilter}
-                                  (login ILIKE '%${searchLoginTerm}%'
-                                  OR email ILIKE '%${searchEmailTerm}%')`;
-
-    const result = await this.dataSource.query(queryString);
-    const resultCount = await this.dataSource.query(queryStringForLength);
-
-    const mappedUser = result.map(this.getOutputUserSql);
-    return getPaginatedType(
-      mappedUser,
-      +pageSize,
-      +pageNumber,
-      +resultCount[0].count
-    );
+    const mappedUser = users.map(this.getOutputUserSql);
+    return getPaginatedType(mappedUser, +pageSize, +pageNumber, count);
   }
   async getById(id: SqlDbId): Promise<OutputSuperAdminUserDto> {
-    const result = await this.dataSource.query(
-      `SELECT * FROM "Users" WHERE id=${id}`
-    );
-    if (!result[0]) throw new NotFoundException();
-    return this.getOutputUserSql(result[0]);
+    const result = await this.usersRepository
+      .createQueryBuilder()
+      .where('id=:id', { id: +id })
+      .getOne();
+    if (!result) throw new NotFoundException();
+    return this.getOutputUserSql(result);
   }
   private getOutputUserSql(user: User): OutputSuperAdminUserDto {
     return {
@@ -71,7 +68,7 @@ export class SuperAdminUsersQueryRepository {
       banInfo: {
         isBanned: user.isBanned,
         banDate: user.banDate ? user.banDate.toISOString() : null,
-        banReason: user.banReason
+        banReason: user.banReason ? user.banReason : null
       }
     };
   }
