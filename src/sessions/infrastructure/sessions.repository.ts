@@ -52,9 +52,10 @@ export class SessionsRepository {
       .execute();
     return true;
   }
-  async isActive(deviceId: string): Promise<boolean> {
+  async isActive(deviceId: string, issueAt: Date): Promise<boolean> {
     const result = await this.sessionsRepository.findOneBy({
-      deviceId: deviceId
+      deviceId: deviceId,
+      issueAt: issueAt
     });
     return !!result;
   }

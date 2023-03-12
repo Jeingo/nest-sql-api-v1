@@ -34,13 +34,18 @@ export class CookieGuard implements CanActivate {
     const result = this.jwtAdapter.checkExpirationRefreshToken(refreshToken);
     if (!result) return false;
     const payload = this.jwtAdapter.getRefreshTokenPayload(refreshToken);
-    const statusSession = await this.isActiveSession(payload.deviceId);
-    console.log(payload);
-    console.log(statusSession);
+    const statusSession = await this.isActiveSession(
+      payload.deviceId,
+      payload.iat
+    );
     if (!statusSession) return false;
     return payload;
   }
-  private async isActiveSession(deviceId: string): Promise<boolean> {
-    return await this.sessionsRepository.isActive(deviceId);
+  private async isActiveSession(
+    deviceId: string,
+    iat: number
+  ): Promise<boolean> {
+    const issueAt = new Date(iat * 1000);
+    return await this.sessionsRepository.isActive(deviceId, issueAt);
   }
 }
