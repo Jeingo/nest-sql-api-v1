@@ -35,6 +35,8 @@ export class CookieGuard implements CanActivate {
     if (!result) return false;
     const payload = this.jwtAdapter.getRefreshTokenPayload(refreshToken);
     const statusSession = await this.isActiveSession(payload.deviceId);
+    console.log(payload);
+    console.log(statusSession);
     if (!statusSession) return false;
     return payload;
   }
