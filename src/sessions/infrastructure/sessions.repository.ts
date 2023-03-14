@@ -33,10 +33,6 @@ export class SessionsRepository {
     await this.sessionsRepository.delete({ deviceId: deviceId });
     return true;
   }
-  async deleteByIssueAt(issueAt: Date): Promise<boolean> {
-    await this.sessionsRepository.delete({ issueAt: issueAt });
-    return true;
-  }
   async deleteWithoutCurrent(
     userId: string,
     deviceId: string

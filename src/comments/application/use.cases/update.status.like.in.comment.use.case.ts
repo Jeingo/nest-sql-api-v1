@@ -24,7 +24,7 @@ export class UpdateLikeStatusInCommentUseCase {
     private readonly commentLikesRepository: CommentLikesRepository,
     private readonly blogsUsersBanRepository: BlogsUsersBanRepository
   ) {}
-
+  //todo refactoring
   async execute(command: UpdateLikeStatusInCommentCommand): Promise<boolean> {
     const user = command.user;
     const commentId = command.commentId;
