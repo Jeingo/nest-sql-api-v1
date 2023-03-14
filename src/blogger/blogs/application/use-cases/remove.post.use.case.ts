@@ -26,11 +26,14 @@ export class RemovePostUseCase {
     const { userId } = command.user;
     const blogId = command.blogId;
     const postId = command.id;
+
     const blog = await this.blogRepository.getById(blogId);
     const post = await this.postsRepository.getById(postId);
+
     if (!post || !blog) throw new NotFoundException();
-    if (blog.userId.toString() !== userId || post.blogId.toString() !== blogId)
+    if (!blog.isOwner(userId) || !post.isOwnersBlog(blogId))
       throw new ForbiddenException();
+
     await this.postsRepository.delete(postId);
     return true;
   }

@@ -58,4 +58,21 @@ export class Blog extends BaseEntity {
   isOwner(userId): boolean {
     return this.userId.toString() === userId;
   }
+  static make(
+    name: string,
+    description: string,
+    websiteUrl: string,
+    userId: string
+  ): Blog {
+    const blog = new Blog();
+    blog.name = name;
+    blog.description = description;
+    blog.websiteUrl = websiteUrl;
+    blog.createdAt = new Date();
+    blog.isMembership = false;
+    blog.isBanned = false;
+    blog.banDate = null;
+    blog.userId = +userId;
+    return blog;
+  }
 }

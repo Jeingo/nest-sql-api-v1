@@ -1,54 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { SqlDbId } from '../../global-types/global.types';
 import { Post } from '../domain/posts.entity';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class PostsRepository {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Post) private postsRepository: Repository<Post>
+  ) {}
 
-  async create(
+  create(
     title: string,
     shortDescription: string,
     content: string,
     blogId: string
-  ): Promise<Post> {
-    const result = await this.dataSource.query(
-      `INSERT INTO "Posts" 
-             (title, "shortDescription", content, "createdAt","blogId") 
-             VALUES
-             ('${title}', '${shortDescription}','${content}', now(), ${blogId}) RETURNING *;`
-    );
-    return result[0];
+  ): Post {
+    return Post.make(title, shortDescription, content, blogId);
+  }
+  async save(post: Post): Promise<Post> {
+    return await this.postsRepository.save(post);
   }
   async getById(id: SqlDbId): Promise<Post> {
-    const result = await this.dataSource.query(
-      `SELECT * FROM "Posts" WHERE id=$1;`,
-      [id]
-    );
-    return result[0];
-  }
-  async update(
-    postId: SqlDbId,
-    title: string,
-    shortDescription: string,
-    content: string
-  ): Promise<boolean> {
-    const queryString = `UPDATE "Posts"
-                         SET title='${title}',
-                         "shortDescription"='${shortDescription}',
-                         content='${content}'
-                         WHERE "id"=${postId}`;
-
-    const result = await this.dataSource.query(queryString);
-
-    return !!result[0];
+    return this.postsRepository.findOneBy({ id: +id });
   }
   async delete(id: SqlDbId): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `DELETE FROM "Posts" WHERE id=${id}`
-    );
-    return !!result[1];
+    await this.postsRepository.delete(+id);
+    return true;
   }
 }

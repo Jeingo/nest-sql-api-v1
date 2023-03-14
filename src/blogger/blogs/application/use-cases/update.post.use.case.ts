@@ -29,12 +29,16 @@ export class UpdatePostUseCase {
     const { title, shortDescription, content } = command.updatePostDto;
     const blogId = command.blogId;
     const postId = command.id;
+
     const blog = await this.blogsRepository.getById(blogId);
     const post = await this.postsRepository.getById(postId);
+
     if (!post || !blog) throw new NotFoundException();
-    if (blog.userId.toString() !== userId || post.blogId.toString() !== blogId)
+    if (!blog.isOwner(userId) || !post.isOwnersBlog(blogId))
       throw new ForbiddenException();
-    await this.postsRepository.update(postId, title, shortDescription, content);
+
+    post.update(title, shortDescription, content);
+    await this.postsRepository.save(post);
     return true;
   }
 }

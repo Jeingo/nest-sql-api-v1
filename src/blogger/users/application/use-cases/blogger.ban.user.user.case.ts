@@ -29,19 +29,32 @@ export class BloggerBanUserUseCase {
     const { isBanned, banReason, blogId } = command.bloggerUserBanDto;
     const { userId } = command.user;
     const bannedUserId = command.userId;
+
     const blog = await this.blogsRepository.getById(blogId);
+
     if (!blog) throw new NotFoundException();
-    if (blog.userId.toString() !== userId) throw new ForbiddenException();
+    if (!blog.isOwner(userId)) throw new ForbiddenException();
 
     const user = await this.usersRepository.getById(bannedUserId);
     if (!user) throw new NotFoundException();
 
-    await this.blogsUsersBanRepository.ban(
-      bannedUserId,
+    let blogsUsersBan = await this.blogsUsersBanRepository.get(
       blogId,
-      isBanned,
-      banReason
+      bannedUserId
     );
+
+    if (!blogsUsersBan) {
+      blogsUsersBan = this.blogsUsersBanRepository.create(
+        bannedUserId,
+        blogId,
+        isBanned,
+        banReason
+      );
+    } else {
+      blogsUsersBan.update(isBanned, banReason);
+    }
+
+    await this.blogsUsersBanRepository.save(blogsUsersBan);
 
     return true;
   }

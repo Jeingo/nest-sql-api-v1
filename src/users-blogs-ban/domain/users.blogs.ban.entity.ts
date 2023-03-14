@@ -1,17 +1,26 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn
+} from 'typeorm';
 import { User } from '../../users/domain/users.entity';
 import { Blog } from '../../blogs/domain/blogs.entity';
 
 @Entity('Users_Blogs_Ban')
-export class UserBlogBan {
+export class UserBlogBan extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { length: 500 })
-  banReason: string;
+  @Column('boolean')
+  isBanned: boolean;
 
-  @Column('timestamptz')
-  banDate: Date;
+  @Column('varchar', { length: 500, nullable: true })
+  banReason: string | null;
+
+  @Column('timestamptz', { nullable: true })
+  banDate: Date | null;
 
   @Column('integer')
   blogId: number;
@@ -24,4 +33,39 @@ export class UserBlogBan {
 
   @ManyToOne(() => User, (user) => user.userBlogBans)
   user: User;
+
+  update(isBanned: boolean, banReason: string): boolean {
+    if (this.isBanned === true && isBanned === true) {
+      this.banDate = new Date();
+      this.banReason = banReason;
+    }
+    if (this.isBanned === true && isBanned === false) {
+      this.isBanned = false;
+      this.banDate = null;
+      this.banReason = null;
+    }
+    if (this.isBanned === false && isBanned === true) {
+      this.isBanned = true;
+      this.banDate = new Date();
+      this.banReason = banReason;
+    }
+    return true;
+  }
+
+  static make(
+    bannedUserId: string,
+    blogId: string,
+    isBanned: boolean,
+    banReason: string
+  ): UserBlogBan {
+    const userBlogBan = new UserBlogBan();
+    if (isBanned) {
+      userBlogBan.userId = +bannedUserId;
+      userBlogBan.blogId = +blogId;
+      userBlogBan.isBanned = isBanned;
+      userBlogBan.banDate = new Date();
+      userBlogBan.banReason = banReason;
+      return userBlogBan;
+    }
+  }
 }

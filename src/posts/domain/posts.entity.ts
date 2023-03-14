@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   Entity,
   ManyToOne,
@@ -10,7 +11,7 @@ import { Comment } from '../../comments/domain/comments.entity';
 import { PostLike } from '../../post-likes/domain/post.likes.entity';
 
 @Entity('Posts')
-export class Post {
+export class Post extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -37,4 +38,28 @@ export class Post {
 
   @OneToMany(() => PostLike, (postLike) => postLike.post)
   postLikes: PostLike[];
+
+  update(title: string, shortDescription: string, content: string): boolean {
+    this.title = title;
+    this.shortDescription = shortDescription;
+    this.content = content;
+    return true;
+  }
+  isOwnersBlog(blogId): boolean {
+    return this.blogId.toString() === blogId;
+  }
+  static make(
+    title: string,
+    shortDescription: string,
+    content: string,
+    blogId: string
+  ): Post {
+    const post = new Post();
+    post.title = title;
+    post.shortDescription = shortDescription;
+    post.content = content;
+    post.createdAt = new Date();
+    post.blogId = +blogId;
+    return post;
+  }
 }

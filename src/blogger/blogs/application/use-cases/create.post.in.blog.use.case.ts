@@ -27,15 +27,16 @@ export class CreatePostInBlogUseCase {
     const { title, shortDescription, content } = command.createPostDto;
     const blogId = command.blogId;
     const { userId } = command.user;
-    const foundBlog = await this.blogRepository.getById(blogId);
-    if (!foundBlog) throw new NotFoundException();
-    if (foundBlog.userId.toString() !== userId) throw new ForbiddenException();
-    const createdPost = await this.postsRepository.create(
+    const blog = await this.blogRepository.getById(blogId);
+    if (!blog) throw new NotFoundException();
+    if (!blog.isOwner(userId)) throw new ForbiddenException();
+    const post = this.postsRepository.create(
       title,
       shortDescription,
       content,
       blogId
     );
-    return createdPost.id.toString();
+    await this.postsRepository.save(post);
+    return post.id.toString();
   }
 }

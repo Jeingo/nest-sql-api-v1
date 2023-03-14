@@ -20,13 +20,13 @@ export class CreateBlogUseCase {
   async execute(command: CreateBlogCommand): Promise<SqlDbId> {
     const { name, description, websiteUrl } = command.createBlogDto;
     const { userId } = command.user;
-    const createdBlog = await this.blogsRepository.create(
+    const blog = this.blogsRepository.create(
       name,
       description,
       websiteUrl,
       userId
     );
-
-    return createdBlog.id.toString();
+    await this.blogsRepository.save(blog);
+    return blog.id.toString();
   }
 }
