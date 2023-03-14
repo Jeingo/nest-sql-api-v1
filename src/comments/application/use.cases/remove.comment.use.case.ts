@@ -14,9 +14,11 @@ export class RemoveCommentUseCase {
   async execute(command: RemoveCommentCommand): Promise<boolean> {
     const commentId = command.id;
     const { userId } = command.user;
+
     const comment = await this.commentsRepository.getById(commentId);
     if (!comment) throw new NotFoundException();
-    if (comment.userId.toString() !== userId) throw new ForbiddenException();
+    if (!comment.isOwner(userId)) throw new ForbiddenException();
+
     await this.commentsRepository.delete(commentId);
     return true;
   }

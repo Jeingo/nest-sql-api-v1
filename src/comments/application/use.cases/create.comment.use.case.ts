@@ -28,7 +28,9 @@ export class CreateCommentUseCase {
     const { content } = command.createCommentDto;
     const { userId } = command.user;
     const postId = command.postId;
+
     const post = await this.postsRepository.getById(postId);
+
     if (!post) throw new NotFoundException();
     const userIsBannedForBlog = await this.blogsUsersBanRepository.isBannedUser(
       post.blogId.toString(),
@@ -36,12 +38,10 @@ export class CreateCommentUseCase {
     );
     if (userIsBannedForBlog) throw new ForbiddenException();
 
-    const createdComment = await this.commentsRepository.create(
-      content,
-      userId,
-      postId
-    );
+    const comment = this.commentsRepository.create(content, userId, postId);
 
-    return createdComment.id.toString();
+    await this.commentsRepository.save(comment);
+
+    return comment.id.toString();
   }
 }

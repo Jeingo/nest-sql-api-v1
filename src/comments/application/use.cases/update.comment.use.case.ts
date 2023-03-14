@@ -20,10 +20,14 @@ export class UpdateCommentUseCase {
     const commentId = command.id;
     const { userId } = command.user;
     const { content } = command.createCommentDto;
+
     const comment = await this.commentsRepository.getById(commentId);
     if (!comment) throw new NotFoundException();
-    if (comment.userId.toString() !== userId) throw new ForbiddenException();
-    await this.commentsRepository.update(commentId, content);
+    if (!comment.isOwner(userId)) throw new ForbiddenException();
+
+    comment.update(content);
+
+    await this.commentsRepository.save(comment);
     return true;
   }
 }

@@ -1,45 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { SqlDbId } from '../../global-types/global.types';
 import { Comment } from '../domain/comments.entity';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CommentsRepository {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
-  async create(
-    content: string,
-    userId: string,
-    postId: string
-  ): Promise<Comment> {
-    const result = await this.dataSource.query(
-      `INSERT INTO "Comments" 
-             (content, "createdAt", "postId", "userId") 
-             VALUES
-             ('${content}', now(),${postId},${userId}) RETURNING *;`
-    );
-    return result[0];
+  constructor(
+    @InjectRepository(Comment) private commentsRepository: Repository<Comment>
+  ) {}
+
+  create(content: string, userId: string, postId: string): Comment {
+    return Comment.make(content, userId, postId);
+  }
+  async save(comment: Comment): Promise<Comment> {
+    return await this.commentsRepository.save(comment);
   }
   async getById(id: SqlDbId): Promise<Comment> {
-    const result = await this.dataSource.query(
-      `SELECT * FROM "Comments" WHERE id=$1;`,
-      [id]
-    );
-    return result[0];
-  }
-  async update(id: SqlDbId, content: string): Promise<boolean> {
-    const queryString = `UPDATE "Comments"
-                         SET content='${content}'
-                         WHERE "id"=${id}`;
-
-    const result = await this.dataSource.query(queryString);
-
-    return !!result[0];
+    return this.commentsRepository.findOneBy({ id: +id });
   }
   async delete(id: SqlDbId): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `DELETE FROM "Comments" WHERE id=${id}`
-    );
-    return !!result[1];
+    await this.commentsRepository.delete(+id);
+    return true;
   }
 }
