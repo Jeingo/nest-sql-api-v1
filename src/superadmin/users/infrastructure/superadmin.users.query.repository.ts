@@ -14,7 +14,8 @@ import { User } from '../../../users/domain/users.entity';
 @Injectable()
 export class SuperAdminUsersQueryRepository {
   constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>
+    @InjectRepository(User)
+    private usersRepository: Repository<User>
   ) {}
 
   async getAll(

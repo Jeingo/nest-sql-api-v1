@@ -135,17 +135,17 @@ const repositories = [
 ];
 
 const queryRepositories = [
-  SuperAdminBlogsQueryRepository,
-  BloggerUsersQueryRepository,
-  SuperAdminUsersQueryRepository,
   UsersQueryRepository,
   SessionsQueryRepository,
+  SuperAdminUsersQueryRepository,
+  SuperAdminBlogsQueryRepository,
+  BloggerUsersQueryRepository,
   BloggerBlogsQueryRepository,
+  BloggerCommentsQueryRepository,
   BlogsQueryRepository,
   BloggerPostsQueryRepository,
   PostsQueryRepository,
-  CommentsQueryRepository,
-  BloggerCommentsQueryRepository
+  CommentsQueryRepository
 ];
 const decorators = [
   EmailNotExistConstraint,

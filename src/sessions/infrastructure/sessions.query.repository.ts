@@ -7,7 +7,8 @@ import { Session } from '../domain/session.entity';
 @Injectable()
 export class SessionsQueryRepository {
   constructor(
-    @InjectRepository(Session) private sessionsRepository: Repository<Session>
+    @InjectRepository(Session)
+    private sessionsRepository: Repository<Session>
   ) {}
   async findAllActiveSession(
     userId: string

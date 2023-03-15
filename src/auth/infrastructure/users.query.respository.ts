@@ -8,7 +8,8 @@ import { SqlDbId } from '../../global-types/global.types';
 @Injectable()
 export class UsersQueryRepository {
   constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>
+    @InjectRepository(User)
+    private usersRepository: Repository<User>
   ) {}
 
   async getMeById(id: SqlDbId): Promise<OutputUserMeDto> {
