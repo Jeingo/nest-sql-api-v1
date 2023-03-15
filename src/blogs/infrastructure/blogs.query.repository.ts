@@ -7,14 +7,13 @@ import {
   PaginatedType,
   SqlDbId
 } from '../../global-types/global.types';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Blog } from '../domain/blogs.entity';
 
 @Injectable()
 export class BlogsQueryRepository {
   constructor(
-    @InjectDataSource() protected readonly dataSource: DataSource,
     @InjectRepository(Blog)
     protected blogsRepository: Repository<Blog>
   ) {}
@@ -29,52 +28,39 @@ export class BlogsQueryRepository {
     } = query;
 
     const skipNumber = (+pageNumber - 1) * +pageSize;
+    const direction = sortDirection.toUpperCase() as Direction;
 
-    const queryString = `SELECT b.* FROM "Blogs" b
-                         LEFT JOIN "Users" u ON b."userId"=u.id
-                         WHERE
-                         b."isBanned"=false
-                         AND
-                         u."isBanned"=false
-                         AND
-                         b.name ILIKE '%${searchNameTerm}%'
-                         ORDER BY "${sortBy}" ${sortDirection}
-                         LIMIT ${pageSize}
-                         OFFSET ${skipNumber}`;
-
-    const queryStringForLength = `SELECT COUNT(b.*) FROM "Blogs" b
-                                  LEFT JOIN "Users" u ON b."userId"=u.id
-                                  WHERE
-                                  b."isBanned"=false
-                                  AND
-                                  u."isBanned"=false
-                                  AND
-                                  b.name ILIKE '%${searchNameTerm}%'`;
-
-    const result = await this.dataSource.query(queryString);
-    const resultCount = await this.dataSource.query(queryStringForLength);
+    const [blogs, count] = await this.blogsRepository
+      .createQueryBuilder('b')
+      .leftJoin('b.user', 'u')
+      .where('b."isBanned"=false')
+      .andWhere('u."isBanned"=false')
+      .andWhere(`name ILIKE :searchNameTerm`, {
+        searchNameTerm: `%${searchNameTerm}%`
+      })
+      .orderBy(`b."${sortBy}"`, direction)
+      .limit(+pageSize)
+      .offset(skipNumber)
+      .getManyAndCount();
 
     return getPaginatedType(
-      result.map(this.sqlGetOutputBlogDto),
+      blogs.map(this.sqlGetOutputBlogDto),
       +pageSize,
       +pageNumber,
-      +resultCount[0].count
+      count
     );
   }
   async getById(id: SqlDbId): Promise<OutputBlogDto> {
-    const result = await this.dataSource.query(
-      `SELECT b.*
-             FROM "Blogs" b 
-             LEFT JOIN "Users" u ON b."userId"=u.id 
-             WHERE 
-             b.id=${id}
-             AND
-             b."isBanned"=false
-             AND
-             u."isBanned"=false`
-    );
-    if (!result[0]) throw new NotFoundException();
-    return this.sqlGetOutputBlogDto(result[0]);
+    const blog = await this.blogsRepository
+      .createQueryBuilder('b')
+      .leftJoin('b.user', 'u')
+      .where('b.id=:blogId', { blogId: +id })
+      .andWhere('b."isBanned"=false')
+      .andWhere('u."isBanned"=false')
+      .getOne();
+
+    if (!blog) throw new NotFoundException();
+    return this.sqlGetOutputBlogDto(blog);
   }
   protected sqlGetOutputBlogDto(blog: Blog): OutputBlogDto {
     return {
