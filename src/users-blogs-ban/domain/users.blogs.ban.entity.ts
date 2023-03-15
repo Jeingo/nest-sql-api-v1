@@ -69,7 +69,13 @@ export class UserBlogBan extends BaseEntity {
       userBlogBan.isBanned = isBanned;
       userBlogBan.banDate = new Date();
       userBlogBan.banReason = banReason;
-      return userBlogBan;
+    } else {
+      userBlogBan.userId = +bannedUserId;
+      userBlogBan.blogId = +blogId;
+      userBlogBan.isBanned = isBanned;
+      userBlogBan.banDate = null;
+      userBlogBan.banReason = null;
     }
+    return userBlogBan;
   }
 }

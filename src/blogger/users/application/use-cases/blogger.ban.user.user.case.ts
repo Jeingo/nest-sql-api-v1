@@ -34,17 +34,14 @@ export class BloggerBanUserUseCase {
 
     if (!blog) throw new NotFoundException();
     if (!blog.isOwner(userId)) throw new ForbiddenException();
-    console.log(blog);
 
     const user = await this.usersRepository.getById(bannedUserId);
     if (!user) throw new NotFoundException();
-    console.log(user);
 
     let blogsUsersBan = await this.blogsUsersBanRepository.getByBlogId(
       blogId,
       bannedUserId
     );
-    console.log(blogsUsersBan);
 
     if (!blogsUsersBan) {
       blogsUsersBan = this.blogsUsersBanRepository.create(
@@ -56,7 +53,6 @@ export class BloggerBanUserUseCase {
     } else {
       blogsUsersBan.update(isBanned, banReason);
     }
-    console.log('here');
 
     await this.blogsUsersBanRepository.save(blogsUsersBan);
 
