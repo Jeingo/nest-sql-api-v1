@@ -7,7 +7,7 @@ import {
 import { CommentsRepository } from '../../infrastructure/comments.repository';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { CommentLikesRepository } from '../../../comment-likes/infrastructure/comment.likes.repository';
-import { BlogsUsersBanRepository } from '../../../blogger/users/infrastructure/blogs.users.ban.repository';
+import { BlogsUsersBanRepository } from '../../../users-blogs-ban/infrastructure/blogs.users.ban.repository';
 
 export class UpdateLikeStatusInCommentCommand {
   constructor(
@@ -24,26 +24,40 @@ export class UpdateLikeStatusInCommentUseCase {
     private readonly commentLikesRepository: CommentLikesRepository,
     private readonly blogsUsersBanRepository: BlogsUsersBanRepository
   ) {}
-  //todo refactoring
+
   async execute(command: UpdateLikeStatusInCommentCommand): Promise<boolean> {
     const user = command.user;
     const commentId = command.commentId;
     const newLikeStatus = command.newLikeStatus;
 
     const comment = await this.commentsRepository.getById(commentId);
-    if (!comment) throw new NotFoundException();
-    const userIsBannedForBlog =
-      await this.blogsUsersBanRepository.isBannedUserByPostId(
-        comment.postId.toString(),
-        user.userId
-      );
-    if (userIsBannedForBlog) throw new ForbiddenException();
 
-    await this.commentLikesRepository.updateLike(
-      commentId,
-      user.userId,
-      newLikeStatus
+    if (!comment) throw new NotFoundException();
+
+    const blogUserBan = await this.blogsUsersBanRepository.getByPostId(
+      comment.postId.toString(),
+      user.userId
     );
+
+    if (blogUserBan && blogUserBan.isActive()) throw new ForbiddenException();
+
+    let commentLike = await this.commentLikesRepository.get(
+      commentId,
+      user.userId
+    );
+
+    if (commentLike) {
+      commentLike.update(newLikeStatus);
+    } else {
+      commentLike = this.commentLikesRepository.create(
+        commentId,
+        user.userId,
+        newLikeStatus
+      );
+    }
+
+    await this.commentLikesRepository.save(commentLike);
+
     return true;
   }
 }

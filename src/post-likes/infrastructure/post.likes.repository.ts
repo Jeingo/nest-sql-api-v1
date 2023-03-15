@@ -1,35 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { LikeStatus } from '../../global-types/global.types';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { PostLike } from '../domain/post.likes.entity';
 
 @Injectable()
 export class PostLikesRepository {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(PostLike)
+    private postLikesRepository: Repository<PostLike>
+  ) {}
 
-  async updateLike(
-    postId: string,
-    userId: string,
-    newLikeStatus: LikeStatus
-  ): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `SELECT * FROM "PostLikes"
-             WHERE "userId"=${userId}
-             AND "postId"=${postId}`
-    );
-    if (result.length !== 0) {
-      await this.dataSource.query(`UPDATE "PostLikes"
-                         SET "myStatus"='${newLikeStatus}'
-                         WHERE "userId"=${userId}
-                         AND "postId"=${postId}`);
-    } else {
-      await this.dataSource.query(
-        `INSERT INTO "PostLikes" 
-             ("myStatus", "postId", "userId", "addedAt") 
-             VALUES
-             ('${newLikeStatus}', ${postId}, ${userId}, now());`
-      );
-    }
-    return true;
+  create(postId: string, userId: string, newLikeStatus: LikeStatus): PostLike {
+    return PostLike.make(postId, userId, newLikeStatus);
+  }
+  async get(postId: string, userId: string): Promise<PostLike> {
+    return this.postLikesRepository.findOneBy({
+      postId: +postId,
+      userId: +userId
+    });
+  }
+  async save(postLike: PostLike): Promise<PostLike> {
+    return await this.postLikesRepository.save(postLike);
   }
 }

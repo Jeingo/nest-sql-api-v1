@@ -7,7 +7,7 @@ import {
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PostsRepository } from '../../infrastructure/posts.repository';
 import { PostLikesRepository } from '../../../post-likes/infrastructure/post.likes.repository';
-import { BlogsUsersBanRepository } from '../../../blogger/users/infrastructure/blogs.users.ban.repository';
+import { BlogsUsersBanRepository } from '../../../users-blogs-ban/infrastructure/blogs.users.ban.repository';
 
 export class UpdateStatusLikeInPostCommand {
   constructor(
@@ -32,17 +32,27 @@ export class UpdateStatusLikeInPostUseCase {
 
     const post = await this.postsRepository.getById(postId);
     if (!post) throw new NotFoundException();
-    const userIsBannedForBlog = await this.blogsUsersBanRepository.isBannedUser(
+
+    const blogUserBan = await this.blogsUsersBanRepository.getByBlogId(
       post.blogId.toString(),
       user.userId
     );
-    if (userIsBannedForBlog) throw new ForbiddenException();
 
-    await this.postLikesRepository.updateLike(
-      postId,
-      user.userId,
-      newLikeStatus
-    );
+    if (blogUserBan && blogUserBan.isActive()) throw new ForbiddenException();
+
+    let postLike = await this.postLikesRepository.get(postId, user.userId);
+
+    if (postLike) {
+      postLike.update(newLikeStatus);
+    } else {
+      postLike = this.postLikesRepository.create(
+        postId,
+        user.userId,
+        newLikeStatus
+      );
+    }
+
+    await this.postLikesRepository.save(postLike);
 
     return true;
   }

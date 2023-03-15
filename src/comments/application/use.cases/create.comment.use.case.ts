@@ -5,7 +5,7 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PostsRepository } from '../../../posts/infrastructure/posts.repository';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
-import { BlogsUsersBanRepository } from '../../../blogger/users/infrastructure/blogs.users.ban.repository';
+import { BlogsUsersBanRepository } from '../../../users-blogs-ban/infrastructure/blogs.users.ban.repository';
 
 export class CreateCommentCommand {
   constructor(
@@ -32,11 +32,13 @@ export class CreateCommentUseCase {
     const post = await this.postsRepository.getById(postId);
 
     if (!post) throw new NotFoundException();
-    const userIsBannedForBlog = await this.blogsUsersBanRepository.isBannedUser(
+
+    const blogUserBan = await this.blogsUsersBanRepository.getByBlogId(
       post.blogId.toString(),
       userId
     );
-    if (userIsBannedForBlog) throw new ForbiddenException();
+
+    if (blogUserBan && blogUserBan.isActive()) throw new ForbiddenException();
 
     const comment = this.commentsRepository.create(content, userId, postId);
 

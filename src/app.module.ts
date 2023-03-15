@@ -69,7 +69,7 @@ import { BlogsQueryRepository } from './blogs/infrastructure/blogs.query.reposit
 import { BloggerPostsQueryRepository } from './blogger/blogs/infrastructure/blogger.posts.query.repository';
 import { PostsQueryRepository } from './posts/infrastructure/posts.query.repository';
 import { PostsRepository } from './posts/infrastructure/posts.repository';
-import { BlogsUsersBanRepository } from './blogger/users/infrastructure/blogs.users.ban.repository';
+import { BlogsUsersBanRepository } from './users-blogs-ban/infrastructure/blogs.users.ban.repository';
 import { CommentsRepository } from './comments/infrastructure/comments.repository';
 import { CommentsQueryRepository } from './comments/infrastructure/comments.query.repository';
 import { BloggerCommentsQueryRepository } from './blogger/blogs/infrastructure/blogger.comments.query.repository';

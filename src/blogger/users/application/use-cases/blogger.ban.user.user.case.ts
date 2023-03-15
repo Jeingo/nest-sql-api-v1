@@ -7,7 +7,7 @@ import { InputBloggerUserBanDto } from '../../api/dto/input.blogger.user.ban.dto
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from '../../../../users/infrastructure/users.repository';
 import { BlogsRepository } from '../../../../blogs/infrastructure/blogs.repository';
-import { BlogsUsersBanRepository } from '../../infrastructure/blogs.users.ban.repository';
+import { BlogsUsersBanRepository } from '../../../../users-blogs-ban/infrastructure/blogs.users.ban.repository';
 
 export class BloggerBanUserCommand {
   constructor(
@@ -38,7 +38,7 @@ export class BloggerBanUserUseCase {
     const user = await this.usersRepository.getById(bannedUserId);
     if (!user) throw new NotFoundException();
 
-    let blogsUsersBan = await this.blogsUsersBanRepository.get(
+    let blogsUsersBan = await this.blogsUsersBanRepository.getByBlogId(
       blogId,
       bannedUserId
     );

@@ -34,6 +34,10 @@ export class UserBlogBan extends BaseEntity {
   @ManyToOne(() => User, (user) => user.userBlogBans)
   user: User;
 
+  isActive(): boolean {
+    return this.isBanned;
+  }
+
   update(isBanned: boolean, banReason: string): boolean {
     if (this.isBanned === true && isBanned === true) {
       this.banDate = new Date();
