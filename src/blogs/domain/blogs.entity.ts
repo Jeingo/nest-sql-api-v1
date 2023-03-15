@@ -70,6 +70,11 @@ export class Blog extends BaseEntity {
     return true;
   }
 
+  bindWithUser(userId: string): boolean {
+    this.userId = +userId;
+    return true;
+  }
+
   static make(
     name: string,
     description: string,

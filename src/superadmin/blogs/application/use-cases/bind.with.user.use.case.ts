@@ -20,11 +20,15 @@ export class BindWithUserUseCase {
     const userId = command.userId;
     const blog = await this.blogsRepository.getById(blogId);
     const user = await this.usersRepository.getById(userId);
+
     if (!blog || !user)
       throw new BadRequestException(['blogId is not correct']);
     if (blog.userId !== null)
       throw new BadRequestException(['blogId is not correct']);
-    await this.blogsRepository.bindWithUser(blogId, userId);
+
+    blog.bindWithUser(userId);
+
+    await this.blogsRepository.save(blog);
     return true;
   }
 }
