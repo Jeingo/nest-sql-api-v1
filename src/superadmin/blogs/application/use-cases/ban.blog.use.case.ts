@@ -17,7 +17,8 @@ export class BanBlogUseCase {
     const { isBanned } = command.banBlogDto;
     const blog = await this.blogsRepository.getById(blogId);
     if (!blog) throw new NotFoundException();
-    await this.blogsRepository.banBlog(blogId, isBanned);
+    blog.ban(isBanned);
+    await this.blogsRepository.save(blog);
     return true;
   }
 }

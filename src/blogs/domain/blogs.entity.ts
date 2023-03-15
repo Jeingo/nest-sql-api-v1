@@ -58,6 +58,18 @@ export class Blog extends BaseEntity {
   isOwner(userId): boolean {
     return this.userId.toString() === userId;
   }
+
+  ban(isBanned: boolean): boolean {
+    if (isBanned) {
+      this.banDate = new Date();
+      this.isBanned = true;
+    } else {
+      this.banDate = null;
+      this.isBanned = false;
+    }
+    return true;
+  }
+
   static make(
     name: string,
     description: string,
