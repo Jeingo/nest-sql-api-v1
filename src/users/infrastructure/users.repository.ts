@@ -7,7 +7,8 @@ import { SqlDbId } from '../../global-types/global.types';
 @Injectable()
 export class UsersRepository {
   constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>
+    @InjectRepository(User)
+    private usersRepository: Repository<User>
   ) {}
   create(
     login: string,
