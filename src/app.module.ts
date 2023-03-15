@@ -141,9 +141,9 @@ const queryRepositories = [
   SuperAdminBlogsQueryRepository,
   BloggerUsersQueryRepository,
   BloggerBlogsQueryRepository,
+  BloggerPostsQueryRepository,
   BloggerCommentsQueryRepository,
   BlogsQueryRepository,
-  BloggerPostsQueryRepository,
   PostsQueryRepository,
   CommentsQueryRepository
 ];

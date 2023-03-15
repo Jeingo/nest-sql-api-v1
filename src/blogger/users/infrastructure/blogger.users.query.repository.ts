@@ -72,7 +72,7 @@ export class BloggerUsersQueryRepository {
       id: usersBlogsBan.userId.toString(),
       login: usersBlogsBan.user.login,
       banInfo: {
-        isBanned: true,
+        isBanned: usersBlogsBan.isBanned,
         banDate: usersBlogsBan.banDate.toISOString(),
         banReason: usersBlogsBan.banReason
       }

@@ -7,13 +7,17 @@ import {
   PaginatedType,
   SqlDbId
 } from '../../global-types/global.types';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Blog } from '../domain/blogs.entity';
 
 @Injectable()
 export class BlogsQueryRepository {
-  constructor(@InjectDataSource() protected readonly dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() protected readonly dataSource: DataSource,
+    @InjectRepository(Blog)
+    protected blogsRepository: Repository<Blog>
+  ) {}
 
   async getAll(query: QueryBlogs): Promise<PaginatedType<OutputBlogDto>> {
     const {

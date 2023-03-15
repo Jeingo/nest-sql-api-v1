@@ -24,30 +24,24 @@ export class BloggerBlogsQueryRepository extends BlogsQueryRepository {
     } = query;
 
     const skipNumber = (+pageNumber - 1) * +pageSize;
+    const direction = sortDirection.toUpperCase() as Direction;
 
-    const queryString = `SELECT * FROM "Blogs"
-                         WHERE
-                         "userId"=${user.userId}
-                         AND
-                         name ILIKE '%${searchNameTerm}%'
-                         ORDER BY "${sortBy}" ${sortDirection}
-                         LIMIT ${pageSize}
-                         OFFSET ${skipNumber}`;
-
-    const queryStringForLength = `SELECT COUNT(*) FROM "Blogs"
-                                  WHERE
-                                  "userId"=${user.userId}
-                                  AND
-                                  name ILIKE '%${searchNameTerm}%'`;
-
-    const result = await this.dataSource.query(queryString);
-    const resultCount = await this.dataSource.query(queryStringForLength);
+    const [blogs, count] = await this.blogsRepository
+      .createQueryBuilder()
+      .where('"userId"=:userId', { userId: +user.userId })
+      .andWhere(`name ILIKE :searchNameTerm`, {
+        searchNameTerm: `%${searchNameTerm}%`
+      })
+      .orderBy(`"${sortBy}"`, direction)
+      .limit(+pageSize)
+      .offset(skipNumber)
+      .getManyAndCount();
 
     return getPaginatedType(
-      result.map(this.sqlGetOutputBlogDto),
+      blogs.map(this.sqlGetOutputBlogDto),
       +pageSize,
       +pageNumber,
-      +resultCount[0].count
+      count
     );
   }
 }
