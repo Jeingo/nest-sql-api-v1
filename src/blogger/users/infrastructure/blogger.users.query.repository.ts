@@ -52,6 +52,7 @@ export class BloggerUsersQueryRepository {
       .leftJoinAndSelect('bub.user', 'u')
       .where('bub."blogId"=:blogId', { blogId: +blogId })
       .andWhere('u."isBanned"=false')
+      .andWhere('bub."isBanned"=true')
       .andWhere(`u.login ILIKE :searchLoginTerm`, {
         searchLoginTerm: `%${searchLoginTerm}%`
       })
