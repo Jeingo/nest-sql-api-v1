@@ -1,12 +1,10 @@
 ## Name:
 #### REST API for Blogger
 
----
 
 ## Description:
 #### This is API for bloggers who can create posts , make comments , put likes , etc.
 
----
 
 ## Installing:
 ```git clone```
@@ -17,7 +15,6 @@ Rename .env-example to .env and fill in it .
 
 ```yarn start```
 
----
 
 ## API:
 
