@@ -5,6 +5,8 @@
 ## Description:
 #### This is API for bloggers who can create posts , make comments , put likes , etc.
 
+## Technology:
+#### Nest.js, TypeOrm
 
 ## Installing:
 ```git clone```
