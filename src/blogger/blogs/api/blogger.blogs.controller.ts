@@ -38,7 +38,9 @@ import { OutputBloggerCommentsDto } from './dto/output.blogger.comments.dto';
 import { BloggerBlogsQueryRepository } from '../infrastructure/blogger.blogs.query.repository';
 import { BloggerPostsQueryRepository } from '../infrastructure/blogger.posts.query.repository';
 import { BloggerCommentsQueryRepository } from '../infrastructure/blogger.comments.query.repository';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Blogger Blogs')
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
 export class BloggerBlogsController {

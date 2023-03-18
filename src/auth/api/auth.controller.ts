@@ -41,7 +41,9 @@ import { UpdateSessionCommand } from '../../sessions/application/use-cases/updat
 import { RemoveSessionCommand } from '../../sessions/application/use-cases/remove.session.use.case';
 import { CurrentUserType } from '../../global-types/global.types';
 import { UsersQueryRepository } from '../infrastructure/users.query.respository';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(

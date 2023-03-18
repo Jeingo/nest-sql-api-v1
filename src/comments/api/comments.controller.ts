@@ -22,7 +22,9 @@ import { UpdateCommentCommand } from '../application/use.cases/update.comment.us
 import { RemoveCommentCommand } from '../application/use.cases/remove.comment.use.case';
 import { UpdateLikeStatusInCommentCommand } from '../application/use.cases/update.status.like.in.comment.use.case';
 import { CommentsQueryRepository } from '../infrastructure/comments.query.repository';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Comments')
 @Controller('comments')
 export class CommentsController {
   constructor(

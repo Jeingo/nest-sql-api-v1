@@ -30,7 +30,9 @@ import { CreateCommentCommand } from '../../comments/application/use.cases/creat
 import { UpdateStatusLikeInPostCommand } from '../application/use-cases/update.status.like.in.post.use.case';
 import { PostsQueryRepository } from '../infrastructure/posts.query.repository';
 import { CommentsQueryRepository } from '../../comments/infrastructure/comments.query.repository';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Posts')
 @Controller('posts')
 export class PostsController {
   constructor(

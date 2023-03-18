@@ -23,7 +23,9 @@ import { InputBloggerUserBanDto } from './dto/input.blogger.user.ban.dto';
 import { BloggerBanUserCommand } from '../application/use-cases/blogger.ban.user.user.case';
 import { CommandBus } from '@nestjs/cqrs';
 import { CurrentUser } from '../../../helper/get-decorators/current.user.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Blogger Users')
 @Controller('blogger/users')
 export class BloggerUsersController {
   constructor(

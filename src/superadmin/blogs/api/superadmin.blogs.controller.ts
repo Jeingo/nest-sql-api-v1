@@ -20,7 +20,9 @@ import { PaginatedType, SqlDbId } from '../../../global-types/global.types';
 import { InputBanBlogDto } from './dto/input.ban.blog.dto';
 import { CheckId } from '../../../helper/pipes/check.id.validator.pipe';
 import { BanBlogCommand } from '../application/use-cases/ban.blog.use.case';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('SuperAdmin Blogs')
 @UseGuards(BasicAuthGuard)
 @Controller('sa/blogs')
 export class SuperAdminBlogsController {

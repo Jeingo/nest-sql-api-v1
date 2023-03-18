@@ -23,7 +23,9 @@ import { InputBanUserDto } from './dto/input.ban.user.dto';
 import { BanUserCommand } from '../application/use-cases/ban.user.use.case';
 import { SuperAdminUsersQueryRepository } from '../infrastructure/superadmin.users.query.repository';
 import { CheckId } from '../../../helper/pipes/check.id.validator.pipe';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('SuperAdmin Users')
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
 export class SuperAdminUsersController {

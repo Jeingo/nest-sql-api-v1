@@ -21,7 +21,9 @@ import {
 } from '../../global-types/global.types';
 import { BlogsQueryRepository } from '../infrastructure/blogs.query.repository';
 import { PostsQueryRepository } from '../../posts/infrastructure/posts.query.repository';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Blogs')
 @Controller('blogs')
 export class BlogsController {
   constructor(
