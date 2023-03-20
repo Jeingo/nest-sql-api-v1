@@ -21,3 +21,5 @@ export const PostsPath = '/posts';
 export const BlogsPath = '/blogs';
 export const CommentsPath = '/comments';
 export const SecurityPath = '/security/devices';
+
+export const QuizPath = '/sa/quiz/questions';
