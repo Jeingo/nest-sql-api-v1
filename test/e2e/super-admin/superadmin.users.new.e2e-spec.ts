@@ -177,7 +177,7 @@ describe('SuperAdminUsersController new (e2e)', () => {
         .auth(superAdminLogin, superAdminPassword)
         .expect(HttpStatus.NOT_FOUND);
     });
-    it(`3.3 should return 201`, async () => {
+    it(`3.3 should return 204`, async () => {
       const user = createUser();
       const userId = await saveUser(app, user);
 

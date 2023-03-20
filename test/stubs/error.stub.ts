@@ -189,3 +189,25 @@ export const errorsMessageForBanBlog = {
     }
   ]
 };
+
+export const errorsMessageForIncorrectQuiz = {
+  errorsMessages: [
+    {
+      message: 'should not be empty',
+      field: 'body'
+    },
+    {
+      message: 'should not be empty',
+      field: 'correctAnswers'
+    }
+  ]
+};
+
+export const errorsMessageForIncorrectQuizPublished = {
+  errorsMessages: [
+    {
+      message: 'should not be empty',
+      field: 'published'
+    }
+  ]
+};
