@@ -83,7 +83,7 @@ describe('Quiz new (e2e)', () => {
         .post(QuizPath)
         .auth(superAdminLogin, superAdminPassword)
         .send(correctQuiz)
-        .expect(HttpStatus.NO_CONTENT);
+        .expect(HttpStatus.CREATED);
       expect(response.body).toEqual({
         id: expect.any(String),
         body: correctQuiz.body,

@@ -5,7 +5,7 @@ import { superAdminLogin, superAdminPassword } from '../auth/basic.auth';
 
 export const saveQuiz = async (app: any): Promise<TestStringID> => {
   const correctQuiz = {
-    body: 'Question',
+    body: 'Question Question 10',
     correctAnswers: ['answer1', 'answer2']
   };
   const response = await request(app)

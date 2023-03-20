@@ -4,7 +4,7 @@ export const incorrectQuiz = {
 };
 
 export const correctQuiz = {
-  body: 'Question',
+  body: 'Question Question 10',
   correctAnswers: ['answer1', 'answer2']
 };
 

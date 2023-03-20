@@ -195,10 +195,6 @@ export const errorsMessageForIncorrectQuiz = {
     {
       message: 'should not be empty',
       field: 'body'
-    },
-    {
-      message: 'should not be empty',
-      field: 'correctAnswers'
     }
   ]
 };

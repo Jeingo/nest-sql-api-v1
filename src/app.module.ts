@@ -83,6 +83,11 @@ import { Comment } from './comments/domain/comments.entity';
 import { UserBlogBan } from './users-blogs-ban/domain/users.blogs.ban.entity';
 import { CommentLike } from './comment-likes/domain/comment.likes.entity';
 import { PostLike } from './post-likes/domain/post.likes.entity';
+import { QuizController } from './quiz/api/quiz.controller';
+import { QuizQueryRepository } from './quiz/infrastructure/quiz.query.repository';
+import { QuizRepository } from './quiz/infrastructure/quiz.repository';
+import { CreateQuizUseCase } from './quiz/application/use-cases/create.quiz.use.case';
+import { Quiz } from './quiz/domain/quiz.entity';
 
 const useCases = [
   RegistrationUserUseCase,
@@ -113,7 +118,8 @@ const useCases = [
   BindWithUserUseCase,
   BanUserUseCase,
   BloggerBanUserUseCase,
-  BanBlogUseCase
+  BanBlogUseCase,
+  CreateQuizUseCase
 ];
 const services = [
   JwtAdapter,
@@ -131,7 +137,8 @@ const repositories = [
   PostsRepository,
   CommentsRepository,
   CommentLikesRepository,
-  PostLikesRepository
+  PostLikesRepository,
+  QuizRepository
 ];
 
 const queryRepositories = [
@@ -145,7 +152,8 @@ const queryRepositories = [
   BloggerCommentsQueryRepository,
   BlogsQueryRepository,
   PostsQueryRepository,
-  CommentsQueryRepository
+  CommentsQueryRepository,
+  QuizQueryRepository
 ];
 const decorators = [
   EmailNotExistConstraint,
@@ -167,7 +175,8 @@ const controllers = [
   SuperAdminBlogsController,
   SuperAdminUsersController,
   BloggerUsersController,
-  BloggerBlogsController
+  BloggerBlogsController,
+  QuizController
 ];
 
 @Module({
@@ -195,7 +204,8 @@ const controllers = [
       Comment,
       CommentLike,
       PostLike,
-      UserBlogBan
+      UserBlogBan,
+      Quiz
     ]),
     ThrottlerModule.forRoot({
       ttl: parseInt(process.env.THROTTLE_TTL, 10),
